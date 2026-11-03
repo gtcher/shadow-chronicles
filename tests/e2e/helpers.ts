@@ -7,7 +7,7 @@ export async function open(page: Page, query = ''): Promise<string[]> {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(String(e)));
   page.on('console', (m) => { if (m.type() === 'error' && !/favicon|AudioContext|autoplay/i.test(m.text())) errors.push(m.text()); });
-  await page.addInitScript(() => { try { localStorage.setItem('sc-settings-v1', JSON.stringify({ tutorialDone: true })); } catch { /* */ } });
+  await page.addInitScript(() => { try { localStorage.setItem('sc-settings-v1', JSON.stringify({ tutorialDone: true, sanctuaryGuideSeen: true })); } catch { /* */ } });
   await page.goto(`/${query}`);
   await expect(page.locator('#loading')).toHaveCount(0, { timeout: 60_000 });
   return errors;

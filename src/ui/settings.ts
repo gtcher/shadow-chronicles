@@ -26,6 +26,7 @@ export interface Settings {
   ambienceVolume: number;  // 0 .. 1
   muted: boolean;
   tutorialDone: boolean;
+  sanctuaryGuideSeen: boolean; // guide du Sanctuaire déjà ouvert une fois
 }
 
 export const STORAGE_KEY = 'sc-settings-v1';
@@ -37,6 +38,7 @@ export const DEFAULT_SETTINGS: Settings = {
   textScale: 1, highContrast: prefersContrast, colorBlind: 'none', reduceMotion: prefersReduced,
   shake: prefersReduced ? 0.3 : 1, flashes: !prefersReduced, damageNumbers: true, vibration: true,
   touchScale: 1, leftHanded: false, autoAim: true, masterVolume: 0.8, musicVolume: 0.7, sfxVolume: 0.8, ambienceVolume: 0.5, muted: false, tutorialDone: false,
+  sanctuaryGuideSeen: false,
 };
 
 type Listener = (s: Readonly<Settings>, changed: keyof Settings | null) => void;
@@ -61,7 +63,7 @@ export class SettingsStore {
   }
 
   reset(): void {
-    this.s = { ...DEFAULT_SETTINGS, tutorialDone: this.s.tutorialDone };
+    this.s = { ...DEFAULT_SETTINGS, tutorialDone: this.s.tutorialDone, sanctuaryGuideSeen: this.s.sanctuaryGuideSeen };
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.s)); } catch { /* ignore */ }
     for (const l of this.listeners) l(this.s, null);
   }

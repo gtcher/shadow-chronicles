@@ -93,10 +93,32 @@ export function upgradeText(u: Upgrade): string {
   if (u.stat && u.perRank !== undefined && STAT_LABEL[u.stat]) return `${STAT_LABEL[u.stat](u.perRank)} par rang.`;
   return u.maxRank > 1 ? `${u.maxRank} rangs.` : 'Déblocage unique.';
 }
+/** Condition de sanctuary.json lue comme « stat ≥ cible » (« bossKilled:5 » → bossWave ≥ 5). */
+export function parseRequirement(req?: string): { key: string; target: number } | null {
+  if (!req) return null;
+  const boss = /^bossKilled:(\d+)$/.exec(req);
+  if (boss) return { key: 'bossWave', target: Number(boss[1]) };
+  const m = /^(\w+)\s*>=\s*(\d+)$/.exec(req);
+  return m ? { key: m[1], target: Number(m[2]) } : null;
+}
+
+/** Où en est le joueur sur une condition (même règle que meetsRequirement côté sauvegarde). */
+export function requirementProgress(req: string | undefined, stats: Record<string, number>): { met: boolean; cur: number; target: number } {
+  const p = parseRequirement(req);
+  if (!p) return { met: !req, cur: 0, target: 0 };
+  const cur = stats[p.key] ?? 0;
+  return { met: cur >= p.target, cur: Math.min(cur, p.target), target: p.target };
+}
+
 export function requirementText(req?: string): string {
-  if (!req) return '';
-  const m = req.match(/^(\w+)>=(\d+)$/);
-  if (!m) return req;
-  const what: Record<string, string> = { bestWave: 'Atteindre la vague', runs: 'Terminer runs :' };
-  return `${what[m[1]] ?? m[1]} ${m[2]}`;
+  const p = parseRequirement(req);
+  if (!p) return req ?? '';
+  const t = p.target;
+  switch (p.key) {
+    case 'bestWave': return `Atteindre la vague ${t}`;
+    case 'runs': return `Jouer ${t} runs (même perdues)`;
+    case 'bossWave': return `Vaincre le boss de la vague ${t}`;
+    case 'legendaryFound': return `Trouver ${t} objets légendaires`;
+    default: return `${p.key} ${t}`;
+  }
 }

@@ -1,5 +1,6 @@
 import { h, fmt } from '../dom';
-import { SANCTUARY, requirementText, upgradeText, type Building, type Upgrade } from '../data';
+import { SANCTUARY, requirementText, requirementProgress, upgradeText, type Building, type Upgrade } from '../data';
+import { nextGoal, goalBar, costChip } from './SanctuaryGuide';
 
 /** Profil méta minimal lu par l'écran (fourni par l'agent Sauvegarde). */
 export interface MetaProfile {
@@ -17,13 +18,11 @@ export interface SanctuaryOptions {
   onUnlock: (b: Building) => boolean;
   onLeave: () => void;
   onPlay: () => void;
+  /** Ouvre le guide « Comment progresser » (branché par UiRoot). */
+  onHelp?: () => void;
 }
 
-const req = (r: string | undefined, stats: Record<string, number>) => {
-  if (!r) return true;
-  const m = r.match(/^(\w+)>=(\d+)$/);
-  return !m || (stats[m[1]] ?? 0) >= Number(m[2]);
-};
+const req = (r: string | undefined, stats: Record<string, number>) => requirementProgress(r, stats).met;
 
 /** Hub du Sanctuaire d'Akar : 4 bâtiments (les verrouillés sont visibles avec leur condition). */
 export function sanctuaryScreen(o: SanctuaryOptions): HTMLElement {
@@ -32,6 +31,7 @@ export function sanctuaryScreen(o: SanctuaryOptions): HTMLElement {
   const wallet = h('div', { class: 'sc-wallet' });
   const list = h('div', { class: 'sc-buildings', role: 'tablist' });
   const detail = h('div', { class: 'sc-upgrades sc-panel', role: 'tabpanel' });
+  const goal = h('div', { class: 'sc-goal sc-panel', 'aria-live': 'polite' });
 
   const cur = (c: string) => SANCTUARY.currencies[c] ?? { icon: '✦', color: '#d9ab74', name: c };
   const affordableIn = (b: Building) => b.upgrades.some((u) => {
@@ -40,6 +40,13 @@ export function sanctuaryScreen(o: SanctuaryOptions): HTMLElement {
   });
 
   const render = () => {
+    const g = nextGoal(p);
+    goal.toggleAttribute('hidden', !g);
+    if (g) goal.replaceChildren(...[h('b', { class: 'sc-gico' }, g.icon),
+      h('div', {}, h('small', {}, g.progress.met ? 'Prêt à débloquer' : 'Prochain objectif'),
+        h('strong', {}, g.name),
+        h('div', { class: 'sc-greq' }, h('span', {}, g.progress.met ? `✓ ${requirementText(g.req)}` : requirementText(g.req)), goalBar(g), costChip(g, p.wallet))),
+      o.onHelp ? h('button', { class: 'sc-btn sc-ghost', onclick: o.onHelp }, 'Tout voir') : null].filter((x): x is HTMLElement => !!x));
     wallet.replaceChildren(...['eclats', 'poussiere', 'sceaux'].map((c) =>
       h('div', { class: 'sc-chip', title: cur(c).name }, h('span', { '--c': cur(c).color }, cur(c).icon), h('b', {}, fmt(p.wallet[c] ?? 0)))));
     list.replaceChildren(...SANCTUARY.buildings.map((b) => {
@@ -57,6 +64,7 @@ export function sanctuaryScreen(o: SanctuaryOptions): HTMLElement {
       detail.replaceChildren(h('header', {}, h('h3', {}, `${b.icon} ${b.name}`), h('p', {}, b.desc)),
         h('div', { class: 'sc-lockbox' }, h('strong', {}, 'Bâtiment en ruine'),
           h('p', {}, `${requirementText(b.requires)} · Restauration : ${uv} ${cur(uc).icon}`),
+          ((pr) => pr.target ? h('p', { class: 'sc-lockprog' }, pr.met ? '✓ Condition remplie' : `Ta progression : ${pr.cur} / ${pr.target}`) : null)(requirementProgress(b.requires, p.stats)),
           h('button', { class: 'sc-btn sc-primary', disabled: !ok, onclick: () => { if (o.onUnlock(b)) render(); } }, ok ? 'Restaurer' : 'Pas encore')));
       return;
     }
@@ -85,6 +93,8 @@ export function sanctuaryScreen(o: SanctuaryOptions): HTMLElement {
       h('div', { class: 'sc-sanct-head' },
         h('div', {}, h('div', { class: 'sc-sub' }, 'Entre deux runs'), h('h2', { class: 'sc-title', style: { fontSize: '1.8em' } }, "Sanctuaire d'Akar")),
         wallet,
-        h('div', { class: 'sc-row' }, h('button', { class: 'sc-btn sc-ghost', onclick: o.onLeave }, '← Retour'), h('button', { class: 'sc-btn sc-primary', onclick: o.onPlay }, '⚔ Partir'))),
+        h('div', { class: 'sc-row' }, o.onHelp ? h('button', { class: 'sc-btn sc-ghost', onclick: o.onHelp, 'aria-label': 'Guide du Sanctuaire' }, '? Guide') : null,
+          h('button', { class: 'sc-btn sc-ghost', onclick: o.onLeave }, '← Retour'), h('button', { class: 'sc-btn sc-primary', onclick: o.onPlay }, '⚔ Partir'))),
+      goal,
       h('div', { class: 'sc-sanct-body' }, list, detail)));
 }

@@ -20,7 +20,10 @@ export interface SaveTools {
 export function metaFromProfile(p: Profile): MetaProfile {
   const ranks: Record<string, number> = {};
   for (const [b, ups] of Object.entries(p.sanctuary)) for (const [u, r] of Object.entries(ups)) ranks[`${b}.${u}`] = r;
-  return { wallet: { ...p.currencies }, ranks, unlocked: [...p.buildingsUnlocked], stats: { bestWave: statValue(p, 'bestWave'), runs: statValue(p, 'runs') } };
+  return { wallet: { ...p.currencies }, ranks, unlocked: [...p.buildingsUnlocked], stats: {
+    bestWave: statValue(p, 'bestWave'), runs: statValue(p, 'runs'),
+    bossWave: p.stats.best.bossWaveKilled ?? 0, legendaryFound: statValue(p, 'legendaryFound'),
+  } };
 }
 
 export function connectSave(ui: UiRoot, save: SaveManager): void {

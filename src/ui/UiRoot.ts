@@ -9,6 +9,7 @@ import { titleScreen, type TitleOptions } from './screens/Title';
 import { pauseScreen, type PauseOptions } from './screens/Pause';
 import { blessingOfferScreen, type OfferOptions, type OfferChoice } from './screens/BlessingOffer';
 import { sanctuaryScreen, type SanctuaryOptions } from './screens/Sanctuary';
+import { sanctuaryGuide } from './screens/SanctuaryGuide';
 import { runEndScreen, type RunEndOptions } from './screens/RunEnd';
 import { settingsScreen } from './screens/SettingsScreen';
 import type { SaveTools } from './saveBridge';
@@ -124,7 +125,16 @@ export class UiRoot {
   show(el: HTMLElement, pauses = true): void { this.closeAll(); this.push(el, pauses); }
 
   showTitle(o: TitleOptions): void { this.inRun = false; this.show(titleScreen(o)); }
-  showSanctuary(o: SanctuaryOptions): void { this.inRun = false; this.show(sanctuaryScreen(o)); }
+  showSanctuary(o: SanctuaryOptions): void {
+    this.inRun = false;
+    const help = () => {
+      this.settings.set('sanctuaryGuideSeen', true);
+      this.push(sanctuaryGuide(o.profile, () => this.pop(), o.assetUrl('shrine-ruins')));
+    };
+    this.show(sanctuaryScreen({ onHelp: help, ...o }));
+    // Première visite : le guide s'ouvre tout seul (une seule fois, puis bouton « ? Guide »).
+    if (!this.settings.get().sanctuaryGuideSeen) help();
+  }
   showRunEnd(o: RunEndOptions): void { this.inRun = false; this.show(runEndScreen(o)); }
   openSettings(): void { this.push(settingsScreen(this.settings, () => this.pop(), this.saveTools)); }
 
@@ -154,7 +164,7 @@ export class UiRoot {
     if (!top) { this.togglePause(); return; }
     // Les écrans de décision (offre, fin de run, titre) ne se ferment pas par Échap.
     const label = top.el.getAttribute('aria-label') ?? '';
-    if (label === 'Pause' || label === 'Réglages') this.pop();
+    if (label === 'Pause' || label === 'Réglages' || label === 'Guide du Sanctuaire') this.pop();
   }
 
   private syncPause(): void {

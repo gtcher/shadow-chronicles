@@ -1,0 +1,276 @@
+<title>Salle d'écoute d'Akar</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Mise en page : une table de mixage sombre, colonne unique ; thèmes en « plaques » cliquables, rangée de butin en dégradé de rareté. */
+:root {
+  color-scheme: dark;
+  --bg: #0f0d12;
+  --panel: #18151d;
+  --line: #2c2733;
+  --fg: #e7e0d6;
+  --muted: #9a9089;
+  --ember: #d9a35a;
+  --blood: #a63a3a;
+  --f-display: "IM Fell English SC", "Cormorant SC", Georgia, serif;
+  --f-body: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--fg); font: 16px/1.5 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 64px; }
+main { max-width: 980px; margin: 0 auto; display: grid; gap: 40px }
+h1, h2 { font-family: var(--f-display); font-weight: 400; text-wrap: balance; margin: 0 }
+h1 { font-size: clamp(2rem, 6vw, 3.2rem); line-height: 1.05; color: var(--ember) }
+h2 { font-size: 1.6rem; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap }
+h2 small { font: 500 .78rem var(--f-mono); color: var(--muted); letter-spacing: .04em }
+p { margin: 0; max-width: 65ch; color: var(--muted) }
+header { display: grid; gap: 14px }
+.row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center }
+button { font: 500 .95rem var(--f-body); color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 9px 14px; cursor: pointer; transition: border-color .15s, background .15s }
+button:hover { border-color: var(--ember) }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px }
+button.primary { background: var(--ember); color: var(--bg); border-color: var(--ember); font-weight: 700 }
+button.primary:hover { filter: brightness(1.1) }
+.state { font: .8rem var(--f-mono); color: var(--muted) }
+section { display: grid; gap: 16px }
+.plates { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px }
+.plate { text-align: left; display: grid; gap: 4px; padding: 14px; position: relative; min-width: 0 }
+.plate b { font-family: var(--f-display); font-weight: 400; font-size: 1.15rem }
+.plate span { font: .75rem var(--f-mono); color: var(--muted) }
+.plate[aria-pressed="true"] { border-color: var(--ember); background: color-mix(in srgb, var(--ember) 12%, var(--panel)) }
+.plate[aria-pressed="true"]::after { content: "♪ en lecture"; font: .7rem var(--f-mono); color: var(--ember) }
+.plate.boss b { color: #e58a7a }
+.label { font: 600 .72rem var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted) }
+.mixer { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px 22px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px }
+.fader { display: grid; gap: 6px; min-width: 0 }
+.fader label { display: flex; justify-content: space-between; font-size: .92rem }
+.fader output { font: .8rem var(--f-mono); color: var(--ember); font-variant-numeric: tabular-nums }
+input[type=range] { width: 100%; accent-color: var(--ember) }
+.layers { display: flex; flex-wrap: wrap; gap: 6px }
+.layer { font: .75rem var(--f-mono); padding: 3px 8px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); transition: all .3s }
+.layer.on { color: var(--bg); background: var(--ember); border-color: var(--ember) }
+.loot { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px }
+.loot button { border-top: 3px solid var(--c); display: grid; gap: 2px; text-align: left; padding: 12px 10px }
+.loot button b { color: var(--c); font-weight: 700 }
+.loot button span { font: .7rem var(--f-mono); color: var(--muted) }
+.sfx { display: grid; gap: 18px }
+.group { display: grid; gap: 8px }
+.chips { display: flex; flex-wrap: wrap; gap: 6px }
+.chips button { padding: 6px 11px; font-size: .88rem }
+.flash { animation: fl .5s }
+@keyframes fl { from { background: color-mix(in srgb, var(--ember) 35%, var(--panel)) } }
+.log { font: .8rem var(--f-mono); color: var(--muted); min-height: 1.4em }
+@media (max-width: 640px) { .loot { grid-template-columns: repeat(3, 1fr) } }
+@media (prefers-reduced-motion: reduce) { .flash { animation: none } * { transition: none !important } }
+</style>
+
+<main>
+  <header>
+    <span class="label">Shadow Chronicles · audio v0.1</span>
+    <h1>Salle d'écoute d'Akar</h1>
+    <p>Toute la musique et les bruitages du jeu, synthétisés en direct dans le navigateur. Choisis un thème, monte l'intensité du combat pour entendre les couches entrer, puis déclenche les sons. Les volumes sont séparés comme dans le jeu.</p>
+    <div class="row">
+      <button class="primary" id="unlock">▶ Activer le son</button>
+      <button id="scenario">Jouer une scène de combat (40 s)</button>
+      <button id="stop">■ Silence</button>
+      <span class="state" id="state">Son inactif : clique sur « Activer le son ».</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>Musique <small>4 biomes · 3 boss · Sanctuaire</small></h2>
+    <span class="label">Biomes (vagues)</span>
+    <div class="plates" id="biomes"></div>
+    <span class="label">Boss</span>
+    <div class="plates" id="bosses"></div>
+    <span class="label">Hors combat</span>
+    <div class="plates" id="calm"></div>
+  </section>
+
+  <section>
+    <h2>Intensité du combat <small id="intVal">0,15</small></h2>
+    <p>Dans le jeu, elle monte toute seule avec les coups, les morts d'ennemis et les PV bas, et redescend au calme. En combat de boss, elle reste haute.</p>
+    <div class="fader"><input type="range" id="intensity" min="0" max="1" step="0.01" value="0.15" aria-label="Intensité"></div>
+    <div class="layers" id="layers"></div>
+  </section>
+
+  <section>
+    <h2>Volumes séparés</h2>
+    <div class="mixer" id="mixer"></div>
+  </section>
+
+  <section>
+    <h2>Butin <small>un son par rareté (loot.json)</small></h2>
+    <div class="loot" id="loot"></div>
+  </section>
+
+  <section>
+    <h2>Bruitages <small id="sfxCount"></small></h2>
+    <div class="sfx" id="sfx"></div>
+    <div class="log" id="log" aria-live="polite"></div>
+  </section>
+</main>
+
+<script>/*__BUNDLE__*/</script>
+<script>
+(() => {
+  const A = window.SCAudio;
+  const LYRE = 'data:audio/ogg;base64,/*__LYRE__*/';
+  const audio = new A.GameAudio({ resolveUrl: () => LYRE });
+  audio.engine.persist = false;
+  // réglages mémorisés pour ce visiteur
+  try { const s = JSON.parse(localStorage.getItem('lab.audio') || 'null'); if (s) audio.engine.update(s); } catch (e) {}
+  audio.engine.onSettingsChange = (s) => { try { localStorage.setItem('lab.audio', JSON.stringify(s)); } catch (e) {} };
+
+  const $ = (id) => document.getElementById(id);
+  const state = $('state');
+  let manual = 0.15;
+  let scenarioTimers = [];
+
+  function unlock() {
+    audio.engine.init();
+    state.textContent = 'Son actif.';
+    $('unlock').textContent = '✓ Son actif';
+  }
+  $('unlock').onclick = () => { unlock(); if (!audio.music.currentId) playTheme('citadel'); };
+
+  const meta = {
+    citadel: 'Vagues 1–3 · Ré éolien · 84 bpm',
+    mists: 'Vagues 4–7 · Do# phrygien · 72 bpm',
+    crypt: 'Vagues 8–10 · Si mineur harmonique · 92 bpm',
+    rift: 'Vagues 11+ · Fa# hongrois · 104 bpm',
+    bossJudge: 'Vague 5 · Ré harmonique · 132 bpm',
+    bossWarden: 'Vague 10 · Do phrygien · 120 bpm',
+    bossEclipse: 'Vagues 15–20 · Mi hongrois · 144 bpm',
+    sanctuary: 'Lyre du prototype · menus et Sanctuaire',
+  };
+  const groups = { biomes: ['citadel', 'mists', 'crypt', 'rift'], bosses: ['bossJudge', 'bossWarden', 'bossEclipse'], calm: ['sanctuary'] };
+  const plates = {};
+  for (const [g, ids] of Object.entries(groups)) for (const id of ids) {
+    const b = document.createElement('button');
+    b.className = 'plate' + (g === 'bosses' ? ' boss' : '');
+    b.setAttribute('aria-pressed', 'false');
+    b.innerHTML = `<b>${A.THEMES[id].name}</b><span>${meta[id]}</span>`;
+    b.onclick = () => { unlock(); playTheme(id); };
+    $(g).append(b); plates[id] = b;
+  }
+
+  function playTheme(id) {
+    clearScenario();
+    const boss = id.startsWith('boss');
+    audio.inBoss = false;
+    if (boss) { audio.startBoss(id === 'bossJudge' ? 5 : id === 'bossWarden' ? 10 : 15); }
+    else if (id === 'sanctuary') { audio.music.play('sanctuary'); audio.ambience.play('shrine'); }
+    else { audio.music.play(id); audio.ambience.play(A.THEMES[id].ambience); }
+    if (boss) audio.ambience.play(A.THEMES[id].ambience);
+    audio.music.setIntensity(boss ? Math.max(manual, 0.75) : manual);
+    if (boss) setIntensityUi(Math.max(manual, 0.75));
+    refresh();
+  }
+
+  function refresh() {
+    const cur = audio.music.currentId;
+    for (const [id, b] of Object.entries(plates)) b.setAttribute('aria-pressed', String(id === cur));
+    const th = A.THEMES[cur];
+    const box = $('layers'); box.textContent = '';
+    if (!th || th.kind === 'file') { box.innerHTML = '<span class="layer">Lyre enregistrée : pas de couches</span>'; return; }
+    const names = { lyre: 'Lyre', harp: 'Harpe', strings: 'Cordes', choir: 'Chœur', drone: 'Bourdon', bass: 'Basse', organ: 'Orgue', horn: 'Cors', bell: 'Cloches', taiko: 'Tambours de guerre', frame: 'Tambour sur cadre', tom: 'Toms', rim: 'Bois', anvil: 'Enclume', swell: 'Souffle' };
+    th.tracks.forEach((t, i) => {
+      const s = document.createElement('span');
+      s.className = 'layer'; s.dataset.min = t.min || 0;
+      s.textContent = names[t.inst] + (t.min ? ` ≥ ${t.min}` : '');
+      box.append(s);
+    });
+    paintLayers();
+  }
+  function paintLayers() {
+    const I = audio.music.intensity;
+    for (const s of $('layers').children) if (s.dataset.min !== undefined) s.classList.toggle('on', A.Music && I >= Number(s.dataset.min) - 0.02);
+  }
+  setInterval(paintLayers, 300);
+
+  function setIntensityUi(v) { $('intensity').value = v; $('intVal').textContent = Number(v).toFixed(2).replace('.', ','); }
+  $('intensity').oninput = (e) => { manual = Number(e.target.value); setIntensityUi(manual); audio.music.setIntensity(manual); };
+
+  // la façade recalcule l'intensité toutes les 250 ms à partir du combat ; ici on la pilote à la main
+  audio.tick = function () {};
+
+  const buses = [['master', 'Général'], ['music', 'Musique'], ['sfx', 'Bruitages'], ['ambience', 'Ambiance'], ['ui', 'Interface']];
+  for (const [k, label] of buses) {
+    const d = document.createElement('div'); d.className = 'fader';
+    const v = Math.round(audio.settings[k] * 100);
+    d.innerHTML = `<label for="v-${k}">${label}<output id="o-${k}">${v} %</output></label><input type="range" id="v-${k}" min="0" max="100" value="${v}">`;
+    d.querySelector('input').oninput = (e) => { audio.setVolume(k, e.target.value / 100); $('o-' + k).textContent = e.target.value + ' %'; };
+    $('mixer').append(d);
+  }
+  const mute = document.createElement('div'); mute.className = 'fader';
+  mute.innerHTML = `<label for="v-mute">Couper tout<output>${audio.settings.muted ? 'oui' : 'non'}</output></label><button id="v-mute">${audio.settings.muted ? 'Rétablir' : 'Couper'}</button>`;
+  mute.querySelector('button').onclick = (e) => { audio.setMuted(!audio.settings.muted); e.target.textContent = audio.settings.muted ? 'Rétablir' : 'Couper'; mute.querySelector('output').textContent = audio.settings.muted ? 'oui' : 'non'; };
+  $('mixer').append(mute);
+
+  const rar = [['common', 'Commun', '#dfe8ef', 'clic métallique'], ['magic', 'Magique', '#62cfff', '2 cloches'], ['rare', 'Rare', '#77b5ff', 'arpège'], ['epic', 'Épique', '#c88dff', 'cloches + grave'], ['legendary', 'Légendaire', '#ffca73', 'chœur, musique baissée'], ['ancestral', 'Ancestral', '#ff7a4d', 'brasier, cors, chœur']];
+  for (const [k, n, c, hint] of rar) {
+    const b = document.createElement('button'); b.style.setProperty('--c', c);
+    b.innerHTML = `<b>${n}</b><span>${hint}</span>`;
+    b.onclick = () => { unlock(); fire(b, () => drop(k)); };
+    $('loot').append(b);
+  }
+  function drop(k) {
+    audio.sfx.play(A.lootSound(k));
+    if (k === 'legendary') audio.engine.duck(0.3, 1.8, 1.5);
+    if (k === 'ancestral') audio.engine.duck(0.15, 2.6, 2);
+  }
+
+  const by = {};
+  for (const [id, d] of Object.entries(A.SFX_DEFS)) { if (d.group === 'Butin' && id.startsWith('loot_')) continue; (by[d.group] ||= []).push([id, d]); }
+  let count = 0;
+  for (const [g, list] of Object.entries(by)) {
+    const box = document.createElement('div'); box.className = 'group';
+    box.innerHTML = `<span class="label">${g}</span><div class="chips"></div>`;
+    for (const [id, d] of list) {
+      const b = document.createElement('button'); b.textContent = d.label; b.title = id; count++;
+      b.onclick = () => { unlock(); fire(b, () => audio.sfx.play(id, { pan: (Math.random() - .5) * .6 })); $('log').textContent = `${id} · bus ${d.bus}`; };
+      box.lastElementChild.append(b);
+    }
+    $('sfx').append(box);
+  }
+  $('sfxCount').textContent = `${count + 6} sons`;
+
+  function fire(el, fn) { fn(); el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
+
+  function clearScenario() { scenarioTimers.forEach(clearTimeout); scenarioTimers = []; }
+  $('stop').onclick = () => { clearScenario(); audio.music.stop(1.5); audio.ambience.play(null); refresh(); };
+
+  // Scène de combat : vague 4 (Brumes) → montée → élite → butin épique → arrivée du Juge → légendaire → victoire
+  $('scenario').onclick = () => {
+    unlock(); clearScenario();
+    const at = (s, fn) => scenarioTimers.push(setTimeout(fn, s * 1000));
+    const I = (v) => { audio.music.setIntensity(v); setIntensityUi(v); };
+    audio.music.play('mists'); audio.ambience.play('mist'); I(0.15); refresh();
+    $('log').textContent = 'Vague 4 · Forêt des Brumes';
+    at(1.5, () => audio.sfx.play('wave_start'));
+    const kinds = ['wolf', 'shade', 'brute', 'shade'];
+    for (let i = 0; i < 26; i++) at(4 + i * 0.45, () => {
+      const pan = (Math.random() - .5) * 1.2;
+      audio.sfx.play(['shoot_mei', 'shoot_taro', 'shoot_sena', 'shoot_ren'][i % 4], { volume: .7, pan: pan * .3 });
+      if (i % 2) audio.sfx.play('hit', { pan });
+      if (i % 3 === 2) audio.sfx.play(/wolf|brute/.test(kinds[i % 4]) ? 'kill_beast' : 'kill_shade', { pan });
+      if (i === 10) audio.sfx.play('hurt');
+      I(Math.min(0.85, 0.15 + i * 0.03));
+    });
+    at(16, () => { audio.sfx.play('kill_elite'); $('log').textContent = 'Élite abattue · butin épique'; });
+    at(16.8, () => drop('epic'));
+    at(18.5, () => { audio.sfx.play('pickup'); audio.sfx.play('wave_clear'); I(0.2); $('log').textContent = 'Vague terminée'; });
+    at(21, () => { audio.sfx.play('blessing_offer'); });
+    at(23, () => { audio.sfx.play('blessing_epic'); });
+    at(25, () => { audio.startBoss(5); I(0.8); refresh(); $('log').textContent = 'Le Juge Pourpre apparaît'; });
+    for (let i = 0; i < 12; i++) at(29 + i * 0.4, () => { audio.sfx.play('hit', { pan: .2 }); if (i % 4 === 0) audio.sfx.play('hit_crit'); });
+    at(31.5, () => audio.sfx.play('boss_phase'));
+    at(34.5, () => { audio.sfx.play('boss_kill'); audio.engine.duck(0.15, 2.5, 2); $('log').textContent = 'Boss vaincu · butin légendaire'; });
+    at(36.5, () => drop('legendary'));
+    at(39.5, () => { audio.sfx.play('victory'); audio.music.play('sanctuary'); audio.ambience.play('shrine'); audio.inBoss = false; I(0.15); refresh(); $('log').textContent = 'Victoire · retour au Sanctuaire'; });
+  };
+})();
+</script>

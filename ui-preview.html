@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <title>Shadow Chronicles · Interface</title>
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #07111f; }
+      #app { position: fixed; inset: 0; }
+      #loading { position: fixed; inset: 0; display: grid; place-content: center; gap: 14px; color: #f1e5ca;
+        font: 600 20px Georgia, serif; text-align: center; letter-spacing: 1px; }
+      #loading .track { width: 260px; height: 6px; border: 1px solid #937444; border-radius: 4px; overflow: hidden; }
+      #loading-bar { width: 0; height: 100%; background: linear-gradient(90deg, #937444, #d5b77e); transition: width .15s; }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="loading">Shadow Chronicles<div class="track"><div id="loading-bar"></div></div></div>
+    <script type="module" src="/src/ui/preview/preview.ts"></script>
+  </body>
+</html>

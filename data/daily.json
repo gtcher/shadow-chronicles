@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "notes": "Défi quotidien à graine : tous les joueurs ont la même run le même jour (héros, modificateurs, routes, vagues, offres de bénédictions). Voir PROGRESSION.md §7 pour l'implémentation de référence du générateur.",
+
+  "seed": {
+    "timezone": "UTC",
+    "resetHourUtc": 0,
+    "format": "SC-D-{YYYY}-{MM}-{DD}",
+    "weeklyFormat": "SC-W-{ISOYEAR}-W{ISOWEEK}",
+    "hash": "cyrb53 (53 bits) → 32 bits bas comme graine",
+    "prng": "mulberry32",
+    "streams": {
+      "desc": "Un flux PRNG indépendant par système, pour qu'un choix du joueur (ex. relance) ne décale pas le reste de la run.",
+      "list": ["setup", "waves", "routes", "blessings", "loot", "contracts", "hazards"],
+      "derive": "seedStream = cyrb53(baseSeedString + ':' + streamName)"
+    },
+    "lockedSystems": "Les vagues, routes proposées, offres de bénédictions (y compris relances, ordre fixe) et contrats sont tirés de leurs flux. Le butin normal reste dans le flux 'loot' mais indexé par numéro d'ennemi pour rester stable."
+  },
+
+  "setup": {
+    "hero": { "pool": ["taro", "mei", "sena", "ren"], "rule": "Tiré du flux setup ; jamais le même héros deux jours de suite (si collision, prendre le suivant dans la liste)." },
+    "mode": { "pool": [ { "id": "survie", "weight": 70 }, { "id": "cauchemar", "weight": 30 } ] },
+    "waves": 10,
+    "weeklyWaves": 20,
+    "startingBlessing": { "count": 1, "rarity": "rare", "desc": "Une bénédiction de départ imposée, tirée parmi les patrons débloqués par TOUS (veilleurs, lune, sang) pour l'équité." },
+    "modifiers": { "positive": 1, "negative": 2, "weeklyNegative": 3, "noDuplicateFamily": true },
+    "sanctuaryBonuses": "désactivés",
+    "sanctuaryNote": "Les améliorations du Sanctuaire sont ignorées pendant le défi pour que le classement soit équitable ; la maîtrise des héros ne compte pas non plus."
+  },
+
+  "modifiers": [
+    { "id": "m_pos_or",        "type": "positive", "family": "economie", "name": "Ruée vers l'or",        "desc": "+50 % d'or." },
+    { "id": "m_pos_benedict",  "type": "positive", "family": "serments", "name": "Patrons généreux",      "desc": "4 choix de bénédiction au lieu de 3." },
+    { "id": "m_pos_rare",      "type": "positive", "family": "butin",    "name": "Faveur de la Forge",    "desc": "Butin minimum : Magique." },
+    { "id": "m_pos_duo",       "type": "positive", "family": "serments", "name": "Harmonie",              "desc": "Les Duos apparaissent 2× plus souvent." },
+    { "id": "m_pos_potion",    "type": "positive", "family": "survie",   "name": "Fioles bénies",         "desc": "+2 potions au départ." },
+    { "id": "m_pos_crit",      "type": "positive", "family": "combat",   "name": "Lune de sang",          "desc": "+15 % de chances de critique." },
+    { "id": "m_pos_cdr",       "type": "positive", "family": "combat",   "name": "Temps suspendu",        "desc": "Recharges des techniques -25 %." },
+
+    { "id": "m_neg_vigueur",   "type": "negative", "family": "ennemis",  "name": "Ennemis Endurcis",      "desc": "PV ennemis +30 %." },
+    { "id": "m_neg_rage",      "type": "negative", "family": "ennemis",  "name": "Rage des Exilés",       "desc": "ATQ ennemis +20 %." },
+    { "id": "m_neg_maree",     "type": "negative", "family": "nombre",   "name": "Marée Noire",           "desc": "+30 % d'ennemis." },
+    { "id": "m_neg_elites",    "type": "negative", "family": "nombre",   "name": "Garde Corrompue",       "desc": "+1 élite par vague." },
+    { "id": "m_neg_failles",   "type": "negative", "family": "terrain",  "name": "Lune Brisée",           "desc": "Failles au sol dans toutes les vagues." },
+    { "id": "m_neg_brouillard","type": "negative", "family": "terrain",  "name": "Brume Épaisse",         "desc": "Champ de vision réduit (vignette serrée) ; la carte tactique est désactivée." },
+    { "id": "m_neg_soin",      "type": "negative", "family": "survie",   "name": "Feux Éteints",          "desc": "Soins reçus -40 %." },
+    { "id": "m_neg_chrono",    "type": "negative", "family": "rythme",   "name": "Sablier",               "desc": "Chaque vague doit être finie en 80 s, sinon des renforts arrivent." },
+    { "id": "m_neg_marchand",  "type": "negative", "family": "economie", "name": "Caravane absente",      "desc": "Aucune route Marchand." },
+    { "id": "m_neg_monopatron","type": "negative", "family": "serments", "name": "Serment unique",        "desc": "Toutes les offres viennent du même patron (tiré au départ)." },
+    { "id": "m_neg_verre",     "type": "negative", "family": "survie",   "name": "Verre Lunaire",         "desc": "Tu subis +25 % de dégâts." }
+  ],
+
+  "scoring": {
+    "formula": "score = vaguesTerminées × 1000 + éliminations × 10 + élites × 75 + boss × 1500 + max(0, 600 − secondesTotal) × 5 + contratsRéussis × 200 + (victoire ? 5000 : 0) − dégâtsSubis × 0.5",
+    "displayBreakdown": true,
+    "tieBreaker": "temps total le plus court",
+    "attempts": { "scored": 1, "practice": "illimité", "desc": "Seul le premier essai du jour compte pour le classement et la série ; les essais suivants sont en mode entraînement (aucune récompense)." }
+  },
+
+  "rewards": {
+    "participation": { "eclats": 10 },
+    "completion": { "eclats": 20, "masteryXp": 80 },
+    "scoreThresholds": [
+      { "score": 8000,  "eclats": 10, "label": "Bronze" },
+      { "score": 14000, "eclats": 20, "label": "Argent" },
+      { "score": 20000, "eclats": 35, "label": "Or", "poussiere": 30 }
+    ],
+    "streak": {
+      "desc": "Série de jours consécutifs avec au moins une tentative notée. Une « bougie de veille » (1 max, regagnée tous les 7 jours de série) protège un jour manqué.",
+      "graceTokens": { "max": 1, "earnEveryDays": 7 },
+      "milestones": [
+        { "days": 3,  "reward": { "eclats": 15 } },
+        { "days": 7,  "reward": { "sceaux": 1, "eclats": 30 } },
+        { "days": 14, "reward": { "sceaux": 1, "cosmetic": "banniere_aube" } },
+        { "days": 30, "reward": { "sceaux": 3, "cosmetic": "aura_lune_pleine", "title": "Gardien de l'Aube" } }
+      ]
+    },
+    "weekly": { "completion": { "eclats": 60, "sceaux": 1 }, "desc": "Défi hebdomadaire de 20 vagues, 3 modificateurs négatifs, disponible du lundi au dimanche." }
+  },
+
+  "leaderboard": {
+    "phase1": "Local : historique des 30 derniers jours, meilleur score, série. Partage d'un code texte (graine + score + build) pour comparer entre amis.",
+    "phase2": "En ligne (optionnel, agent sauvegarde/déploiement) : table quotidienne et « fantôme » du score médian affiché pendant la run.",
+    "shareTemplate": "Shadow Chronicles · Défi du {date} · {hero} · Vague {wave}/10 · {score} pts · Série {streak} 🔥"
+  },
+
+  "validation": {
+    "desc": "Vecteurs de test calculés avec reference/daily-seed.js : premier uint32 du flux 'setup', et configuration complète attendue.",
+    "vectors": [
+      { "seedString": "SC-D-2026-11-02", "stream": "setup", "expectedFirstUint32": 217198325, "expectedConfig": { "hero": "taro", "mode": "cauchemar", "modifiers": ["m_pos_rare", "m_neg_verre", "m_neg_maree"] } },
+      { "seedString": "SC-D-2026-11-03", "stream": "setup", "expectedFirstUint32": 3646690480, "expectedConfig": { "hero": "ren", "mode": "survie", "modifiers": ["m_pos_benedict", "m_neg_marchand", "m_neg_soin"] } }
+    ]
+  }
+}

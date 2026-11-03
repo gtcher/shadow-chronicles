@@ -1,0 +1,23 @@
+{
+ "frameMedianMsSwiftshader": 30,
+ "budget": {
+  "jsGzipKB": 300,
+  "bootMB": 9,
+  "tickAvgMs": 2.5,
+  "tickP99Ms": 8,
+  "heapMB": 160,
+  "heapGrowthMB": 25,
+  "displayObjects": 4000
+ },
+ "at": "2026-11-03T01:39:17.282Z",
+ "jsGzipKB": 297,
+ "bootMs": 12919,
+ "bootMB": 0.31,
+ "tickAvgMs": 0.4,
+ "tickP99Ms": 5.1,
+ "heapMB": 61.04,
+ "heapGrowthMB": 0,
+ "displayObjects": 1349,
+ "entities": 70,
+ "wave": 14
+}

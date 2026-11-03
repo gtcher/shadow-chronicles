@@ -1,0 +1,50 @@
+import { h } from '../dom';
+import { HERO_IDS, HERO_INFO, type HeroId } from '../data';
+
+export interface TitleOptions {
+  assetUrl: (key: string) => string | undefined;
+  hero: HeroId;
+  /** Progression de maîtrise 0..1 par héros (agent Sauvegarde). */
+  mastery?: Partial<Record<HeroId, { level: number; progress: number }>>;
+  daily?: { label: string; streak: number };
+  /** Expédition sauvegardée à reprendre. */
+  resume?: { label: string; onResume: () => void; onDiscard: () => void };
+  onPlay: (hero: HeroId) => void;
+  onDaily?: () => void;
+  /** Pactes de la Brume (après le boss de la vague 10) : points engagés. */
+  pacts?: { points: number };
+  onPacts?: () => void;
+  onSanctuary: () => void;
+  onSettings: () => void;
+}
+
+/** Écran titre : choix du héros + accès Sanctuaire, défi du jour, réglages. */
+export function titleScreen(o: TitleOptions): HTMLElement {
+  let hero = o.hero;
+  const cards = HERO_IDS.map((id) => {
+    const info = HERO_INFO[id];
+    const m = o.mastery?.[id];
+    const card = h('button', { class: 'sc-herocard', '--c': info.color, 'aria-pressed': String(id === hero), 'aria-label': `${info.name}, ${info.role}`,
+      style: { backgroundImage: `url(${o.assetUrl(`hero-${id}`)})` },
+      onclick: () => { if (hero === id) o.onPlay(hero); hero = id; cards.forEach((c, i) => c.setAttribute('aria-pressed', String(HERO_IDS[i] === id))); },
+      ondblclick: () => o.onPlay(id) },
+    h('div', {}, h('h4', {}, info.name), h('p', {}, info.role),
+      h('div', { class: 'sc-mast', title: `Maîtrise ${m?.level ?? 1}` }, h('i', { style: { width: `${(m?.progress ?? 0) * 100}%` } }))));
+    return card;
+  });
+  return h('section', { class: 'sc-screen sc-bg', style: { backgroundImage: `url(${o.assetUrl('ruined-citadel')})` }, role: 'dialog', 'aria-label': 'Menu principal' },
+    h('div', { class: 'sc-center' },
+      h('h1', { class: 'sc-title sc-logo' }, 'Shadow Chronicles', h('small', {}, 'Les Serments d\'Akar')),
+      h('div', { class: 'sc-heroes', role: 'group', 'aria-label': 'Choix du héros' }, ...cards),
+      o.resume ? h('div', { class: 'sc-next', style: { maxWidth: '560px', margin: '0 auto 14px' } }, h('i', {}, '⟲'),
+        h('div', { style: { flex: '1' } }, h('b', {}, 'Expédition en cours'), h('div', { style: { color: 'var(--mute)', fontSize: '0.9em' } }, o.resume.label)),
+        h('button', { class: 'sc-btn sc-primary', onclick: o.resume.onResume, 'data-autofocus': true }, 'Reprendre'),
+        h('button', { class: 'sc-btn sc-ghost', onclick: o.resume.onDiscard, 'aria-label': 'Abandonner l\'expédition' }, '✕')) : null,
+      h('div', { class: 'sc-row' },
+        h('button', { class: `sc-btn${o.resume ? '' : ' sc-primary'}`, style: { minWidth: '220px', fontSize: '1.15em' }, onclick: () => o.onPlay(hero) }, o.resume ? '⚔  Nouvelle run' : '⚔  Partir en run'),
+        h('button', { class: 'sc-btn', onclick: o.onSanctuary }, '♜ Sanctuaire'),
+        o.pacts && o.onPacts ? h('button', { class: 'sc-btn', onclick: o.onPacts, title: 'Pactes de la Brume' }, `☁ Pactes${o.pacts.points ? ` · ${o.pacts.points}` : ''}`) : null,
+        h('button', { class: 'sc-btn sc-ghost', onclick: o.onSettings, 'aria-label': 'Réglages' }, '⚙ Réglages')),
+      o.daily ? h('button', { class: 'sc-daily sc-panel sc-btn sc-ghost', onclick: o.onDaily },
+        h('span', {}, '☀'), h('span', {}, 'Défi du jour : ', h('b', {}, o.daily.label)), h('span', {}, `Série ${o.daily.streak} 🔥`)) : null));
+}

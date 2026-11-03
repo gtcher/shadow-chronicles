@@ -1,0 +1,330 @@
+<title>Shadow Chronicles · Direction artistique</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+/* Mise en page : une scène de jeu vivante en tête, puis la bible visuelle en planches successives, comme un carnet de DA. */
+:root{
+  --nuit:#07101c; --nuit2:#0f1d2e; --ardoise:#22344a; --brume:#4d6380;
+  --or:#d5b77e; --or-sombre:#937444; --creme:#f1e5ca; --texte2:#a9b6c6;
+  --danger:#ff6a4a;
+  --display:"Cinzel",Georgia,"Times New Roman",serif;
+  --body:"Alegreya Sans","Segoe UI",Tahoma,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--nuit);color:var(--creme);font-family:var(--body);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+.wrap{max-width:1180px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:.04em;text-wrap:balance;margin:0}
+h1{font-size:clamp(28px,4.4vw,46px);color:var(--creme)}
+h2{font-size:clamp(20px,2.6vw,28px);color:var(--or)}
+h3{font-size:15px;color:var(--creme);letter-spacing:.08em;text-transform:uppercase}
+p{margin:0;max-width:68ch;color:var(--texte2)}
+.eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--or-sombre);font-weight:700}
+header{padding-block:36px 20px;display:grid;gap:10px}
+section{padding-block:40px 8px;display:grid;gap:18px;border-top:1px solid #937444;border-image:linear-gradient(90deg,transparent,#93744499 20%,#93744499 80%,transparent) 1}
+header+section{border-top:0}
+
+/* Scène */
+.stage{position:relative;border:1px solid var(--or-sombre);border-radius:6px;overflow:hidden;background:#000;box-shadow:0 0 0 1px #e6c98b18 inset,0 20px 60px #000c}
+#scene{display:block;width:100%;height:auto;aspect-ratio:16/8.4;max-width:100%}
+.hud{position:absolute;left:12px;top:10px;display:flex;flex-direction:column;gap:2px;pointer-events:none;text-shadow:0 2px 6px #000}
+.hud b{font-family:var(--display);font-size:clamp(14px,2vw,20px);letter-spacing:.06em}
+.hud span{font-size:12px;color:var(--texte2);letter-spacing:.1em;text-transform:uppercase}
+.compare{position:absolute;right:10px;top:10px;display:flex;gap:0;border:1px solid var(--or-sombre);border-radius:4px;overflow:hidden;background:#07101ccc}
+.controls{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center}
+.group{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.group>small{color:var(--texte2);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-right:4px}
+button.chip{font:600 13px var(--body);color:var(--creme);background:linear-gradient(#2c4058,#172537);border:1px solid #5c7088;border-radius:4px;padding:6px 12px;cursor:pointer;min-height:34px}
+button.chip:hover{filter:brightness(1.18)}
+button.chip[aria-pressed="true"]{border-color:var(--sig,var(--or));box-shadow:0 0 0 1px var(--sig,var(--or)) inset,0 0 14px -4px var(--sig,var(--or));background:linear-gradient(#3b4d63,#1b2b3e)}
+.compare button.chip{border:0;border-radius:0;min-height:30px}
+button:focus-visible{outline:2px solid #ffd88c;outline-offset:2px}
+
+/* Palettes */
+.chapters{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.chap{display:grid;gap:10px;padding:14px;border:1px solid #2a3d55;border-radius:6px;background:var(--nuit2)}
+.chap .tile{aspect-ratio:2/1;border-radius:3px;background-size:128px;max-width:100%}
+.chap header{padding:0;gap:2px}
+.chap p{font-size:14px}
+.sw{display:flex;height:26px;border-radius:3px;overflow:hidden}
+.sw i{flex:1}
+.sw i.glow{flex:.7;box-shadow:inset 0 0 12px #fff6}
+.meta{font-size:12px;color:var(--texte2);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.heroes{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.hero{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;padding:10px 12px;border-radius:6px;background:var(--nuit2);border:1px solid #2a3d55}
+.hero .dot{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 40% 35%,var(--l),var(--s) 55%,#000 100%);box-shadow:0 0 18px -2px var(--s)}
+.hero b{font-family:var(--display);letter-spacing:.06em}
+.hero div{min-width:0}
+.hero small{display:block;color:var(--texte2);font-size:13px}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.rule{display:grid;gap:6px;padding-left:14px;border-left:2px solid var(--or-sombre)}
+.rule p{font-size:15px}
+
+/* Sprites */
+.roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;align-items:start}
+.card{display:grid;gap:4px;justify-items:center;padding:10px 8px 12px;border-radius:6px;background:radial-gradient(ellipse at 50% 80%,#22344a,#0b1522 70%);border:1px solid #2a3d55}
+.card.boss{grid-column:span 2;background:radial-gradient(ellipse at 50% 80%,#3a2433,#0b1522 70%)}
+.card canvas{width:100%;max-width:150px;aspect-ratio:1;height:auto}
+.card.boss canvas{max-width:240px}
+.card b{font-family:var(--display);font-size:13px;letter-spacing:.06em;text-align:center}
+.card small{color:var(--texte2);font-size:12px}
+@media (max-width:420px){.card.boss{grid-column:span 1}}
+
+/* Tuiles et décors */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.tiles figure{margin:0;display:grid;gap:6px}
+.tiles .sq{aspect-ratio:1;border-radius:3px;background-size:50%;background-repeat:repeat;max-width:100%}
+figcaption{font-size:12px;color:var(--texte2);letter-spacing:.06em}
+.decor{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:flex-end;padding:16px;border-radius:6px;background-size:192px}
+.decor img,.decor canvas{height:auto;max-height:190px;max-width:30%}
+.limits{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.limit{padding:14px;border:1px dashed #5c7088;border-radius:6px;display:grid;gap:6px}
+.limit p{font-size:15px}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:var(--or)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">Shadow Chronicles · bible visuelle v1</span>
+  <h1>Une nuit d'Akar, peinte</h1>
+  <p>On garde l'ADN des illustrations du prototype et on construit autour : quatre chapitres avec chacun leur sol, leur lumière et leurs ruines, des héros animés qui se détachent toujours du décor, et une règle simple pour que chaque couleur ait un sens en combat.</p>
+</header>
+
+<section aria-labelledby="t-scene">
+  <h2 id="t-scene">La scène</h2>
+  <div class="stage">
+    <canvas id="scene" width="1280" height="672" aria-label="Scène de combat animée"></canvas>
+    <div class="hud"><span id="hudCh">Chapitre 1 · vagues 1 à 3</span><b id="hudName">La Cour des Veilleurs</b></div>
+    <div class="compare" role="group" aria-label="Comparer">
+      <button class="chip" id="cmpOld" aria-pressed="false">Prototype</button>
+      <button class="chip" id="cmpNew" aria-pressed="true">Nouvelle DA</button>
+    </div>
+  </div>
+  <div class="controls">
+    <div class="group" id="chapBtns"><small>Chapitre</small></div>
+    <div class="group" id="heroBtns"><small>Héros</small></div>
+  </div>
+</section>
+
+<section aria-labelledby="t-lecture">
+  <h2 id="t-lecture">Trois règles de lecture</h2>
+  <div class="rules">
+    <div class="rule"><h3>Le héros d'abord</h3><p>Le sol reste sous 40 % de luminosité. Chaque personnage porte un liseré dans sa couleur, il ressort même dans une mêlée de vingt ennemis.</p></div>
+    <div class="rule"><h3>Une couleur, un sens</h3><p>Rouge-orangé pour le danger ennemi. Couleur signature pour tes propres coups. Or pour le butin. Cyan pâle pour le soin.</p></div>
+    <div class="rule"><h3>Lumière haut-gauche</h3><p>Dalles, décors et volumes sont éclairés du même côté. Les contre-jours tombent à droite, ce qui unifie des assets d'origines différentes.</p></div>
+  </div>
+  <div class="heroes" id="heroCards"></div>
+</section>
+
+<section aria-labelledby="t-chap">
+  <h2 id="t-chap">Quatre chapitres, quatre lumières</h2>
+  <p>Les régions du prototype deviennent des chapitres visuels. Le sol change de matière et de température, la lueur dominante annonce le boss.</p>
+  <div class="chapters" id="chapCards"></div>
+</section>
+
+<section aria-labelledby="t-sprites">
+  <h2 id="t-sprites">Personnages animés</h2>
+  <p>Format PixiJS, ancre aux pieds, tous tournés vers la droite. Cinq animations par personnage : idle, course, attaque, touché, mort.</p>
+  <div class="group" id="animBtns"><small>Animation</small></div>
+  <div class="roster" id="roster"></div>
+</section>
+
+<section aria-labelledby="t-tiles">
+  <h2 id="t-tiles">Tuiles de sol</h2>
+  <p>512 px, raccordables sur les quatre bords. Chaque aperçu répète la tuile 2×2 pour montrer le raccord. Le calque se superpose aux dalles.</p>
+  <div class="group" id="tileBtns"><small>Chapitre</small></div>
+  <div class="tiles" id="tiles"></div>
+</section>
+
+<section aria-labelledby="t-decor">
+  <h2 id="t-decor">Décors</h2>
+  <div class="group" id="decorBtns"><small>Chapitre</small></div>
+  <div class="decor" id="decor"></div>
+</section>
+
+<section aria-labelledby="t-limits">
+  <h2 id="t-limits">Ce qu'il reste à peindre</h2>
+  <div class="limits">
+    <div class="limit"><h3>Personnages en pied</h3><p>Les illustrations sources sont des bustes. L'animation actuelle déforme l'image (respiration, fente, cape, dissolution). Pour une vraie marche, il faudra des héros en pied découpés en parties, animés en squelette.</p></div>
+    <div class="limit"><h3>Boss dédiés</h3><p>Cendrefer, la Matriarche, l'Arbitre et le Souverain sont des recolorations d'ennemis existants. Ils tiennent en démo mais méritent chacun leur silhouette.</p></div>
+    <div class="limit"><h3>Tout est rejouable</h3><p>Tuiles, décors et planches sont générés par script. Changer une teinte dans <code>palettes.py</code> régénère tout un chapitre en une minute.</p></div>
+  </div>
+</section>
+</div>
+
+<script>
+const CH={
+ ch1:{n:"La Cour des Veilleurs",v:"1 à 3",ui:"#d9ab74",sol:["#1b2430","#2b3644","#3d4a58","#56626e"],lu:"#ffb35c",b:"#8aa0b8",amb:"Ruines d'Akar sous la brume, mousse, torches mourantes.",boss:null,en:["wolf","shade","raider"],add:false},
+ ch2:{n:"Les Remparts écarlates",v:"4 à 7",ui:"#ea7683",sol:["#1d1013","#33191b","#4a2723","#6a3a2c"],lu:"#ff7a2a",b:"#b25a48",amb:"Remparts en feu, braises, sang séché, bannières du Culte.",boss:"cendrefer",en:["raider","brute","wolf"],add:false},
+ ch3:{n:"La Nécropole lunaire",v:"8 à 10",ui:"#9ccaff",sol:["#0e1626","#1a2940","#2c4260","#4f6c8e"],lu:"#bfe6ff",b:"#a9c8ee",amb:"Marbre, givre, cristaux lunaires, eau noire.",boss:"matriarche",en:["shade","shadeElite","wolf"],add:false},
+ ch4:{n:"La Porte de l'Éclipse",v:"11 à 20+",ui:"#c69dff",sol:["#0d0a17","#1b1430","#2c2148","#45346a"],lu:"#b46bff",b:"#7d5cc0",amb:"Obsidienne fracturée, failles du Néant, éclipse.",boss:"arbitre",en:["brute","shade","wolf"],add:true}
+};
+const HE={taro:{n:"Taro",r:"Lame écarlate · mêlée",s:"#e0303c",l:"#ff7a5c"},mei:{n:"Mei",r:"Danseuse d'ombre · assassin",s:"#ff3fb4",l:"#ff9be0"},sena:{n:"Sena",r:"Prêtresse lunaire · magie",s:"#4f8dff",l:"#cfe4ff"},ren:{n:"Ren",r:"Archer d'or · distance",s:"#e8b64a",l:"#7fe0ff"}};
+const EN={raider:"Pillard",brute:"Colosse enchaîné",wolf:"Loup des cendres",shade:"Ombre",shadeElite:"Ombre élite"};
+const BO={juge:["Le Juge Pourpre","#e0303c"],cendrefer:["Capitaine Cendrefer","#ef955a"],matriarche:["Matriarche lunaire","#86cfff"],arbitre:["Arbitre de l'Éclipse","#cd91ef"],souverain:["Souverain des Ruines","#ffc878"]};
+const ANIMS=[["idle",8,8],["course",8,12],["attaque",6,16],["touche",3,14],["mort",8,10]];
+const AN_LABEL={idle:"Idle",course:"Course",attaque:"Attaque",touche:"Touché",mort:"Mort"};
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const imgs={};
+function img(src){if(!imgs[src]){const i=new Image();i.src=src;imgs[src]=i;}return imgs[src];}
+function sheetOf(id){
+  if(HE[id])return{src:`assets/sprites/heros/${id}.webp`,f:128};
+  if(EN[id])return{src:`assets/sprites/ennemis/${id}.webp`,f:112};
+  return{src:`assets/sprites/boss/boss_${id}.webp`,f:192};
+}
+function drawFrame(ctx,id,anim,i,x,y,size,flip){
+  const sh=sheetOf(id),im=img(sh.src);if(!im.complete||!im.naturalWidth)return;
+  const row=ANIMS.findIndex(a=>a[0]===anim);const n=ANIMS[row][1];
+  const fx=(i%n)*sh.f,fy=row*sh.f;
+  ctx.save();ctx.translate(x,y);if(flip)ctx.scale(-1,1);
+  ctx.drawImage(im,fx,fy,sh.f,sh.f,-size/2,-size*.95,size,size);ctx.restore();
+}
+
+/* ---------- Scène ---------- */
+const cv=document.getElementById("scene"),cx=cv.getContext("2d");
+let state={ch:"ch1",hero:"sena",old:false};
+const W=cv.width,H=cv.height;
+function makeBtns(el,items,cur,on,sig){
+  items.forEach(([k,label])=>{const b=document.createElement("button");b.className="chip";b.textContent=label;b.dataset.k=k;
+    b.setAttribute("aria-pressed",k===cur);if(sig)b.style.setProperty("--sig",sig(k));
+    b.onclick=()=>{el.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));on(k);};el.appendChild(b);});
+}
+makeBtns(document.getElementById("chapBtns"),Object.keys(CH).map((k,i)=>[k,`${i+1}`]),"ch1",k=>{state.ch=k;setupScene();},k=>CH[k].ui);
+document.querySelectorAll("#chapBtns button").forEach(b=>b.title=CH[b.dataset.k].n);
+makeBtns(document.getElementById("heroBtns"),Object.keys(HE).map(k=>[k,HE[k].n]),"sena",k=>{state.hero=k;},k=>HE[k].s);
+const cmpOld=document.getElementById("cmpOld"),cmpNew=document.getElementById("cmpNew");
+cmpOld.onclick=()=>{state.old=true;cmpOld.setAttribute("aria-pressed",true);cmpNew.setAttribute("aria-pressed",false);};
+cmpNew.onclick=()=>{state.old=false;cmpOld.setAttribute("aria-pressed",false);cmpNew.setAttribute("aria-pressed",true);};
+
+let props=[],foes=[],embers=[];
+function rnd(a,b){return a+Math.random()*(b-a);}
+function setupScene(){
+  const c=CH[state.ch];const i=Object.keys(CH).indexOf(state.ch)+1;
+  document.getElementById("hudCh").textContent=`Chapitre ${i} · vagues ${c.v}`;
+  const hn=document.getElementById("hudName");hn.textContent=c.n;hn.style.color=c.ui;
+  const d=`assets/decor/${state.ch}/`;
+  props=[{k:"arche",x:W*.16,y:H*.36,s:.62},{k:"pilier",x:W*.64,y:H*.30,s:.55},{k:"stele",x:W*.84,y:H*.44,s:.55},
+    {k:"cristal",x:W*.05,y:H*.80,s:.6},{k:"gravats",x:W*.40,y:H*.27,s:.6},{k:"brasero",x:W*.33,y:H*.47,s:.55,anim:1},{k:"brasero",x:W*.93,y:H*.86,s:.55,anim:1},{k:"gravats",x:W*.78,y:H*.97,s:.55}]
+    .map(p=>({...p,im:img(d+p.k+".webp")}));
+  const e=c.en;
+  foes=[{id:e[0],x:W*.58,y:H*.64},{id:e[1],x:W*.70,y:H*.86},{id:e[2],x:W*.52,y:H*.98}];
+  if(c.boss)foes.push({id:c.boss,x:W*.84,y:H*.58,boss:1});
+  foes.forEach((f,k)=>{f.t=k*.37;});
+  embers=Array.from({length:60},()=>({x:rnd(0,W),y:rnd(0,H),v:rnd(10,40),r:rnd(1,2.6),p:rnd(0,6)}));
+}
+setupScene();
+
+function tilePat(src){const im=img(src);if(!(im.complete&&im.naturalWidth))return null;const p=cx.createPattern(im,"repeat");p.setTransform(new DOMMatrix([2,0,0,2,0,0]));return p;}
+let t0=performance.now(),last=t0;
+function heroAnim(t){ // boucle de démonstration : idle, course, attaque, attaque, idle
+  const cyc=t%6.4;
+  if(cyc<1.6)return["idle",Math.floor(cyc*8)];
+  if(cyc<3.2)return["course",Math.floor((cyc-1.6)*12)];
+  if(cyc<4.8)return["attaque",Math.min(5,Math.floor(((cyc-3.2)%.8)*16*.6))];
+  return["idle",Math.floor(cyc*8)];
+}
+function frame(now){
+  const t=(now-t0)/1000,dt=Math.min(.05,(now-last)/1000);last=now;
+  const c=CH[state.ch];
+  cx.setTransform(1,0,0,1,0,0);
+  if(state.old){ drawOld(t); requestAnimationFrame(frame); return; }
+  // Sol
+  const scroll=(t*14)%512;
+  cx.save();cx.translate(-scroll*.0,-scroll*.25);
+  const p1=tilePat(`assets/tiles/${state.ch}/dalles_a.webp`);
+  if(p1){cx.fillStyle=p1;cx.fillRect(0,0,W,H+512);}
+  const p2=tilePat(`assets/tiles/${state.ch}/terre.webp`);
+  if(p2){cx.globalAlpha=.85;cx.fillStyle=p2;cx.beginPath();cx.ellipse(W*.45,H*.62+scroll*.25,W*.28,H*.16,-.2,0,7);cx.ellipse(W*.12,H*.2+scroll*.25,W*.12,H*.09,.3,0,7);cx.fill();cx.globalAlpha=1;}
+  const p3=tilePat(`assets/tiles/${state.ch}/calque.webp`);
+  if(p3){cx.globalCompositeOperation=c.add?"lighter":"source-over";cx.globalAlpha=c.add?.8:.9;cx.fillStyle=p3;cx.fillRect(0,0,W,H+512);cx.globalAlpha=1;cx.globalCompositeOperation="source-over";}
+  cx.restore();
+  // Lumières au sol des braseros
+  cx.globalCompositeOperation="lighter";
+  props.filter(p=>p.anim).forEach(p=>{const fl=.85+.15*Math.sin(t*9+p.x);const g=cx.createRadialGradient(p.x,p.y-30,0,p.x,p.y-30,240*fl);g.addColorStop(0,c.lu+"66");g.addColorStop(1,c.lu+"00");cx.fillStyle=g;cx.fillRect(p.x-260,p.y-290,520,520);});
+  // aura du héros
+  const hx=W*.34,hy=H*.84,hs=HE[state.hero];
+  const g2=cx.createRadialGradient(hx,hy-10,0,hx,hy-10,150);g2.addColorStop(0,hs.s+"55");g2.addColorStop(1,hs.s+"00");cx.fillStyle=g2;cx.fillRect(hx-160,hy-170,320,320);
+  cx.globalCompositeOperation="source-over";
+  // Tri en Y : décors + personnages
+  const list=[];
+  props.forEach(p=>list.push({y:p.y,draw:()=>{const im=p.im;if(!im.complete||!im.naturalWidth)return;
+    if(p.anim){const fw=im.naturalWidth/8,f=Math.floor(t*12+p.x)%8;const w=fw*p.s*2,h=im.naturalHeight*p.s*2;
+      shadow(p.x,p.y,w*.22);cx.drawImage(im,f*fw,0,fw,im.naturalHeight,p.x-w/2,p.y-h*.97,w,h);}
+    else{const w=im.naturalWidth*p.s*2,h=im.naturalHeight*p.s*2;shadow(p.x,p.y,Math.min(w*.3,90));cx.drawImage(im,p.x-w/2,p.y-h*.95,w,h);}}}));
+  foes.forEach(f=>list.push({y:f.y,draw:()=>{
+    const sz=f.boss?330:190;const bob=f.boss?0:Math.sin(t*1.3+f.t*7)*6;
+    if(f.boss){cx.globalCompositeOperation="lighter";const col=BO[f.id][1];const g=cx.createRadialGradient(f.x,f.y-sz*.4,0,f.x,f.y-sz*.4,sz*.7);g.addColorStop(0,col+(f.ghost?"22":"44"));g.addColorStop(1,col+"00");cx.fillStyle=g;cx.fillRect(f.x-sz,f.y-sz*1.2,sz*2,sz*1.6);cx.globalCompositeOperation="source-over";}
+    shadow(f.x+bob,f.y,sz*.28);
+    if(f.ghost)cx.globalAlpha=.0;
+    const a=(Math.floor(t*8+f.t*10));
+    const hitCyc=(t+f.t*3)%4;
+    const anim=(!f.boss&&hitCyc>3.55)?["touche",Math.floor((hitCyc-3.55)*14)]:["idle",a];
+    drawFrame(cx,f.id,anim[0],anim[1],f.x+bob,f.y,sz,true);cx.globalAlpha=1;}}));
+  list.push({y:hy,draw:()=>{const [an,fi]=heroAnim(reduce?0:t);shadow(hx,hy,60);drawFrame(cx,state.hero,an,fi,hx,hy,230,false);
+    if(an==="attaque"&&fi>=2&&fi<=3){drawSlash(hx+70,hy-110,hs);} }});
+  list.sort((a,b)=>a.y-b.y).forEach(o=>o.draw());
+  // Particules d'ambiance
+  cx.globalCompositeOperation="lighter";
+  embers.forEach(e=>{e.y-=e.v*dt;e.x+=Math.sin(t+e.p)*8*dt;if(e.y<-10){e.y=H+10;e.x=rnd(0,W);}
+    cx.fillStyle=c.lu+(state.ch==="ch1"?"55":"aa");cx.beginPath();cx.arc(e.x,e.y,e.r,0,7);cx.fill();});
+  cx.globalCompositeOperation="source-over";
+  // Brume et vignettage
+  const fog=cx.createLinearGradient(0,0,0,H*.4);fog.addColorStop(0,c.b+"40");fog.addColorStop(1,c.b+"00");cx.fillStyle=fog;cx.fillRect(0,0,W,H*.4);
+  const v=cx.createRadialGradient(W/2,H*.6,H*.35,W/2,H*.6,W*.72);v.addColorStop(0,"#00000000");v.addColorStop(1,"#000000d0");cx.fillStyle=v;cx.fillRect(0,0,W,H);
+  if(!reduce)requestAnimationFrame(frame);else setTimeout(()=>requestAnimationFrame(frame),400);
+}
+function shadow(x,y,r){cx.fillStyle="#00000073";cx.beginPath();cx.ellipse(x,y-4,r,r*.28,0,0,7);cx.fill();}
+function drawSlash(x,y,hs){cx.save();cx.globalCompositeOperation="lighter";cx.strokeStyle=hs.l;cx.lineWidth=7;cx.shadowColor=hs.s;cx.shadowBlur=24;
+  cx.beginPath();cx.arc(x,y,90,-1.1,.9);cx.stroke();cx.lineWidth=2;cx.strokeStyle="#fff";cx.beginPath();cx.arc(x,y,90,-1,.8);cx.stroke();cx.restore();}
+function drawOld(t){
+  const p=tilePat("assets/avant/stone-ground.webp");cx.fillStyle=p||"#0b1726";cx.fillRect(0,0,W,H);
+  cx.fillStyle="#0b172688";cx.fillRect(0,0,W,H);
+  const draw=(src,x,y,h)=>{const im=img(src);if(!im.complete||!im.naturalWidth)return;const w=im.naturalWidth*h/im.naturalHeight;cx.drawImage(im,x-w/2,y-h,w,h);};
+  draw(`assets/avant/hero-${state.hero}.png`,W*.34,H*.84,150);
+  const ens={raider:1,brute:1,wolf:1,shade:1,shadeElite:1};
+  CH[state.ch].en.forEach((e,i)=>draw(`assets/avant/enemy-${e}.png`,[W*.62,W*.74,W*.55][i],[H*.66,H*.80,H*.92][i],110));
+  cx.fillStyle="#f1e5ca";cx.font="600 18px 'Alegreya Sans',sans-serif";cx.fillText("Prototype : un seul sol, images fixes, pas de décor ni de lumière",24,H-24);
+}
+requestAnimationFrame(frame);
+
+/* ---------- Cartes héros et chapitres ---------- */
+document.getElementById("heroCards").innerHTML=Object.entries(HE).map(([k,h])=>`<div class="hero" style="--s:${h.s};--l:${h.l}"><span class="dot" aria-hidden="true"></span><div><b>${h.n}</b><small>${h.r}</small><small class="meta">${h.s} · liseré ${h.l}</small></div></div>`).join("");
+document.getElementById("chapCards").innerHTML=Object.entries(CH).map(([k,c],i)=>`<div class="chap">
+  <div class="tile" style="background-image:url(assets/tiles/${k}/dalles_a.webp)"></div>
+  <header><span class="eyebrow" style="color:${c.ui}">Chapitre ${i+1} · vagues ${c.v}</span><h3>${c.n}</h3></header>
+  <p>${c.amb}</p>
+  <div class="sw">${c.sol.map(s=>`<i style="background:${s}" title="${s}"></i>`).join("")}<i class="glow" style="background:${c.lu}" title="lueur ${c.lu}"></i></div>
+  <span class="meta">sol ${c.sol.join(" ")} · lueur ${c.lu}</span></div>`).join("");
+
+/* ---------- Galerie de sprites ---------- */
+const roster=document.getElementById("roster");let curAnim="idle";const cards=[];
+const all=[...Object.keys(HE).map(k=>[k,HE[k].n,HE[k].r,0]),...Object.keys(EN).map(k=>[k,EN[k],"Ennemi",0]),...Object.keys(BO).map(k=>[k,BO[k][0],"Boss",1])];
+all.forEach(([id,n,r,boss])=>{const d=document.createElement("div");d.className="card"+(boss?" boss":"");
+  const c=document.createElement("canvas");c.width=c.height=boss?240:150;d.appendChild(c);
+  d.insertAdjacentHTML("beforeend",`<b>${n}</b><small>${r}</small>`);roster.appendChild(d);cards.push({id,c,ctx:c.getContext("2d")});});
+makeBtns(document.getElementById("animBtns"),ANIMS.map(a=>[a[0],AN_LABEL[a[0]]]),"idle",k=>{curAnim=k;});
+function gallery(now){const t=now/1000;const a=ANIMS.find(x=>x[0]===curAnim);
+  const fi=curAnim==="mort"?Math.min(a[1]-1,Math.floor((t*a[2])%(a[1]+6))):Math.floor(t*a[2]);
+  cards.forEach(o=>{o.ctx.clearRect(0,0,o.c.width,o.c.height);drawFrame(o.ctx,o.id,curAnim,reduce?0:fi,o.c.width/2,o.c.height*.97,o.c.width,false);});
+  requestAnimationFrame(gallery);}
+requestAnimationFrame(gallery);
+
+/* ---------- Tuiles et décors ---------- */
+const TI=[["dalles_a","Dalles"],["dalles_b","Grandes dalles"],["dalles_usees","Dalles usées"],["terre","Terre"],["calque","Dalles + calque"]];
+function showTiles(ch){document.getElementById("tiles").innerHTML=TI.map(([k,l])=>{
+  const bg=k==="calque"?`url(assets/tiles/${ch}/calque.webp),url(assets/tiles/${ch}/dalles_a.webp)`:`url(assets/tiles/${ch}/${k}.webp)`;
+  return `<figure><div class="sq" style="background-image:${bg}" role="img" aria-label="${l}"></div><figcaption>${l}</figcaption></figure>`;}).join("");}
+makeBtns(document.getElementById("tileBtns"),Object.keys(CH).map((k,i)=>[k,CH[k].n]),"ch1",showTiles,k=>CH[k].ui);showTiles("ch1");
+let decorCh="ch1";
+function showDecor(ch){decorCh=ch;const el=document.getElementById("decor");el.style.backgroundImage=`linear-gradient(#07101c55,#07101c99),url(assets/tiles/${ch}/dalles_b.webp)`;
+  el.innerHTML=["arche","pilier","stele","cristal","gravats"].map(k=>`<img src="assets/decor/${ch}/${k}.webp" alt="${k}">`).join("")+`<canvas id="brasero" width="100" height="150" aria-label="brasero animé"></canvas>`;}
+makeBtns(document.getElementById("decorBtns"),Object.keys(CH).map(k=>[k,CH[k].n]),"ch1",showDecor,k=>CH[k].ui);showDecor("ch1");
+function braz(now){const c=document.getElementById("brasero");if(c){const x=c.getContext("2d"),im=img(`assets/decor/${decorCh}/brasero.webp`);
+  if(im.complete&&im.naturalWidth){const fw=im.naturalWidth/8,f=Math.floor(now/1000*12)%8;x.clearRect(0,0,100,150);x.drawImage(im,f*fw,0,fw,im.naturalHeight,0,0,100,150);}}
+  requestAnimationFrame(braz);}
+requestAnimationFrame(braz);
+</script>

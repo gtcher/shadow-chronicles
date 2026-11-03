@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "notes": "Succès. Condition = { stat, op, value, scope, where? }. scope: 'run' (dans une seule run), 'lifetime' (cumul du profil), 'wave' (dans une seule vague). Les 5 premiers reprennent les jalons du prototype (milestone3). Voir PROGRESSION.md §6.",
+
+  "categories": {
+    "campagne":   { "name": "Campagne",      "icon": "⚔" },
+    "combat":     { "name": "Combat",        "icon": "✶" },
+    "serments":   { "name": "Serments",      "icon": "⛨" },
+    "butin":      { "name": "Butin",         "icon": "◆" },
+    "heros":      { "name": "Héros",         "icon": "☾" },
+    "defis":      { "name": "Défis",         "icon": "♛" },
+    "secrets":    { "name": "Secrets",       "icon": "?" }
+  },
+
+  "tiers": {
+    "bronze":  { "color": "#c58a5a", "eclats": 5 },
+    "argent":  { "color": "#c9d4de", "eclats": 12 },
+    "or":      { "color": "#ffca73", "eclats": 25 },
+    "mythe":   { "color": "#ff7a4d", "eclats": 50, "sceaux": 1 }
+  },
+
+  "achievements": [
+    { "id": "a_premieres_cendres", "cat": "campagne", "tier": "bronze", "icon": "⚔", "name": "Premières cendres",     "desc": "Terminer la première vague.", "cond": { "stat": "wavesCleared", "op": ">=", "value": 1, "scope": "run" } },
+    { "id": "a_passage_veilleurs", "cat": "campagne", "tier": "bronze", "icon": "✦", "name": "Passage des Veilleurs", "desc": "Atteindre la vague 4.", "cond": { "stat": "waveReached", "op": ">=", "value": 4, "scope": "run" } },
+    { "id": "a_premier_jugement",  "cat": "campagne", "tier": "argent", "icon": "♛", "name": "Premier Jugement",      "desc": "Vaincre le Juge Pourpre (vague 5).", "cond": { "stat": "bossKilled", "op": ">=", "value": 1, "scope": "lifetime" } },
+    { "id": "a_eclat_lune",        "cat": "campagne", "tier": "argent", "icon": "☾", "name": "Éclat de Lune",         "desc": "Atteindre la vague 8.", "cond": { "stat": "waveReached", "op": ">=", "value": 8, "scope": "run" } },
+    { "id": "a_profondeurs",       "cat": "campagne", "tier": "argent", "icon": "◆", "name": "Les Profondeurs",       "desc": "Atteindre la vague 11 (Tombeau Lunaire).", "cond": { "stat": "waveReached", "op": ">=", "value": 11, "scope": "run" } },
+    { "id": "a_porte_sans_retour", "cat": "campagne", "tier": "or",     "icon": "✧", "name": "La Porte sans Retour",  "desc": "Atteindre la vague 15 (Éclipse Infinie).", "cond": { "stat": "waveReached", "op": ">=", "value": 15, "scope": "run" } },
+    { "id": "a_eclipse_vaincue",   "cat": "campagne", "tier": "mythe",  "icon": "☀", "name": "L'Éclipse Vaincue",     "desc": "Terminer la vague 20.", "cond": { "stat": "wavesCleared", "op": ">=", "value": 20, "scope": "run" }, "reward": { "title": "Briseur d'Éclipse" } },
+    { "id": "a_cauchemar_20",      "cat": "campagne", "tier": "mythe",  "icon": "☠", "name": "Réveil du Cauchemar",   "desc": "Terminer la vague 20 en mode Cauchemar.", "cond": { "stat": "wavesCleared", "op": ">=", "value": 20, "scope": "run", "where": { "mode": "cauchemar" } }, "reward": { "cosmetic": "aura_cauchemar" } },
+
+    { "id": "a_cent_ombres",       "cat": "combat", "tier": "bronze", "icon": "✶", "name": "Cent ombres",            "desc": "Vaincre 100 ennemis au total.", "cond": { "stat": "kills", "op": ">=", "value": 100, "scope": "lifetime" } },
+    { "id": "a_mille_ombres",      "cat": "combat", "tier": "argent", "icon": "✶", "name": "Mille ombres",           "desc": "Vaincre 1 000 ennemis au total.", "cond": { "stat": "kills", "op": ">=", "value": 1000, "scope": "lifetime" } },
+    { "id": "a_dix_mille",         "cat": "combat", "tier": "or",     "icon": "✶", "name": "Fléau de la Brume",      "desc": "Vaincre 10 000 ennemis au total.", "cond": { "stat": "kills", "op": ">=", "value": 10000, "scope": "lifetime" } },
+    { "id": "a_multi_5",           "cat": "combat", "tier": "argent", "icon": "✺", "name": "Moisson",                "desc": "Vaincre 5 ennemis en moins d'une seconde.", "cond": { "stat": "killsWithin1s", "op": ">=", "value": 5, "scope": "run" } },
+    { "id": "a_combo_50",          "cat": "combat", "tier": "argent", "icon": "⚡", "name": "Danse ininterrompue",   "desc": "Atteindre un combo de 50 coups.", "cond": { "stat": "maxCombo", "op": ">=", "value": 50, "scope": "run" } },
+    { "id": "a_intouchable",       "cat": "combat", "tier": "or",     "icon": "◈", "name": "Sans une égratignure",   "desc": "Terminer une vague de boss sans perdre de PV.", "cond": { "stat": "bossWaveNoDamage", "op": ">=", "value": 1, "scope": "lifetime" } },
+    { "id": "a_esquive_100",       "cat": "combat", "tier": "bronze", "icon": "➶", "name": "Insaisissable",          "desc": "Esquiver 100 attaques au total.", "cond": { "stat": "dodgedHits", "op": ">=", "value": 100, "scope": "lifetime" } },
+    { "id": "a_gros_coup",         "cat": "combat", "tier": "or",     "icon": "☄", "name": "Comète",                 "desc": "Infliger 2 000 dégâts en un seul coup.", "cond": { "stat": "maxHit", "op": ">=", "value": 2000, "scope": "run" } },
+    { "id": "a_boss_rapide",       "cat": "combat", "tier": "or",     "icon": "⏱", "name": "Verdict Express",        "desc": "Vaincre un boss en moins de 20 secondes.", "cond": { "stat": "fastestBossKill", "op": "<=", "value": 20, "scope": "lifetime" } },
+
+    { "id": "a_premier_duo",       "cat": "serments", "tier": "bronze", "icon": "⚭", "name": "Deux voix",            "desc": "Obtenir une bénédiction Duo.", "cond": { "stat": "duosTaken", "op": ">=", "value": 1, "scope": "lifetime" } },
+    { "id": "a_tous_duos",         "cat": "serments", "tier": "or",     "icon": "⚭", "name": "Chœur des Serments",   "desc": "Découvrir les 8 bénédictions Duo.", "cond": { "stat": "duosDiscovered", "op": ">=", "value": 8, "scope": "lifetime" }, "reward": { "title": "Voix des Serments" } },
+    { "id": "a_legendaire_ben",    "cat": "serments", "tier": "argent", "icon": "✪", "name": "Élu d'un Patron",      "desc": "Obtenir une bénédiction légendaire.", "cond": { "stat": "legendaryBlessingsTaken", "op": ">=", "value": 1, "scope": "lifetime" } },
+    { "id": "a_resonance_6",       "cat": "serments", "tier": "or",     "icon": "♾", "name": "Résonance parfaite",   "desc": "Activer le palier 6 d'une Résonance.", "cond": { "stat": "maxResonance", "op": ">=", "value": 6, "scope": "run" } },
+    { "id": "a_cinq_patrons",      "cat": "serments", "tier": "argent", "icon": "✋", "name": "Pèlerin",              "desc": "Avoir une bénédiction de chacun des 5 patrons dans la même run.", "cond": { "stat": "distinctPatrons", "op": ">=", "value": 5, "scope": "run" } },
+    { "id": "a_heroique",          "cat": "serments", "tier": "argent", "icon": "★", "name": "Grâce Héroïque",       "desc": "Posséder 3 bénédictions héroïques dans la même run.", "cond": { "stat": "heroicBlessings", "op": ">=", "value": 3, "scope": "run" } },
+    { "id": "a_codex_complet",     "cat": "serments", "tier": "mythe",  "icon": "📜", "name": "Codex des Brumes",     "desc": "Découvrir toutes les bénédictions.", "cond": { "stat": "blessingsDiscoveredPct", "op": ">=", "value": 100, "scope": "lifetime" } },
+
+    { "id": "a_premiere_leg",      "cat": "butin", "tier": "bronze", "icon": "◆", "name": "Éclat doré",              "desc": "Trouver un objet légendaire.", "cond": { "stat": "legendaryFound", "op": ">=", "value": 1, "scope": "lifetime" } },
+    { "id": "a_collection",        "cat": "butin", "tier": "or",     "icon": "🗝", "name": "Conservateur d'Akar",    "desc": "Trouver les 17 pouvoirs légendaires.", "cond": { "stat": "legendaryPowersDiscovered", "op": ">=", "value": 17, "scope": "lifetime" }, "reward": { "cosmetic": "vitrine_reliques" } },
+    { "id": "a_ancestral",         "cat": "butin", "tier": "mythe",  "icon": "🔥", "name": "Braise des Anciens",     "desc": "Trouver un objet ancestral.", "cond": { "stat": "ancestralFound", "op": ">=", "value": 1, "scope": "lifetime" } },
+    { "id": "a_full_epique",       "cat": "butin", "tier": "argent", "icon": "◇", "name": "Équipement de parade",   "desc": "Avoir 4 objets épiques ou mieux équipés en même temps.", "cond": { "stat": "equippedEpicPlus", "op": ">=", "value": 4, "scope": "run" } },
+    { "id": "a_riche",             "cat": "butin", "tier": "argent", "icon": "◉", "name": "Trésor de guerre",       "desc": "Posséder 1 000 or en même temps.", "cond": { "stat": "goldHeld", "op": ">=", "value": 1000, "scope": "run" } },
+    { "id": "a_forgeron",          "cat": "butin", "tier": "bronze", "icon": "⚒", "name": "Forgeron",               "desc": "Démanteler 50 objets.", "cond": { "stat": "salvaged", "op": ">=", "value": 50, "scope": "lifetime" } },
+
+    { "id": "a_taro_15",           "cat": "heros", "tier": "argent", "icon": "🛡", "name": "Lame sombre",            "desc": "Atteindre la vague 15 avec Taro.", "cond": { "stat": "waveReached", "op": ">=", "value": 15, "scope": "run", "where": { "hero": "taro" } } },
+    { "id": "a_mei_15",            "cat": "heros", "tier": "argent", "icon": "🗡", "name": "Exécution rouge",        "desc": "Atteindre la vague 15 avec Mei.", "cond": { "stat": "waveReached", "op": ">=", "value": 15, "scope": "run", "where": { "hero": "mei" } } },
+    { "id": "a_sena_15",           "cat": "heros", "tier": "argent", "icon": "❄", "name": "Comète lunaire",         "desc": "Atteindre la vague 15 avec Sena.", "cond": { "stat": "waveReached", "op": ">=", "value": 15, "scope": "run", "where": { "hero": "sena" } } },
+    { "id": "a_ren_15",            "cat": "heros", "tier": "argent", "icon": "🏹", "name": "Pluie de flèches",       "desc": "Atteindre la vague 15 avec Ren.", "cond": { "stat": "waveReached", "op": ">=", "value": 15, "scope": "run", "where": { "hero": "ren" } } },
+    { "id": "a_quatuor",           "cat": "heros", "tier": "mythe",  "icon": "✦", "name": "Les Quatre Serments",    "desc": "Terminer la vague 20 avec chacun des 4 héros.", "cond": { "stat": "heroesWon", "op": ">=", "value": 4, "scope": "lifetime" }, "reward": { "title": "Gardien des Quatre Serments" } },
+    { "id": "a_maitrise_10",       "cat": "heros", "tier": "or",     "icon": "★", "name": "Légende vivante",        "desc": "Atteindre la maîtrise 10 avec un héros.", "cond": { "stat": "maxHeroMastery", "op": ">=", "value": 10, "scope": "lifetime" } },
+
+    { "id": "a_quotidien_1",       "cat": "defis", "tier": "bronze", "icon": "📅", "name": "Rituel du jour",         "desc": "Terminer un défi quotidien.", "cond": { "stat": "dailiesCompleted", "op": ">=", "value": 1, "scope": "lifetime" } },
+    { "id": "a_serie_7",           "cat": "defis", "tier": "or",     "icon": "🔥", "name": "Sept aubes",             "desc": "Série de 7 défis quotidiens d'affilée.", "cond": { "stat": "dailyStreakMax", "op": ">=", "value": 7, "scope": "lifetime" } },
+    { "id": "a_serie_30",          "cat": "defis", "tier": "mythe",  "icon": "🌕", "name": "Une lune entière",       "desc": "Série de 30 défis quotidiens d'affilée.", "cond": { "stat": "dailyStreakMax", "op": ">=", "value": 30, "scope": "lifetime" }, "reward": { "cosmetic": "aura_lune_pleine" } },
+    { "id": "a_pacte_10",          "cat": "defis", "tier": "or",     "icon": "☁", "name": "Voyageur des Brumes",    "desc": "Vaincre le boss de la vague 10 avec 10 points de Pacte.", "cond": { "stat": "bossKilledWithPact", "op": ">=", "value": 10, "scope": "run" } },
+    { "id": "a_pacte_32",          "cat": "defis", "tier": "mythe",  "icon": "☁", "name": "Celui qui ne revient pas","desc": "Terminer la vague 20 avec 32 points de Pacte.", "cond": { "stat": "winWithPact", "op": ">=", "value": 32, "scope": "run" } },
+    { "id": "a_contrats_100",      "cat": "defis", "tier": "argent", "icon": "📜", "name": "Chasseur de primes",     "desc": "Réussir 100 contrats.", "cond": { "stat": "contractsCompleted", "op": ">=", "value": 100, "scope": "lifetime" } },
+    { "id": "a_route_risque",      "cat": "defis", "tier": "argent", "icon": "⚠", "name": "Goût du risque",         "desc": "Choisir uniquement des routes de risque 3 jusqu'à la vague 10.", "cond": { "stat": "onlyRisk3UntilWave", "op": ">=", "value": 10, "scope": "run" } },
+
+    { "id": "a_secret_pacifiste",  "cat": "secrets", "tier": "argent", "icon": "?", "hidden": true, "name": "Le Pèlerin pacifique", "desc": "Survivre 30 s dans une vague sans attaquer.", "cond": { "stat": "secondsWithoutAttack", "op": ">=", "value": 30, "scope": "wave" } },
+    { "id": "a_secret_phenix",     "cat": "secrets", "tier": "argent", "icon": "?", "hidden": true, "name": "Cendres et retour",    "desc": "Être sauvé par le Manteau du Phénix puis vaincre un boss dans la même vague.", "cond": { "stat": "phoenixThenBoss", "op": ">=", "value": 1, "scope": "wave" } },
+    { "id": "a_secret_nu",         "cat": "secrets", "tier": "or",     "icon": "?", "hidden": true, "name": "Dénuement",            "desc": "Vaincre le Juge Pourpre sans aucun objet équipé.", "cond": { "stat": "bossKilledNaked", "op": ">=", "value": 1, "scope": "run" } },
+    { "id": "a_secret_brume",      "cat": "secrets", "tier": "or",     "icon": "?", "hidden": true, "name": "Pacte scellé",         "desc": "Atteindre la vague 10 avec uniquement des bénédictions du Pacte de la Brume.", "cond": { "stat": "onlyPatronUntilWave", "op": ">=", "value": 10, "scope": "run", "where": { "patron": "brume" } } }
+  ],
+
+  "presentation": {
+    "toastDuration": 3.3,
+    "nearCompletionHint": "Sur l'écran de fin de run, afficher les 3 succès les plus proches (progression ≥ 60 %) avec leur barre.",
+    "sound": "achievement_unlock"
+  }
+}

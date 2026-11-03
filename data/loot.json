@@ -1,0 +1,157 @@
+{
+  "version": 1,
+  "notes": "Butin d'équipement par rareté. Clés de rareté et de slot identiques au prototype (rarityDefs, slotDefs) pour faciliter la reprise. 'ancestral' est le nouveau palier de chasse (fin de partie). Voir PROGRESSION.md §4.",
+
+  "rarities": {
+    "common":    { "name": "Commun",     "color": "#dfe8ef", "statMul": 1.0,  "sellValue": 1.0,  "affixes": [0, 1], "legendaryPower": false,
+                   "fx": { "beam": false, "glow": 0,   "sound": "loot_common",    "dropShake": 0 } },
+    "magic":     { "name": "Magique",    "color": "#62cfff", "statMul": 1.25, "sellValue": 1.6,  "affixes": [1, 2], "legendaryPower": false,
+                   "fx": { "beam": false, "glow": 0.3, "sound": "loot_magic",     "dropShake": 0 } },
+    "rare":      { "name": "Rare",       "color": "#77b5ff", "statMul": 1.55, "sellValue": 2.5,  "affixes": [2, 3], "legendaryPower": false,
+                   "fx": { "beam": true,  "glow": 0.5, "sound": "loot_rare",      "dropShake": 0 } },
+    "epic":      { "name": "Épique",     "color": "#c88dff", "statMul": 2.05, "sellValue": 4.3,  "affixes": [3, 4], "legendaryPower": false,
+                   "fx": { "beam": true,  "glow": 0.8, "sound": "loot_epic",      "dropShake": 2, "slowMo": 0 } },
+    "legendary": { "name": "Légendaire", "color": "#ffca73", "statMul": 3.1,  "sellValue": 8.0,  "affixes": [3, 4], "legendaryPower": true,
+                   "fx": { "beam": true,  "glow": 1.0, "sound": "loot_legendary", "dropShake": 5, "slowMo": 0.35, "banner": true } },
+    "ancestral": { "name": "Ancestral",  "color": "#ff7a4d", "statMul": 3.8,  "sellValue": 14.0, "affixes": [4, 4], "legendaryPower": true, "perfectRoll": true,
+                   "fx": { "beam": true,  "glow": 1.2, "sound": "loot_ancestral", "dropShake": 8, "slowMo": 0.6, "banner": true, "screenFlash": "#ff7a4d" },
+                   "unlock": "sanctuary:forge>=3 ou mode Cauchemar" }
+  },
+
+  "slots": {
+    "weapon": { "icon": "⚔",  "label": "Arme",   "baseStats": { "atk": [4, 7] } },
+    "armor":  { "icon": "🛡", "label": "Armure", "baseStats": { "def": [3, 5], "maxHp": [12, 20] } },
+    "ring":   { "icon": "💍", "label": "Bijou",  "baseStats": { "crit": [0.01, 0.025], "maxMana": [6, 12] } },
+    "boots":  { "icon": "🥾", "label": "Bottes", "baseStats": { "speed": [0.02, 0.04], "def": [1, 2] } }
+  },
+
+  "itemLevel": {
+    "formula": "ilvl = wave + (mode == 'cauchemar' ? 4 : 0) + routeBonus",
+    "statScalePerIlvl": 0.06,
+    "desc": "Stat finale = base × statMul(rareté) × (1 + 0,06 × ilvl). Les objets de vague 20 valent ~2,2× ceux de vague 1 à rareté égale."
+  },
+
+  "dropTables": {
+    "desc": "Poids relatifs par source et par tranche de vagues. 'chance' = probabilité qu'une source lâche un objet.",
+    "sources": {
+      "normal": {
+        "chance": 0.06,
+        "byWave": {
+          "1-3":   { "common": 70, "magic": 26, "rare": 4,  "epic": 0,  "legendary": 0,   "ancestral": 0 },
+          "4-7":   { "common": 52, "magic": 34, "rare": 12, "epic": 2,  "legendary": 0,   "ancestral": 0 },
+          "8-12":  { "common": 38, "magic": 36, "rare": 20, "epic": 5,  "legendary": 1,   "ancestral": 0 },
+          "13-20": { "common": 26, "magic": 34, "rare": 27, "epic": 10, "legendary": 2.6, "ancestral": 0.4 }
+        }
+      },
+      "elite": {
+        "chance": 0.45,
+        "byWave": {
+          "1-3":   { "common": 30, "magic": 45, "rare": 22, "epic": 3,  "legendary": 0,  "ancestral": 0 },
+          "4-7":   { "common": 15, "magic": 38, "rare": 35, "epic": 10, "legendary": 2,  "ancestral": 0 },
+          "8-12":  { "common": 6,  "magic": 28, "rare": 40, "epic": 20, "legendary": 6,  "ancestral": 0 },
+          "13-20": { "common": 0,  "magic": 18, "rare": 40, "epic": 28, "legendary": 12, "ancestral": 2 }
+        }
+      },
+      "boss": {
+        "chance": 1.0, "rolls": 2, "minRarity": "rare",
+        "guarantee": "Le premier boss vaincu d'un profil lâche toujours une légendaire (moment « wow » de la première partie).",
+        "byWave": {
+          "5":  { "rare": 50, "epic": 38, "legendary": 12, "ancestral": 0 },
+          "10": { "rare": 30, "epic": 45, "legendary": 25, "ancestral": 0 },
+          "15": { "rare": 10, "epic": 50, "legendary": 36, "ancestral": 4 },
+          "20": { "rare": 0,  "epic": 40, "legendary": 50, "ancestral": 10 }
+        }
+      },
+      "routeChest": {
+        "desc": "Récompenses de fin de vague liées aux routes du prototype (V17ROUTES).",
+        "cache":  { "rolls": 1, "minRarity": "rare" },
+        "raid":   { "rolls": 1, "minRarity": "rare", "epicChance": 0.5 },
+        "rift":   { "rolls": 1, "minRarity": "epic" },
+        "hunt":   { "rolls": 2, "minRarity": "rare" },
+        "trail":  { "rolls": 0 },
+        "rest":   { "rolls": 0 },
+        "archive":{ "rolls": 0 }
+      }
+    }
+  },
+
+  "pity": {
+    "desc": "Protection contre la malchance : compteurs persistants dans la run (et le profil pour la légendaire).",
+    "epic":      { "afterDropsWithout": 18, "scope": "run" },
+    "legendary": { "afterDropsWithout": 45, "scope": "profile", "softStart": 30, "softBonusPerDrop": 0.4 },
+    "ancestral": { "afterDropsWithout": 160, "scope": "profile", "requires": "unlocked" }
+  },
+
+  "smartLoot": {
+    "heroBias": 0.65,
+    "desc": "65 % des légendaires tirées sont soit utilisables par tous, soit propres au héros joué. Les affixes sont pondérés par HERO_WEIGHT du prototype.",
+    "heroWeights": {
+      "taro": { "atk": 1.3,  "def": 2.3,  "maxHp": 0.20, "maxMana": 0.06, "crit": 115, "speed": 90 },
+      "mei":  { "atk": 2.35, "def": 1.15, "maxHp": 0.11, "maxMana": 0.10, "crit": 225, "speed": 170 },
+      "sena": { "atk": 2.05, "def": 1.05, "maxHp": 0.13, "maxMana": 0.19, "crit": 140, "speed": 110 },
+      "ren":  { "atk": 2.15, "def": 1.15, "maxHp": 0.12, "maxMana": 0.13, "crit": 205, "speed": 170 }
+    }
+  },
+
+  "affixes": [
+    { "id": "atk_flat",      "name": "de Puissance",      "stat": "atk",         "range": [2, 5],       "slots": ["weapon", "ring"],          "weight": 100 },
+    { "id": "atk_pct",       "name": "du Bourreau",       "stat": "atkPct",      "range": [3, 8],       "slots": ["weapon"],                  "weight": 60 },
+    { "id": "def_flat",      "name": "du Rempart",        "stat": "def",         "range": [2, 4],       "slots": ["armor", "boots"],          "weight": 100 },
+    { "id": "hp_flat",       "name": "de Vigueur",        "stat": "maxHp",       "range": [10, 26],     "slots": ["armor", "ring"],           "weight": 100 },
+    { "id": "mana_flat",     "name": "de Clarté",         "stat": "maxMana",     "range": [6, 16],      "slots": ["ring", "armor"],           "weight": 70 },
+    { "id": "crit",          "name": "de Précision",      "stat": "crit",        "range": [0.01, 0.04], "slots": ["weapon", "ring"],          "weight": 70 },
+    { "id": "crit_dmg",      "name": "du Massacre",       "stat": "critDamage",  "range": [8, 20],      "slots": ["weapon", "ring"],          "weight": 45 },
+    { "id": "speed",         "name": "de Célérité",       "stat": "speed",       "range": [0.02, 0.05], "slots": ["boots"],                   "weight": 90 },
+    { "id": "cdr",           "name": "des Astres",        "stat": "cooldownPct", "range": [3, 8],       "slots": ["ring", "boots"],           "weight": 45 },
+    { "id": "lifesteal",     "name": "du Sang-Lune",      "stat": "lifesteal",   "range": [1, 3],       "slots": ["weapon", "ring"],          "weight": 35 },
+    { "id": "gold_find",     "name": "du Pillard",        "stat": "goldFind",    "range": [5, 15],      "slots": ["ring", "boots"],           "weight": 40 },
+    { "id": "shard_find",    "name": "d'Akar",            "stat": "shardFind",   "range": [5, 12],      "slots": ["ring"],                    "weight": 15, "minRarity": "epic" },
+    { "id": "status_power",  "name": "des Serments",      "stat": "statusDamagePct", "range": [6, 15],  "slots": ["weapon", "armor", "ring"], "weight": 35, "minRarity": "rare",
+      "desc": "Augmente les dégâts de Saignement, Poison, Choc et des éclats de Gel (synergie avec les bénédictions)." },
+    { "id": "blessing_boost","name": "du Patron",         "stat": "patronResonanceBonus", "range": [1, 1], "slots": ["ring", "armor"],    "weight": 8,  "minRarity": "legendary",
+      "desc": "Compte comme une bénédiction supplémentaire d'un patron aléatoire pour les Résonances." }
+  ],
+
+  "legendaryPowers": [
+    { "id": "crimson",     "slot": "weapon", "hero": "taro", "name": "Lame des Trois Serments",      "short": "3 coups → onde sanglante", "patronHint": "sang",      "desc": "Toutes les 3 touches, une onde rouge frappe jusqu'à 3 ennemis proches pour 65 % de ton ATQ." },
+    { "id": "moonstaff",   "slot": "weapon", "hero": "sena", "name": "Sceptre des Éclats Lunaires",  "short": "4 coups → nova + gel",     "patronHint": "lune",      "desc": "Toutes les 4 touches, une nova lunaire frappe la cible et les ennemis proches et les ralentit 2 s." },
+    { "id": "hunter",      "slot": "weapon", "hero": "ren",  "name": "Arc du Dernier Veilleur",      "short": "Ricochet + Élan",          "patronHint": "orage",     "desc": "Toutes les 3 s, une touche fait ricocher une flèche sur un autre ennemi et gagne 10 points d'Élan." },
+    { "id": "shadowblade", "slot": "weapon", "hero": "mei",  "name": "Dagues du Pacte Muet",         "short": "3 coups → seconde frappe", "patronHint": "brume",     "desc": "Toutes les 3 touches, inflige une seconde frappe à la cible et réduit son temps de préparation." },
+    { "id": "aegis",       "slot": "armor",  "name": "Égide des Veilleurs",          "short": "Blessure → bouclier + onde", "patronHint": "veilleurs", "desc": "Après avoir subi des dégâts, octroie un bouclier égal à 25 + 2×DEF et repousse les ennemis proches (8 s)." },
+    { "id": "frostmail",   "slot": "armor",  "name": "Armure du Givre Éternel",      "short": "Blessure → gel",           "patronHint": "lune",      "desc": "Après avoir subi des dégâts, ralentit fortement les ennemis voisins 2,5 s et renvoie un petit choc (7 s)." },
+    { "id": "phoenix",     "slot": "armor",  "name": "Manteau du Phénix Cendré",     "short": "PV faibles → renaissance", "patronHint": "veilleurs", "desc": "Une fois par vague, sous 30 % PV, récupère 30 % des PV max et deviens invulnérable 1,4 s." },
+    { "id": "bloodseal",   "slot": "ring",   "name": "Anneau du Sang-Lune",          "short": "Vampirisme 9 %",           "patronHint": "sang",      "desc": "Rend 9 % des dégâts de chaque touche en PV (limité à 5 % des PV max par seconde)." },
+    { "id": "chronoring",  "slot": "ring",   "name": "Horloge des Astres",           "short": "Recharges réduites",       "patronHint": "orage",     "desc": "Réduit le temps de recharge des techniques." },
+    { "id": "plague",      "slot": "ring",   "name": "Sceau du Fléau Noir",          "short": "Poison durable",           "patronHint": "brume",     "desc": "Applique un poison dans la durée." },
+    { "id": "phantom",     "slot": "boots",  "name": "Pas du Fantôme",               "short": "Esquive offensive",        "patronHint": "brume",     "desc": "Esquive avec onde offensive." },
+    { "id": "wind",        "slot": "boots",  "name": "Bottes de la Traque Céleste",  "short": "Vitesse après élimination","patronHint": "orage",     "desc": "Accélération après une élimination." },
+    { "id": "stormstep",   "slot": "boots",  "name": "Foulées de l'Orage",           "short": "Éclairs en courant",       "patronHint": "orage",     "desc": "Déclenche des éclairs en courant." },
+
+    { "id": "new_oathbreaker", "slot": "weapon", "name": "Briseuse de Serments", "short": "Bénédictions +1 cran", "patronHint": null, "new": true,
+      "desc": "Ta bénédiction de Frappe compte comme un cran de rareté au-dessus." },
+    { "id": "new_juge",        "slot": "armor",  "name": "Robe du Juge Pourpre", "short": "Marque à l'impact", "patronHint": "veilleurs", "new": true, "source": "boss:5",
+      "desc": "Les ennemis qui te touchent sont marqués 4 s. Tuer une cible marquée rend 4 % PV." },
+    { "id": "new_eclipse",     "slot": "ring",   "name": "Sceau de l'Éclipse",   "short": "Double résonance", "patronHint": null, "new": true, "source": "boss:20",
+      "desc": "Les paliers de Résonance de ton patron principal s'activent avec une bénédiction de moins." },
+    { "id": "new_brumepas",    "slot": "boots",  "name": "Semelles de Brume",    "short": "Esquive = poison",  "patronHint": "brume", "new": true,
+      "desc": "Chaque esquive laisse une traînée qui applique 2 Poison." }
+  ],
+
+  "ancestralRules": {
+    "desc": "Une ancestrale = légendaire avec 4 affixes au jet maximal + un affixe « Serment » unique (au choix parmi 3 à la ramasse).",
+    "oathAffixChoices": 3,
+    "oathAffixes": [
+      { "id": "oath_veilleurs", "desc": "+1 Résonance Veilleurs" },
+      { "id": "oath_lune",      "desc": "+1 Résonance Lune" },
+      { "id": "oath_sang",      "desc": "+1 Résonance Sang" },
+      { "id": "oath_orage",     "desc": "+1 Résonance Orage" },
+      { "id": "oath_brume",     "desc": "+1 Résonance Brume" }
+    ]
+  },
+
+  "salvage": {
+    "desc": "Démanteler au lieu de vendre : donne de la Poussière d'étoile (monnaie de la Forge du Sanctuaire).",
+    "dust": { "common": 1, "magic": 2, "rare": 5, "epic": 12, "legendary": 30, "ancestral": 80 },
+    "autoSalvageDefault": ["common"]
+  }
+}

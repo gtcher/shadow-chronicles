@@ -1,0 +1,35 @@
+héros  niveau  victoires  vague méd.  durée victoire  morts (cause)
+mei 0.3        3/3        20          12 min          {}
+mei 0.6        3/3        20          12 min          {}
+mei 0.9        3/3        20          11 min          {}
+ren 0.3        3/3        20          16 min          {}
+ren 0.6        3/3        20          15 min          {}
+ren 0.9        3/3        20          16 min          {}
+sena 0.3       3/3        20          16 min          {}
+sena 0.6       3/3        20          17 min          {}
+sena 0.9       3/3        20          17 min          {}
+taro 0.3       3/3        20          13 min          {}
+taro 0.6       3/3        20          14 min          {}
+taro 0.9       3/3        20          14 min          {}
+
+vague  durée moy.  dégâts PV (% max)  bouclier absorbé  coups  survie (passé / atteint)
+ 1           13 s       3 %                0 %               0      36/36
+ 2           26 s       6 %                0 %               0      36/36
+ 3           29 s       8 %                0 %               0      36/36
+ 4           41 s       18 %               0 %               0      36/36
+ 5 captain   48 s       39 %               0 %               0      36/36
+ 6           34 s       5 %                0 %               0      36/36
+ 7           41 s       10 %               0 %               0      36/36
+ 8           42 s       5 %                0 %               0      36/36
+ 9           50 s       5 %                0 %               0      36/36
+10 oracle    37 s       5 %                0 %               0      36/36
+11           48 s       2 %                0 %               0      36/36
+12           53 s       1 %                0 %               0      36/36
+13           51 s       1 %                0 %               0      36/36
+14           58 s       0 %                0 %               0      36/36
+15 arbiter   36 s       1 %                0 %               0      36/36
+16           47 s       1 %                0 %               0      36/36
+17           54 s       1 %                0 %               0      36/36
+18           52 s       0 %                0 %               0      36/36
+19           52 s       0 %                0 %               0      36/36
+20 sovereign 34 s       0 %                0 %               0      36/36

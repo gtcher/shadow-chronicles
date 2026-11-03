@@ -1,0 +1,8200 @@
+[
+ {
+  "hero": "taro",
+  "skill": 0.3,
+  "seed": 1,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 753,
+  "kills": 1092,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 10.866666666666916,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 24.89999999999878,
+    "damageTaken": 0,
+    "hpEnd": 207,
+    "hpMax": 230,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 31.349999999998225,
+    "damageTaken": 8,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 39.83333333333107,
+    "damageTaken": 15,
+    "hpEnd": 266,
+    "hpMax": 266,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 49.216666666692745,
+    "damageTaken": 62,
+    "hpEnd": 266,
+    "hpMax": 266,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 30.100000000023954,
+    "damageTaken": 0,
+    "hpEnd": 266,
+    "hpMax": 266,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 39.98333333336515,
+    "damageTaken": 0,
+    "hpEnd": 268,
+    "hpMax": 268,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 42.14999999999853,
+    "damageTaken": 0,
+    "hpEnd": 268,
+    "hpMax": 268,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 45.94999999995821,
+    "damageTaken": 0,
+    "hpEnd": 249,
+    "hpMax": 249,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 30.899999999971897,
+    "damageTaken": 0,
+    "hpEnd": 261,
+    "hpMax": 261,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 35.733333333300834,
+    "damageTaken": 0,
+    "hpEnd": 261,
+    "hpMax": 261,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 41.699999999962074,
+    "damageTaken": 0,
+    "hpEnd": 310,
+    "hpMax": 310,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 45.19999999995889,
+    "damageTaken": 0,
+    "hpEnd": 310,
+    "hpMax": 310,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 47.16666666662377,
+    "damageTaken": 0,
+    "hpEnd": 321,
+    "hpMax": 321,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 26.999999999975444,
+    "damageTaken": 0,
+    "hpEnd": 321,
+    "hpMax": 321,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 45.3333333332921,
+    "damageTaken": 0,
+    "hpEnd": 407,
+    "hpMax": 407,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 42.699999999961165,
+    "damageTaken": 0,
+    "hpEnd": 407,
+    "hpMax": 407,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 36.11666666663382,
+    "damageTaken": 0,
+    "hpEnd": 407,
+    "hpMax": 407,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 42.266666666628225,
+    "damageTaken": 0,
+    "hpEnd": 435,
+    "hpMax": 435,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 25.3999999999769,
+    "damageTaken": 0,
+    "hpEnd": 435,
+    "hpMax": 435,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 435,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 245,
+  "perfectDodges": 119,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "mei",
+  "skill": 0.3,
+  "seed": 1,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 682,
+  "kills": 1094,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 11.516666666666948,
+    "damageTaken": 8,
+    "hpEnd": 170,
+    "hpMax": 170,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 20.86666666666561,
+    "damageTaken": 35,
+    "hpEnd": 161,
+    "hpMax": 170,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 26.133333333331848,
+    "damageTaken": 106,
+    "hpEnd": 87,
+    "hpMax": 170,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 32.06666666666485,
+    "damageTaken": 83,
+    "hpEnd": 115,
+    "hpMax": 170,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 37.73333333333632,
+    "damageTaken": 240,
+    "hpEnd": 163,
+    "hpMax": 170,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 24.15000000001922,
+    "damageTaken": 65,
+    "hpEnd": 184,
+    "hpMax": 233,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 29.850000000023755,
+    "damageTaken": 48.99999999999977,
+    "hpEnd": 233,
+    "hpMax": 233,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 30.65000000002439,
+    "damageTaken": 0,
+    "hpEnd": 233,
+    "hpMax": 233,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 37.86666666669038,
+    "damageTaken": 0,
+    "hpEnd": 317,
+    "hpMax": 317,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 26.18333333330952,
+    "damageTaken": 0,
+    "hpEnd": 317,
+    "hpMax": 317,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 42.19999999996162,
+    "damageTaken": 0,
+    "hpEnd": 317,
+    "hpMax": 317,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 38.56666666663159,
+    "damageTaken": 30,
+    "hpEnd": 317,
+    "hpMax": 317,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 40.36666666662995,
+    "damageTaken": 33.095,
+    "hpEnd": 317,
+    "hpMax": 317,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 38.88333333329797,
+    "damageTaken": 0,
+    "hpEnd": 317,
+    "hpMax": 317,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 27.41666666664173,
+    "damageTaken": 0,
+    "hpEnd": 317,
+    "hpMax": 317,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 43.86666666662677,
+    "damageTaken": 0,
+    "hpEnd": 352,
+    "hpMax": 352,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 49.46666666662168,
+    "damageTaken": 0,
+    "hpEnd": 352,
+    "hpMax": 352,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 41.599999999962165,
+    "damageTaken": 0,
+    "hpEnd": 398,
+    "hpMax": 398,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 39.48333333329742,
+    "damageTaken": 0,
+    "hpEnd": 398,
+    "hpMax": 398,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 24.08333333331143,
+    "damageTaken": 0,
+    "hpEnd": 398,
+    "hpMax": 398,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 341,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 158,
+  "perfectDodges": 81,
+  "potionsUsed": 3,
+  "errors": []
+ },
+ {
+  "hero": "taro",
+  "skill": 0.3,
+  "seed": 3,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 764,
+  "kills": 1113,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 11.96666666666697,
+    "damageTaken": 0,
+    "hpEnd": 256,
+    "hpMax": 256,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 37.91666666666459,
+    "damageTaken": 0,
+    "hpEnd": 256,
+    "hpMax": 256,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 25.06666666666525,
+    "damageTaken": 0,
+    "hpEnd": 256,
+    "hpMax": 256,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 33.94999999999807,
+    "damageTaken": 45,
+    "hpEnd": 141,
+    "hpMax": 277,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 47.683333333359855,
+    "damageTaken": 0,
+    "hpEnd": 217,
+    "hpMax": 277,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 27.833333333355483,
+    "damageTaken": 0,
+    "hpEnd": 217,
+    "hpMax": 280,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 37.65000000002996,
+    "damageTaken": 0,
+    "hpEnd": 189,
+    "hpMax": 280,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 38.48333333334233,
+    "damageTaken": 0,
+    "hpEnd": 239,
+    "hpMax": 280,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 40.84999999996285,
+    "damageTaken": 0,
+    "hpEnd": 280,
+    "hpMax": 280,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 22.399999999979627,
+    "damageTaken": 9,
+    "hpEnd": 315,
+    "hpMax": 315,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 43.94999999996003,
+    "damageTaken": 27,
+    "hpEnd": 357,
+    "hpMax": 357,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 46.96666666662395,
+    "damageTaken": 0,
+    "hpEnd": 357,
+    "hpMax": 357,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 50.34999999995421,
+    "damageTaken": 6,
+    "hpEnd": 424,
+    "hpMax": 424,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 43.33333333329392,
+    "damageTaken": 3.30715,
+    "hpEnd": 424,
+    "hpMax": 424,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 23.783333333311703,
+    "damageTaken": 0,
+    "hpEnd": 424,
+    "hpMax": 424,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 46.81666666662409,
+    "damageTaken": 0,
+    "hpEnd": 437,
+    "hpMax": 437,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 51.48333333328651,
+    "damageTaken": 0,
+    "hpEnd": 437,
+    "hpMax": 437,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 38.86666666663132,
+    "damageTaken": 0,
+    "hpEnd": 437,
+    "hpMax": 437,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 42.43333333329474,
+    "damageTaken": 0,
+    "hpEnd": 437,
+    "hpMax": 437,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 32.616666666637,
+    "damageTaken": 0,
+    "hpEnd": 437,
+    "hpMax": 437,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 437,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 253,
+  "perfectDodges": 106,
+  "potionsUsed": 2,
+  "errors": []
+ },
+ {
+  "hero": "taro",
+  "skill": 0.3,
+  "seed": 2,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 766,
+  "kills": 1118,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 13.733333333333697,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 26.149999999998517,
+    "damageTaken": 0,
+    "hpEnd": 184,
+    "hpMax": 230,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 27.016666666665138,
+    "damageTaken": 1,
+    "hpEnd": 149,
+    "hpMax": 230,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 37.283333333331214,
+    "damageTaken": 14,
+    "hpEnd": 190,
+    "hpMax": 253,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 46.33333333335476,
+    "damageTaken": 29,
+    "hpEnd": 202,
+    "hpMax": 253,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 31.10000000002475,
+    "damageTaken": 0,
+    "hpEnd": 305,
+    "hpMax": 305,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 39.95000000003179,
+    "damageTaken": 0,
+    "hpEnd": 305,
+    "hpMax": 305,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 40.96666666667426,
+    "damageTaken": 0,
+    "hpEnd": 305,
+    "hpMax": 305,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 47.016666666623905,
+    "damageTaken": 0,
+    "hpEnd": 305,
+    "hpMax": 305,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 25.333333333310293,
+    "damageTaken": 0,
+    "hpEnd": 305,
+    "hpMax": 305,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 45.899999999958254,
+    "damageTaken": 0,
+    "hpEnd": 305,
+    "hpMax": 305,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 41.34999999996239,
+    "damageTaken": 0,
+    "hpEnd": 351,
+    "hpMax": 351,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 47.999999999956344,
+    "damageTaken": 0,
+    "hpEnd": 397,
+    "hpMax": 397,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 50.649999999953934,
+    "damageTaken": 0,
+    "hpEnd": 397,
+    "hpMax": 397,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 23.64999999997849,
+    "damageTaken": 0,
+    "hpEnd": 345,
+    "hpMax": 345,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 41.9999999999618,
+    "damageTaken": 0,
+    "hpEnd": 345,
+    "hpMax": 345,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 47.683333333289966,
+    "damageTaken": 0,
+    "hpEnd": 345,
+    "hpMax": 345,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 42.11666666662836,
+    "damageTaken": 0,
+    "hpEnd": 390,
+    "hpMax": 390,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 41.43333333329565,
+    "damageTaken": 0,
+    "hpEnd": 390,
+    "hpMax": 390,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 28.866666666640413,
+    "damageTaken": 0,
+    "hpEnd": 390,
+    "hpMax": 390,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 390,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 251,
+  "perfectDodges": 135,
+  "potionsUsed": 1,
+  "errors": []
+ },
+ {
+  "hero": "mei",
+  "skill": 0.3,
+  "seed": 2,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 687,
+  "kills": 1084,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 10.233333333333551,
+    "damageTaken": 16,
+    "hpEnd": 170,
+    "hpMax": 170,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 19.999999999999126,
+    "damageTaken": 37,
+    "hpEnd": 207,
+    "hpMax": 212,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 24.399999999998613,
+    "damageTaken": 39,
+    "hpEnd": 239,
+    "hpMax": 239,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 36.31666666666461,
+    "damageTaken": 54.00091999999995,
+    "hpEnd": 239,
+    "hpMax": 239,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 41.15000000000602,
+    "damageTaken": 237.12495999999982,
+    "hpEnd": 239,
+    "hpMax": 239,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 27.033333333354847,
+    "damageTaken": 0,
+    "hpEnd": 239,
+    "hpMax": 239,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 29.633333333356916,
+    "damageTaken": 0,
+    "hpEnd": 228,
+    "hpMax": 228,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 31.816666666691987,
+    "damageTaken": 0,
+    "hpEnd": 228,
+    "hpMax": 228,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 40.93333333334127,
+    "damageTaken": 0,
+    "hpEnd": 257,
+    "hpMax": 257,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 24.616666666644278,
+    "damageTaken": 0,
+    "hpEnd": 257,
+    "hpMax": 257,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 36.4333333333002,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 46.48333333329106,
+    "damageTaken": 0,
+    "hpEnd": 292,
+    "hpMax": 292,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 37.93333333329883,
+    "damageTaken": 0,
+    "hpEnd": 292,
+    "hpMax": 292,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 43.149999999960755,
+    "damageTaken": 0,
+    "hpEnd": 292,
+    "hpMax": 292,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 25.51666666664346,
+    "damageTaken": 0,
+    "hpEnd": 292,
+    "hpMax": 292,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 41.51666666662891,
+    "damageTaken": 0,
+    "hpEnd": 292,
+    "hpMax": 292,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 43.53333333329374,
+    "damageTaken": 0,
+    "hpEnd": 292,
+    "hpMax": 292,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 42.46666666662804,
+    "damageTaken": 0,
+    "hpEnd": 292,
+    "hpMax": 292,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 41.833333333295286,
+    "damageTaken": 0,
+    "hpEnd": 370,
+    "hpMax": 370,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 22.88333333331252,
+    "damageTaken": 0,
+    "hpEnd": 376,
+    "hpMax": 376,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 376,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 128,
+  "perfectDodges": 61,
+  "potionsUsed": 2,
+  "errors": []
+ },
+ {
+  "hero": "mei",
+  "skill": 0.3,
+  "seed": 3,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 734,
+  "kills": 1092,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 9.883333333333534,
+    "damageTaken": 20,
+    "hpEnd": 170,
+    "hpMax": 170,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 24.16666666666559,
+    "damageTaken": 50,
+    "hpEnd": 181,
+    "hpMax": 201,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 18.466666666665617,
+    "damageTaken": 54,
+    "hpEnd": 149,
+    "hpMax": 194,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 30.89999999999825,
+    "damageTaken": 61,
+    "hpEnd": 165,
+    "hpMax": 194,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 38.7499999999978,
+    "damageTaken": 233,
+    "hpEnd": 164,
+    "hpMax": 194,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 32.266666666692345,
+    "damageTaken": 100,
+    "hpEnd": 286,
+    "hpMax": 286,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 38.56666666669736,
+    "damageTaken": 10.276879999999984,
+    "hpEnd": 286,
+    "hpMax": 286,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 39.90000000003175,
+    "damageTaken": 0.6596799999999998,
+    "hpEnd": 286,
+    "hpMax": 286,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 51.849999999977,
+    "damageTaken": 11.264319999999968,
+    "hpEnd": 286,
+    "hpMax": 286,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 38.383333333298424,
+    "damageTaken": 57.22263999999968,
+    "hpEnd": 286,
+    "hpMax": 286,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 41.933333333295195,
+    "damageTaken": 0,
+    "hpEnd": 286,
+    "hpMax": 286,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 42.5499999999613,
+    "damageTaken": 0,
+    "hpEnd": 286,
+    "hpMax": 286,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 39.13333333329774,
+    "damageTaken": 0,
+    "hpEnd": 286,
+    "hpMax": 286,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 49.19999999995525,
+    "damageTaken": 0,
+    "hpEnd": 286,
+    "hpMax": 286,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 22.783333333312612,
+    "damageTaken": 0,
+    "hpEnd": 286,
+    "hpMax": 286,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 41.76666666662868,
+    "damageTaken": 0,
+    "hpEnd": 286,
+    "hpMax": 286,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 51.51666666661981,
+    "damageTaken": 0,
+    "hpEnd": 286,
+    "hpMax": 286,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 38.88333333329797,
+    "damageTaken": 0,
+    "hpEnd": 286,
+    "hpMax": 286,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 40.44999999996321,
+    "damageTaken": 0,
+    "hpEnd": 286,
+    "hpMax": 286,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 23.98333333331152,
+    "damageTaken": 0,
+    "hpEnd": 286,
+    "hpMax": 286,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 286,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 176,
+  "perfectDodges": 84,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "sena",
+  "skill": 0.3,
+  "seed": 2,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 914,
+  "kills": 1126,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 14.333333333333663,
+    "damageTaken": 11,
+    "hpEnd": 160,
+    "hpMax": 160,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 27.016666666665134,
+    "damageTaken": 20,
+    "hpEnd": 160,
+    "hpMax": 160,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 29.216666666665013,
+    "damageTaken": 88,
+    "hpEnd": 194,
+    "hpMax": 235,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 45.216666666664096,
+    "damageTaken": 38,
+    "hpEnd": 235,
+    "hpMax": 235,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 56.566666666706126,
+    "damageTaken": 0,
+    "hpEnd": 204,
+    "hpMax": 204,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 32.93333333335954,
+    "damageTaken": 0,
+    "hpEnd": 252,
+    "hpMax": 252,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 43.03333333336758,
+    "damageTaken": 0,
+    "hpEnd": 210,
+    "hpMax": 252,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 34.16666666663559,
+    "damageTaken": 0,
+    "hpEnd": 234,
+    "hpMax": 252,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 47.449999999956844,
+    "damageTaken": 0,
+    "hpEnd": 242,
+    "hpMax": 242,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 38.58333333329824,
+    "damageTaken": 0,
+    "hpEnd": 242,
+    "hpMax": 242,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 51.69999999995298,
+    "damageTaken": 0,
+    "hpEnd": 242,
+    "hpMax": 242,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 45.899999999958254,
+    "damageTaken": 0,
+    "hpEnd": 244,
+    "hpMax": 244,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 51.48333333328651,
+    "damageTaken": 0,
+    "hpEnd": 244,
+    "hpMax": 244,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 40.88333333329615,
+    "damageTaken": 0,
+    "hpEnd": 272,
+    "hpMax": 272,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 44.96666666662577,
+    "damageTaken": 41,
+    "hpEnd": 272,
+    "hpMax": 272,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 46.9833333332906,
+    "damageTaken": 141,
+    "hpEnd": 179,
+    "hpMax": 320,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 68.71666666660417,
+    "damageTaken": 55,
+    "hpEnd": 251,
+    "hpMax": 320,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 50.94999999995366,
+    "damageTaken": 0,
+    "hpEnd": 320,
+    "hpMax": 320,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 75.59999999993124,
+    "damageTaken": 0,
+    "hpEnd": 320,
+    "hpMax": 320,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 49.566666666621586,
+    "damageTaken": 0,
+    "hpEnd": 320,
+    "hpMax": 320,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 320,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 210,
+  "perfectDodges": 69,
+  "potionsUsed": 1,
+  "errors": []
+ },
+ {
+  "hero": "sena",
+  "skill": 0.3,
+  "seed": 1,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 998,
+  "kills": 1162,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 12.133333333333645,
+    "damageTaken": 11,
+    "hpEnd": 160,
+    "hpMax": 160,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 19.11666666666564,
+    "damageTaken": 0,
+    "hpEnd": 160,
+    "hpMax": 160,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 32.08333333333152,
+    "damageTaken": 0,
+    "hpEnd": 160,
+    "hpMax": 160,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 39.74999999999774,
+    "damageTaken": 76,
+    "hpEnd": 218,
+    "hpMax": 218,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 49.71666666668985,
+    "damageTaken": 211,
+    "hpEnd": 179,
+    "hpMax": 218,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 45.26666666670269,
+    "damageTaken": 48,
+    "hpEnd": 235,
+    "hpMax": 276,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 41.666666666699825,
+    "damageTaken": 124,
+    "hpEnd": 207,
+    "hpMax": 276,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 57.633333333294786,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 276,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 57.299999999947886,
+    "damageTaken": 0,
+    "hpEnd": 276,
+    "hpMax": 276,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 58.399999999946886,
+    "damageTaken": 0,
+    "hpEnd": 248,
+    "hpMax": 276,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 47.683333333289966,
+    "damageTaken": 0,
+    "hpEnd": 276,
+    "hpMax": 276,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 62.86666666660949,
+    "damageTaken": 0,
+    "hpEnd": 276,
+    "hpMax": 276,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 69.1166666666038,
+    "damageTaken": 0,
+    "hpEnd": 276,
+    "hpMax": 276,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 65.99999999993997,
+    "damageTaken": 0,
+    "hpEnd": 276,
+    "hpMax": 276,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 41.13333333329592,
+    "damageTaken": 0,
+    "hpEnd": 253,
+    "hpMax": 253,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 54.083333333284145,
+    "damageTaken": 0,
+    "hpEnd": 345,
+    "hpMax": 345,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 64.81666666660772,
+    "damageTaken": 0,
+    "hpEnd": 345,
+    "hpMax": 345,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 59.19999999994616,
+    "damageTaken": 0,
+    "hpEnd": 345,
+    "hpMax": 345,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 58.03333333328055,
+    "damageTaken": 30.5,
+    "hpEnd": 314,
+    "hpMax": 345,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 42.583333333294604,
+    "damageTaken": 0,
+    "hpEnd": 345,
+    "hpMax": 345,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 345,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 249,
+  "perfectDodges": 84,
+  "potionsUsed": 3,
+  "errors": []
+ },
+ {
+  "hero": "sena",
+  "skill": 0.3,
+  "seed": 3,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 1043,
+  "kills": 1178,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 13.03333333333369,
+    "damageTaken": 11,
+    "hpEnd": 160,
+    "hpMax": 160,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 31.86666666666486,
+    "damageTaken": 41,
+    "hpEnd": 183,
+    "hpMax": 204,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 28.2999999999984,
+    "damageTaken": 0,
+    "hpEnd": 204,
+    "hpMax": 204,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 40.3999999999977,
+    "damageTaken": 100,
+    "hpEnd": 140,
+    "hpMax": 204,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 63.28333333337628,
+    "damageTaken": 26.91999999999994,
+    "hpEnd": 199,
+    "hpMax": 204,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 36.666666666695846,
+    "damageTaken": 0,
+    "hpEnd": 261,
+    "hpMax": 261,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 49.933333333347804,
+    "damageTaken": 0,
+    "hpEnd": 261,
+    "hpMax": 261,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 44.49999999995953,
+    "damageTaken": 6.800000000000001,
+    "hpEnd": 261,
+    "hpMax": 261,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 70.86666666660221,
+    "damageTaken": 0,
+    "hpEnd": 261,
+    "hpMax": 261,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 64.86666666660767,
+    "damageTaken": 0,
+    "hpEnd": 261,
+    "hpMax": 261,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 57.04999999994811,
+    "damageTaken": 0,
+    "hpEnd": 261,
+    "hpMax": 261,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 58.0166666666139,
+    "damageTaken": 0,
+    "hpEnd": 296,
+    "hpMax": 296,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 69.99999999993634,
+    "damageTaken": 0,
+    "hpEnd": 296,
+    "hpMax": 296,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 81.48333333325922,
+    "damageTaken": 0,
+    "hpEnd": 307,
+    "hpMax": 307,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 31.749999999971124,
+    "damageTaken": 0,
+    "hpEnd": 307,
+    "hpMax": 307,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 56.93333333328155,
+    "damageTaken": 0,
+    "hpEnd": 307,
+    "hpMax": 307,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 47.86666666662313,
+    "damageTaken": 0,
+    "hpEnd": 261,
+    "hpMax": 261,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 59.24999999994611,
+    "damageTaken": 0,
+    "hpEnd": 261,
+    "hpMax": 261,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 65.83333333327346,
+    "damageTaken": 0,
+    "hpEnd": 261,
+    "hpMax": 261,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 52.399999999952456,
+    "damageTaken": 0,
+    "hpEnd": 261,
+    "hpMax": 261,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 261,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 270,
+  "perfectDodges": 76,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "ren",
+  "skill": 0.3,
+  "seed": 1,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 1035,
+  "kills": 1168,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 14.750000000000306,
+    "damageTaken": 11,
+    "hpEnd": 180,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 30.88333333333158,
+    "damageTaken": 21,
+    "hpEnd": 180,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 34.29999999999806,
+    "damageTaken": 0,
+    "hpEnd": 180,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 50.6500000000035,
+    "damageTaken": 9.750000000000004,
+    "hpEnd": 180,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 50.950000000040546,
+    "damageTaken": 70.37999999999997,
+    "hpEnd": 173,
+    "hpMax": 205,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 40.00000000003183,
+    "damageTaken": 0,
+    "hpEnd": 268,
+    "hpMax": 268,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 40.73333333334256,
+    "damageTaken": 0,
+    "hpEnd": 304,
+    "hpMax": 304,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 44.699999999959346,
+    "damageTaken": 0,
+    "hpEnd": 304,
+    "hpMax": 304,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 62.56666666660976,
+    "damageTaken": 0,
+    "hpEnd": 304,
+    "hpMax": 304,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 45.04999999995903,
+    "damageTaken": 0,
+    "hpEnd": 304,
+    "hpMax": 304,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 63.5499999999422,
+    "damageTaken": 0,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 67.3333333332721,
+    "damageTaken": 0,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 77.333333333263,
+    "damageTaken": 0,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 80.7333333332599,
+    "damageTaken": 0,
+    "hpEnd": 361,
+    "hpMax": 361,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 54.59999999995034,
+    "damageTaken": 0,
+    "hpEnd": 361,
+    "hpMax": 361,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 38.383333333298424,
+    "damageTaken": 0,
+    "hpEnd": 361,
+    "hpMax": 361,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 63.23333333327582,
+    "damageTaken": 0,
+    "hpEnd": 361,
+    "hpMax": 361,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 57.38333333328114,
+    "damageTaken": 0,
+    "hpEnd": 408,
+    "hpMax": 408,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 60.1833333332786,
+    "damageTaken": 0,
+    "hpEnd": 408,
+    "hpMax": 408,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 38.39999999996519,
+    "damageTaken": 0,
+    "hpEnd": 408,
+    "hpMax": 408,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 408,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 176,
+  "perfectDodges": 43,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "ren",
+  "skill": 0.3,
+  "seed": 3,
+  "reached": 20,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 867,
+  "kills": 1154,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 12.050000000000308,
+    "damageTaken": 11,
+    "hpEnd": 180,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 30.13333333333169,
+    "damageTaken": 0,
+    "hpEnd": 180,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 32.49999999999816,
+    "damageTaken": 47,
+    "hpEnd": 151,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 34.199999999998056,
+    "damageTaken": 103,
+    "hpEnd": 150,
+    "hpMax": 195,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 30.71666666667967,
+    "damageTaken": 154,
+    "hpEnd": 145,
+    "hpMax": 195,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 38.16666666669704,
+    "damageTaken": 19,
+    "hpEnd": 258,
+    "hpMax": 310,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 36.716666666695886,
+    "damageTaken": 81,
+    "hpEnd": 310,
+    "hpMax": 310,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 36.23333333335731,
+    "damageTaken": 63,
+    "hpEnd": 334,
+    "hpMax": 334,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 70.03333333326964,
+    "damageTaken": 123,
+    "hpEnd": 334,
+    "hpMax": 334,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 43.71666666662691,
+    "damageTaken": 127,
+    "hpEnd": 310,
+    "hpMax": 310,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 50.93333333328701,
+    "damageTaken": 128,
+    "hpEnd": 310,
+    "hpMax": 310,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 44.33333333329301,
+    "damageTaken": 121,
+    "hpEnd": 310,
+    "hpMax": 310,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 43.6499999999603,
+    "damageTaken": 0,
+    "hpEnd": 310,
+    "hpMax": 310,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 54.66666666661695,
+    "damageTaken": 0,
+    "hpEnd": 310,
+    "hpMax": 310,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 35.316666666634546,
+    "damageTaken": 0,
+    "hpEnd": 310,
+    "hpMax": 310,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 55.966666666615765,
+    "damageTaken": 0,
+    "hpEnd": 382,
+    "hpMax": 382,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 52.333333333285736,
+    "damageTaken": 0,
+    "hpEnd": 382,
+    "hpMax": 382,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 59.6999999999457,
+    "damageTaken": 0,
+    "hpEnd": 420,
+    "hpMax": 420,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 57.54999999994766,
+    "damageTaken": 0,
+    "hpEnd": 420,
+    "hpMax": 420,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 30.349999999972397,
+    "damageTaken": 0,
+    "hpEnd": 420,
+    "hpMax": 420,
+    "potionsLeft": 4,
+    "cleared": true
+   }
+  ],
+  "deathCause": null,
+  "dodges": 184,
+  "perfectDodges": 56,
+  "potionsUsed": 3,
+  "errors": []
+ },
+ {
+  "hero": "ren",
+  "skill": 0.3,
+  "seed": 2,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 991,
+  "kills": 1196,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 15.050000000000288,
+    "damageTaken": 11,
+    "hpEnd": 180,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 32.48333333333149,
+    "damageTaken": 0,
+    "hpEnd": 180,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 34.36666666666472,
+    "damageTaken": 12,
+    "hpEnd": 180,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 43.64999999999961,
+    "damageTaken": 0,
+    "hpEnd": 225,
+    "hpMax": 225,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 45.68333333336969,
+    "damageTaken": 228.99999999999983,
+    "hpEnd": 207,
+    "hpMax": 207,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 32.283333333359025,
+    "damageTaken": 0,
+    "hpEnd": 207,
+    "hpMax": 207,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 50.15000000003138,
+    "damageTaken": 17.357599999999998,
+    "hpEnd": 207,
+    "hpMax": 207,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 35.83333333330074,
+    "damageTaken": 0,
+    "hpEnd": 207,
+    "hpMax": 207,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 37.949999999965485,
+    "damageTaken": 0,
+    "hpEnd": 207,
+    "hpMax": 207,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 32.216666666637366,
+    "damageTaken": 4.8896000000000015,
+    "hpEnd": 207,
+    "hpMax": 207,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 54.733333333283554,
+    "damageTaken": 0,
+    "hpEnd": 307,
+    "hpMax": 307,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 63.44999999994229,
+    "damageTaken": 0,
+    "hpEnd": 307,
+    "hpMax": 307,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 62.66666666660967,
+    "damageTaken": 0,
+    "hpEnd": 307,
+    "hpMax": 307,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 61.3499999999442,
+    "damageTaken": 0,
+    "hpEnd": 307,
+    "hpMax": 307,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 53.24999999995157,
+    "damageTaken": 0,
+    "hpEnd": 307,
+    "hpMax": 307,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 63.466666666608944,
+    "damageTaken": 0,
+    "hpEnd": 324,
+    "hpMax": 324,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 75.23333333326491,
+    "damageTaken": 0,
+    "hpEnd": 324,
+    "hpMax": 324,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 71.49999999993497,
+    "damageTaken": 0,
+    "hpEnd": 369,
+    "hpMax": 369,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 63.66666666660876,
+    "damageTaken": 0,
+    "hpEnd": 369,
+    "hpMax": 369,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 43.133333333294104,
+    "damageTaken": 0,
+    "hpEnd": 407,
+    "hpMax": 407,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 407,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 231,
+  "perfectDodges": 76,
+  "potionsUsed": 2,
+  "errors": []
+ },
+ {
+  "hero": "taro",
+  "skill": 0.6,
+  "seed": 1,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 842,
+  "kills": 1110,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 14.050000000000345,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 31.89999999999819,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 30.249999999998288,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 51.316666666667516,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 69.63333333338875,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 34.15000000002718,
+    "damageTaken": 0,
+    "hpEnd": 316,
+    "hpMax": 316,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 45.34999999998837,
+    "damageTaken": 0,
+    "hpEnd": 285,
+    "hpMax": 285,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 42.46666666662804,
+    "damageTaken": 0,
+    "hpEnd": 285,
+    "hpMax": 285,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 49.04999999995539,
+    "damageTaken": 0,
+    "hpEnd": 285,
+    "hpMax": 285,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 37.88333333329888,
+    "damageTaken": 0,
+    "hpEnd": 285,
+    "hpMax": 285,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 44.21666666662645,
+    "damageTaken": 0,
+    "hpEnd": 348,
+    "hpMax": 348,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 50.58333333328733,
+    "damageTaken": 0,
+    "hpEnd": 348,
+    "hpMax": 348,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 45.249999999958845,
+    "damageTaken": 0,
+    "hpEnd": 348,
+    "hpMax": 348,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 40.24999999996339,
+    "damageTaken": 0,
+    "hpEnd": 348,
+    "hpMax": 348,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 26.916666666642186,
+    "damageTaken": 0,
+    "hpEnd": 348,
+    "hpMax": 348,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 48.783333333288965,
+    "damageTaken": 0,
+    "hpEnd": 348,
+    "hpMax": 348,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 50.48333333328742,
+    "damageTaken": 0,
+    "hpEnd": 348,
+    "hpMax": 348,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 39.949999999963666,
+    "damageTaken": 0,
+    "hpEnd": 327,
+    "hpMax": 327,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 48.883333333288874,
+    "damageTaken": 0,
+    "hpEnd": 327,
+    "hpMax": 327,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 21.849999999980128,
+    "damageTaken": 0,
+    "hpEnd": 370,
+    "hpMax": 370,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 370,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 359,
+  "perfectDodges": 150,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "taro",
+  "skill": 0.6,
+  "seed": 2,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 828,
+  "kills": 1102,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 10.666666666666906,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 29.26666666666522,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 33.86666666666475,
+    "damageTaken": 0,
+    "hpEnd": 253,
+    "hpMax": 253,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 52.566666666666464,
+    "damageTaken": 0,
+    "hpEnd": 253,
+    "hpMax": 253,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 93.73333333340793,
+    "damageTaken": 0,
+    "hpEnd": 241,
+    "hpMax": 253,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 37.616666666682534,
+    "damageTaken": 0,
+    "hpEnd": 351,
+    "hpMax": 351,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 38.99999999996453,
+    "damageTaken": 0,
+    "hpEnd": 351,
+    "hpMax": 351,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 42.583333333294604,
+    "damageTaken": 0,
+    "hpEnd": 351,
+    "hpMax": 351,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 47.249999999957026,
+    "damageTaken": 11.564809999999998,
+    "hpEnd": 351,
+    "hpMax": 351,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 26.18333333330952,
+    "damageTaken": 0,
+    "hpEnd": 351,
+    "hpMax": 351,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 41.33333333329574,
+    "damageTaken": 0,
+    "hpEnd": 351,
+    "hpMax": 351,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 50.94999999995366,
+    "damageTaken": 0,
+    "hpEnd": 351,
+    "hpMax": 351,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 42.98333333329424,
+    "damageTaken": 0,
+    "hpEnd": 351,
+    "hpMax": 351,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 51.36666666661995,
+    "damageTaken": 0,
+    "hpEnd": 351,
+    "hpMax": 351,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 28.16666666664105,
+    "damageTaken": 0,
+    "hpEnd": 366,
+    "hpMax": 366,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 39.183333333297696,
+    "damageTaken": 0,
+    "hpEnd": 366,
+    "hpMax": 366,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 41.033333333296014,
+    "damageTaken": 0,
+    "hpEnd": 366,
+    "hpMax": 366,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 37.5999999999658,
+    "damageTaken": 0,
+    "hpEnd": 366,
+    "hpMax": 366,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 40.949999999962756,
+    "damageTaken": 0,
+    "hpEnd": 366,
+    "hpMax": 366,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 23.066666666645688,
+    "damageTaken": 0,
+    "hpEnd": 366,
+    "hpMax": 366,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 366,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 376,
+  "perfectDodges": 151,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "mei",
+  "skill": 0.6,
+  "seed": 1,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 689,
+  "kills": 1074,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 10.000000000000206,
+    "damageTaken": 7,
+    "hpEnd": 170,
+    "hpMax": 170,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 30.266666666665234,
+    "damageTaken": 35,
+    "hpEnd": 194,
+    "hpMax": 199,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 21.48333333333212,
+    "damageTaken": 57,
+    "hpEnd": 156,
+    "hpMax": 190,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 32.66666666666481,
+    "damageTaken": 155,
+    "hpEnd": 143,
+    "hpMax": 190,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 35.916666666671475,
+    "damageTaken": 150.29166666666688,
+    "hpEnd": 87,
+    "hpMax": 190,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 27.816666666688803,
+    "damageTaken": 0,
+    "hpEnd": 265,
+    "hpMax": 265,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 33.61666666669342,
+    "damageTaken": 0,
+    "hpEnd": 265,
+    "hpMax": 265,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 36.950000000029405,
+    "damageTaken": 0,
+    "hpEnd": 265,
+    "hpMax": 265,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 43.08333333332544,
+    "damageTaken": 0,
+    "hpEnd": 265,
+    "hpMax": 265,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 22.783333333312612,
+    "damageTaken": 0,
+    "hpEnd": 265,
+    "hpMax": 265,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 38.99999999996453,
+    "damageTaken": 0,
+    "hpEnd": 301,
+    "hpMax": 301,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 45.19999999995889,
+    "damageTaken": 0,
+    "hpEnd": 301,
+    "hpMax": 301,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 35.316666666634546,
+    "damageTaken": 0,
+    "hpEnd": 301,
+    "hpMax": 301,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 37.66666666663241,
+    "damageTaken": 12.74,
+    "hpEnd": 301,
+    "hpMax": 301,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 26.08333333330961,
+    "damageTaken": 0,
+    "hpEnd": 301,
+    "hpMax": 301,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 37.966666666632136,
+    "damageTaken": 0,
+    "hpEnd": 301,
+    "hpMax": 301,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 49.649999999954844,
+    "damageTaken": 0,
+    "hpEnd": 334,
+    "hpMax": 334,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 36.199999999967076,
+    "damageTaken": 0,
+    "hpEnd": 334,
+    "hpMax": 334,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 46.19999999995798,
+    "damageTaken": 0,
+    "hpEnd": 334,
+    "hpMax": 334,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 22.183333333313158,
+    "damageTaken": 0,
+    "hpEnd": 357,
+    "hpMax": 357,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 357,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 215,
+  "perfectDodges": 89,
+  "potionsUsed": 3,
+  "errors": []
+ },
+ {
+  "hero": "taro",
+  "skill": 0.6,
+  "seed": 3,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 869,
+  "kills": 1132,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 13.950000000000351,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 22.916666666665368,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 23.749999999998657,
+    "damageTaken": 0,
+    "hpEnd": 252,
+    "hpMax": 252,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 41.949999999997615,
+    "damageTaken": 0,
+    "hpEnd": 242,
+    "hpMax": 251,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 47.666666666687775,
+    "damageTaken": 0,
+    "hpEnd": 251,
+    "hpMax": 251,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 35.15000000002797,
+    "damageTaken": 0,
+    "hpEnd": 319,
+    "hpMax": 319,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 44.93333333336909,
+    "damageTaken": 0,
+    "hpEnd": 287,
+    "hpMax": 319,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 44.36666666665624,
+    "damageTaken": 0,
+    "hpEnd": 319,
+    "hpMax": 319,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 47.4999999999568,
+    "damageTaken": 0,
+    "hpEnd": 319,
+    "hpMax": 319,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 33.83333333330256,
+    "damageTaken": 8,
+    "hpEnd": 319,
+    "hpMax": 319,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 49.08333333328869,
+    "damageTaken": 0,
+    "hpEnd": 319,
+    "hpMax": 319,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 60.03333333327873,
+    "damageTaken": 4,
+    "hpEnd": 319,
+    "hpMax": 319,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 46.28333333329124,
+    "damageTaken": 0,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 54.199999999950705,
+    "damageTaken": 7.759999999999941,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 29.633333333306382,
+    "damageTaken": 0.6100000000000012,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 49.41666666662172,
+    "damageTaken": 0,
+    "hpEnd": 423,
+    "hpMax": 423,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 50.46666666662077,
+    "damageTaken": 0,
+    "hpEnd": 423,
+    "hpMax": 423,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 53.5833333332846,
+    "damageTaken": 0,
+    "hpEnd": 423,
+    "hpMax": 423,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 56.3333333332821,
+    "damageTaken": 0,
+    "hpEnd": 423,
+    "hpMax": 423,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 45.18333333329224,
+    "damageTaken": 0,
+    "hpEnd": 423,
+    "hpMax": 423,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 493,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 397,
+  "perfectDodges": 165,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "mei",
+  "skill": 0.6,
+  "seed": 2,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 694,
+  "kills": 1074,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 12.116666666666978,
+    "damageTaken": 5,
+    "hpEnd": 170,
+    "hpMax": 170,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 16.249999999999133,
+    "damageTaken": 28,
+    "hpEnd": 182,
+    "hpMax": 183,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 23.63333333333199,
+    "damageTaken": 47,
+    "hpEnd": 183,
+    "hpMax": 183,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 32.03333333333152,
+    "damageTaken": 167,
+    "hpEnd": 93,
+    "hpMax": 183,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 32.96666666666479,
+    "damageTaken": 155.99999999999986,
+    "hpEnd": 183,
+    "hpMax": 183,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 29.71666666668648,
+    "damageTaken": 6,
+    "hpEnd": 290,
+    "hpMax": 290,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 37.63333333336328,
+    "damageTaken": 1.22356,
+    "hpEnd": 290,
+    "hpMax": 290,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 36.633333333362486,
+    "damageTaken": 0,
+    "hpEnd": 340,
+    "hpMax": 340,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 46.133333333335855,
+    "damageTaken": 1.4300000000000002,
+    "hpEnd": 340,
+    "hpMax": 340,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 28.71666666664055,
+    "damageTaken": 13.394999999999955,
+    "hpEnd": 342,
+    "hpMax": 342,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 50.433333333287464,
+    "damageTaken": 0,
+    "hpEnd": 342,
+    "hpMax": 342,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 41.43333333329565,
+    "damageTaken": 0,
+    "hpEnd": 342,
+    "hpMax": 342,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 46.86666666662404,
+    "damageTaken": 11.630000000000024,
+    "hpEnd": 292,
+    "hpMax": 292,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 40.21666666663009,
+    "damageTaken": 0,
+    "hpEnd": 292,
+    "hpMax": 292,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 23.233333333312203,
+    "damageTaken": 0,
+    "hpEnd": 292,
+    "hpMax": 292,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 36.183333333300425,
+    "damageTaken": 0,
+    "hpEnd": 327,
+    "hpMax": 327,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 37.13333333329956,
+    "damageTaken": 0,
+    "hpEnd": 327,
+    "hpMax": 327,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 38.0833333332987,
+    "damageTaken": 0,
+    "hpEnd": 327,
+    "hpMax": 327,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 43.49999999996044,
+    "damageTaken": 0,
+    "hpEnd": 327,
+    "hpMax": 327,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 21.816666666646825,
+    "damageTaken": 0,
+    "hpEnd": 327,
+    "hpMax": 327,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 380,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 241,
+  "perfectDodges": 99,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "mei",
+  "skill": 0.6,
+  "seed": 3,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 731,
+  "kills": 1104,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 10.866666666666916,
+    "damageTaken": 17,
+    "hpEnd": 170,
+    "hpMax": 170,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 21.416666666665645,
+    "damageTaken": 70,
+    "hpEnd": 117,
+    "hpMax": 170,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 22.49999999999872,
+    "damageTaken": 39,
+    "hpEnd": 104,
+    "hpMax": 170,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 29.133333333331684,
+    "damageTaken": 105,
+    "hpEnd": 124,
+    "hpMax": 170,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 34.93333333333135,
+    "damageTaken": 130,
+    "hpEnd": 130,
+    "hpMax": 200,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 33.51666666669108,
+    "damageTaken": 49,
+    "hpEnd": 140,
+    "hpMax": 247,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 38.75000000003084,
+    "damageTaken": 155,
+    "hpEnd": 62,
+    "hpMax": 247,
+    "potionsLeft": 0,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 36.633333333362486,
+    "damageTaken": 89,
+    "hpEnd": 271,
+    "hpMax": 271,
+    "potionsLeft": 0,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 40.383333333329546,
+    "damageTaken": 0,
+    "hpEnd": 271,
+    "hpMax": 271,
+    "potionsLeft": 0,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 22.066666666646597,
+    "damageTaken": 0,
+    "hpEnd": 271,
+    "hpMax": 271,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 41.21666666662918,
+    "damageTaken": 0,
+    "hpEnd": 363,
+    "hpMax": 363,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 58.833333333279825,
+    "damageTaken": 0,
+    "hpEnd": 363,
+    "hpMax": 363,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 48.09999999995625,
+    "damageTaken": 0,
+    "hpEnd": 371,
+    "hpMax": 371,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 46.71666666662418,
+    "damageTaken": 0,
+    "hpEnd": 345,
+    "hpMax": 345,
+    "potionsLeft": 1,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 32.11666666663746,
+    "damageTaken": 0,
+    "hpEnd": 345,
+    "hpMax": 345,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 40.18333333329679,
+    "damageTaken": 0,
+    "hpEnd": 345,
+    "hpMax": 345,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 53.316666666618175,
+    "damageTaken": 0,
+    "hpEnd": 345,
+    "hpMax": 345,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 44.699999999959346,
+    "damageTaken": 0,
+    "hpEnd": 345,
+    "hpMax": 345,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 37.5999999999658,
+    "damageTaken": 0,
+    "hpEnd": 345,
+    "hpMax": 345,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 19.466666666648962,
+    "damageTaken": 0,
+    "hpEnd": 430,
+    "hpMax": 430,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 430,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 243,
+  "perfectDodges": 108,
+  "potionsUsed": 4,
+  "errors": []
+ },
+ {
+  "hero": "sena",
+  "skill": 0.6,
+  "seed": 1,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 1065,
+  "kills": 1184,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 13.000000000000355,
+    "damageTaken": 0,
+    "hpEnd": 160,
+    "hpMax": 160,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 22.499999999998725,
+    "damageTaken": 0,
+    "hpEnd": 160,
+    "hpMax": 160,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 33.24999999999812,
+    "damageTaken": 0,
+    "hpEnd": 200,
+    "hpMax": 200,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 49.583333333330515,
+    "damageTaken": 0,
+    "hpEnd": 200,
+    "hpMax": 200,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 55.850000000041064,
+    "damageTaken": 0,
+    "hpEnd": 200,
+    "hpMax": 200,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 36.00000000002865,
+    "damageTaken": 0,
+    "hpEnd": 203,
+    "hpMax": 203,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 43.516666666692714,
+    "damageTaken": 114,
+    "hpEnd": 203,
+    "hpMax": 203,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 52.49999999995225,
+    "damageTaken": 151,
+    "hpEnd": 203,
+    "hpMax": 203,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 59.01666666661299,
+    "damageTaken": 85,
+    "hpEnd": 203,
+    "hpMax": 203,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 49.63333333328819,
+    "damageTaken": 12.760000000000002,
+    "hpEnd": 203,
+    "hpMax": 203,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 63.61666666660881,
+    "damageTaken": 5,
+    "hpEnd": 267,
+    "hpMax": 267,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 82.3499999999251,
+    "damageTaken": 0,
+    "hpEnd": 267,
+    "hpMax": 267,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 71.61666666660153,
+    "damageTaken": 0,
+    "hpEnd": 313,
+    "hpMax": 313,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 97.36666666657811,
+    "damageTaken": 0,
+    "hpEnd": 313,
+    "hpMax": 313,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 57.09999999994807,
+    "damageTaken": 20,
+    "hpEnd": 267,
+    "hpMax": 267,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 46.59999999995762,
+    "damageTaken": 0,
+    "hpEnd": 267,
+    "hpMax": 267,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 48.24999999995612,
+    "damageTaken": 28,
+    "hpEnd": 267,
+    "hpMax": 267,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 69.48333333327014,
+    "damageTaken": 0,
+    "hpEnd": 305,
+    "hpMax": 305,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 53.71666666661781,
+    "damageTaken": 0,
+    "hpEnd": 305,
+    "hpMax": 305,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 40.93333333329622,
+    "damageTaken": 28,
+    "hpEnd": 305,
+    "hpMax": 305,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 305,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 272,
+  "perfectDodges": 64,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "sena",
+  "skill": 0.6,
+  "seed": 2,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 1035,
+  "kills": 1200,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 13.250000000000368,
+    "damageTaken": 0,
+    "hpEnd": 160,
+    "hpMax": 160,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 20.983333333332144,
+    "damageTaken": 0,
+    "hpEnd": 160,
+    "hpMax": 160,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 24.583333333331936,
+    "damageTaken": 12,
+    "hpEnd": 178,
+    "hpMax": 178,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 39.31666666666444,
+    "damageTaken": 0,
+    "hpEnd": 199,
+    "hpMax": 199,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 45.583333333349,
+    "damageTaken": 168,
+    "hpEnd": 199,
+    "hpMax": 199,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 45.78333333336977,
+    "damageTaken": 11,
+    "hpEnd": 267,
+    "hpMax": 267,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 50.31666666670671,
+    "damageTaken": 48,
+    "hpEnd": 267,
+    "hpMax": 267,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 61.19999999995807,
+    "damageTaken": 42,
+    "hpEnd": 267,
+    "hpMax": 267,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 77.79999999992924,
+    "damageTaken": 123,
+    "hpEnd": 267,
+    "hpMax": 267,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 60.64999999994484,
+    "damageTaken": 157,
+    "hpEnd": 267,
+    "hpMax": 267,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 45.899999999958254,
+    "damageTaken": 29,
+    "hpEnd": 281,
+    "hpMax": 281,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 61.88333333327705,
+    "damageTaken": 0,
+    "hpEnd": 281,
+    "hpMax": 281,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 55.299999999949705,
+    "damageTaken": 0,
+    "hpEnd": 281,
+    "hpMax": 281,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 68.48333333327105,
+    "damageTaken": 0,
+    "hpEnd": 281,
+    "hpMax": 281,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 45.2999999999588,
+    "damageTaken": 0,
+    "hpEnd": 281,
+    "hpMax": 281,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 54.23333333328401,
+    "damageTaken": 0,
+    "hpEnd": 326,
+    "hpMax": 326,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 69.48333333327014,
+    "damageTaken": 0,
+    "hpEnd": 326,
+    "hpMax": 326,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 78.93333333326154,
+    "damageTaken": 0,
+    "hpEnd": 326,
+    "hpMax": 326,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 52.61666666661881,
+    "damageTaken": 0,
+    "hpEnd": 384,
+    "hpMax": 384,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 43.783333333293626,
+    "damageTaken": 0,
+    "hpEnd": 384,
+    "hpMax": 384,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 384,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 309,
+  "perfectDodges": 76,
+  "potionsUsed": 2,
+  "errors": []
+ },
+ {
+  "hero": "sena",
+  "skill": 0.6,
+  "seed": 3,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 921,
+  "kills": 1144,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 13.183333333333698,
+    "damageTaken": 0,
+    "hpEnd": 160,
+    "hpMax": 160,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 25.883333333331866,
+    "damageTaken": 23,
+    "hpEnd": 176,
+    "hpMax": 215,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 31.783333333331534,
+    "damageTaken": 0,
+    "hpEnd": 159,
+    "hpMax": 247,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 64.41666666667338,
+    "damageTaken": 60,
+    "hpEnd": 136,
+    "hpMax": 247,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 62.7833333333833,
+    "damageTaken": 71,
+    "hpEnd": 247,
+    "hpMax": 247,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 41.15000000003275,
+    "damageTaken": 14,
+    "hpEnd": 215,
+    "hpMax": 215,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 42.83333333331052,
+    "damageTaken": 24.999999999999993,
+    "hpEnd": 215,
+    "hpMax": 215,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 42.63333333329456,
+    "damageTaken": 1.4982499999999952,
+    "hpEnd": 215,
+    "hpMax": 215,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 43.98333333329333,
+    "damageTaken": 0,
+    "hpEnd": 215,
+    "hpMax": 215,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 47.54999999995675,
+    "damageTaken": 8.202,
+    "hpEnd": 215,
+    "hpMax": 215,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 42.599999999961256,
+    "damageTaken": 4.4,
+    "hpEnd": 215,
+    "hpMax": 215,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 46.566666666624315,
+    "damageTaken": 0,
+    "hpEnd": 249,
+    "hpMax": 249,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 35.21666666663464,
+    "damageTaken": 4.3069999999999995,
+    "hpEnd": 251,
+    "hpMax": 251,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 45.09999999995898,
+    "damageTaken": 0,
+    "hpEnd": 251,
+    "hpMax": 251,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 47.03333333329056,
+    "damageTaken": 0,
+    "hpEnd": 251,
+    "hpMax": 251,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 56.81666666661499,
+    "damageTaken": 0,
+    "hpEnd": 324,
+    "hpMax": 324,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 52.083333333285964,
+    "damageTaken": 23,
+    "hpEnd": 324,
+    "hpMax": 324,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 63.5166666666089,
+    "damageTaken": 12,
+    "hpEnd": 324,
+    "hpMax": 324,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 58.88333333327978,
+    "damageTaken": 0,
+    "hpEnd": 324,
+    "hpMax": 324,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 37.716666666632364,
+    "damageTaken": 0,
+    "hpEnd": 324,
+    "hpMax": 324,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 324,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 222,
+  "perfectDodges": 42,
+  "potionsUsed": 2,
+  "errors": []
+ },
+ {
+  "hero": "ren",
+  "skill": 0.6,
+  "seed": 1,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 1022,
+  "kills": 1184,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 15.816666666666912,
+    "damageTaken": 0,
+    "hpEnd": 180,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 26.01666666666519,
+    "damageTaken": 0,
+    "hpEnd": 180,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 26.749999999998487,
+    "damageTaken": 0,
+    "hpEnd": 202,
+    "hpMax": 202,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 38.98333333333112,
+    "damageTaken": 6,
+    "hpEnd": 212,
+    "hpMax": 212,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 44.48333333335617,
+    "damageTaken": 120,
+    "hpEnd": 211,
+    "hpMax": 212,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 34.416666666694056,
+    "damageTaken": 28,
+    "hpEnd": 305,
+    "hpMax": 305,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 48.10000000003828,
+    "damageTaken": 0,
+    "hpEnd": 305,
+    "hpMax": 305,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 49.69999999997748,
+    "damageTaken": 0,
+    "hpEnd": 305,
+    "hpMax": 305,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 60.88333333327796,
+    "damageTaken": 0,
+    "hpEnd": 305,
+    "hpMax": 305,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 35.733333333300834,
+    "damageTaken": 0,
+    "hpEnd": 305,
+    "hpMax": 305,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 53.24999999995157,
+    "damageTaken": 0,
+    "hpEnd": 344,
+    "hpMax": 344,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 55.416666666616266,
+    "damageTaken": 0,
+    "hpEnd": 349,
+    "hpMax": 349,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 46.26666666662459,
+    "damageTaken": 0,
+    "hpEnd": 307,
+    "hpMax": 307,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 74.86666666659858,
+    "damageTaken": 0,
+    "hpEnd": 353,
+    "hpMax": 353,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 39.2499999999643,
+    "damageTaken": 0,
+    "hpEnd": 353,
+    "hpMax": 353,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 65.49999999994043,
+    "damageTaken": 0,
+    "hpEnd": 353,
+    "hpMax": 353,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 76.86666666659676,
+    "damageTaken": 0,
+    "hpEnd": 353,
+    "hpMax": 353,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 73.31666666659999,
+    "damageTaken": 0,
+    "hpEnd": 353,
+    "hpMax": 353,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 82.29999999992515,
+    "damageTaken": 0,
+    "hpEnd": 353,
+    "hpMax": 353,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 54.78333333328351,
+    "damageTaken": 0,
+    "hpEnd": 390,
+    "hpMax": 390,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 390,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 227,
+  "perfectDodges": 52,
+  "potionsUsed": 1,
+  "errors": []
+ },
+ {
+  "hero": "ren",
+  "skill": 0.6,
+  "seed": 2,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 836,
+  "kills": 1132,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 12.83333333333368,
+    "damageTaken": 0,
+    "hpEnd": 180,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 19.783333333332212,
+    "damageTaken": 0,
+    "hpEnd": 171,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 25.533333333331882,
+    "damageTaken": 0,
+    "hpEnd": 153,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 37.08333333333123,
+    "damageTaken": 36,
+    "hpEnd": 169,
+    "hpMax": 208,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 40.18333333334223,
+    "damageTaken": 126,
+    "hpEnd": 182,
+    "hpMax": 208,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 28.43333333335596,
+    "damageTaken": 38,
+    "hpEnd": 208,
+    "hpMax": 208,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 38.76666666669752,
+    "damageTaken": 57,
+    "hpEnd": 235,
+    "hpMax": 235,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 36.800000000029286,
+    "damageTaken": 0,
+    "hpEnd": 235,
+    "hpMax": 235,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 44.01666666663968,
+    "damageTaken": 0,
+    "hpEnd": 260,
+    "hpMax": 260,
+    "potionsLeft": 2,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 31.36666666663814,
+    "damageTaken": 0,
+    "hpEnd": 273,
+    "hpMax": 273,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 46.116666666624724,
+    "damageTaken": 0,
+    "hpEnd": 273,
+    "hpMax": 273,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 48.14999999995621,
+    "damageTaken": 0,
+    "hpEnd": 273,
+    "hpMax": 273,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 57.716666666614174,
+    "damageTaken": 0,
+    "hpEnd": 273,
+    "hpMax": 273,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 66.46666666660622,
+    "damageTaken": 0,
+    "hpEnd": 362,
+    "hpMax": 362,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 32.71666666663691,
+    "damageTaken": 0,
+    "hpEnd": 362,
+    "hpMax": 362,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 40.949999999962756,
+    "damageTaken": 0,
+    "hpEnd": 355,
+    "hpMax": 355,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 63.73333333327537,
+    "damageTaken": 0,
+    "hpEnd": 355,
+    "hpMax": 355,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 51.18333333328678,
+    "damageTaken": 0,
+    "hpEnd": 355,
+    "hpMax": 355,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 60.066666666612036,
+    "damageTaken": 0,
+    "hpEnd": 355,
+    "hpMax": 355,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 34.68333333330179,
+    "damageTaken": 0,
+    "hpEnd": 364,
+    "hpMax": 364,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 364,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 146,
+  "perfectDodges": 36,
+  "potionsUsed": 2,
+  "errors": []
+ },
+ {
+  "hero": "ren",
+  "skill": 0.6,
+  "seed": 3,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 884,
+  "kills": 1162,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 11.400000000000276,
+    "damageTaken": 0,
+    "hpEnd": 198,
+    "hpMax": 198,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 33.116666666664926,
+    "damageTaken": 0,
+    "hpEnd": 198,
+    "hpMax": 198,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 36.74999999999792,
+    "damageTaken": 0,
+    "hpEnd": 198,
+    "hpMax": 198,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 49.016666666670005,
+    "damageTaken": 0,
+    "hpEnd": 183,
+    "hpMax": 198,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 35.03333333336121,
+    "damageTaken": 0,
+    "hpEnd": 198,
+    "hpMax": 198,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 33.18333333335974,
+    "damageTaken": 0,
+    "hpEnd": 249,
+    "hpMax": 249,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 39.81666666669835,
+    "damageTaken": 25,
+    "hpEnd": 249,
+    "hpMax": 249,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 47.19999999997336,
+    "damageTaken": 0,
+    "hpEnd": 249,
+    "hpMax": 249,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 44.49999999995953,
+    "damageTaken": 39.42606,
+    "hpEnd": 249,
+    "hpMax": 249,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 32.616666666637,
+    "damageTaken": 21.83396,
+    "hpEnd": 249,
+    "hpMax": 249,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 63.33333333327573,
+    "damageTaken": 9.46425,
+    "hpEnd": 279,
+    "hpMax": 279,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 54.99999999994998,
+    "damageTaken": 0,
+    "hpEnd": 279,
+    "hpMax": 279,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 56.083333333282326,
+    "damageTaken": 0,
+    "hpEnd": 279,
+    "hpMax": 279,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 59.13333333327955,
+    "damageTaken": 0,
+    "hpEnd": 301,
+    "hpMax": 301,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 40.283333333296696,
+    "damageTaken": 0,
+    "hpEnd": 301,
+    "hpMax": 301,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 45.783333333291694,
+    "damageTaken": 0,
+    "hpEnd": 419,
+    "hpMax": 419,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 44.583333333292785,
+    "damageTaken": 0,
+    "hpEnd": 419,
+    "hpMax": 419,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 51.61666666661972,
+    "damageTaken": 0,
+    "hpEnd": 419,
+    "hpMax": 419,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 50.39999999995416,
+    "damageTaken": 0,
+    "hpEnd": 419,
+    "hpMax": 419,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 36.01666666663391,
+    "damageTaken": 0,
+    "hpEnd": 419,
+    "hpMax": 419,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 419,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 239,
+  "perfectDodges": 65,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "taro",
+  "skill": 0.9,
+  "seed": 1,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 941,
+  "kills": 1166,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 14.73333333333364,
+    "damageTaken": 0,
+    "hpEnd": 276,
+    "hpMax": 276,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 34.73333333333136,
+    "damageTaken": 0,
+    "hpEnd": 276,
+    "hpMax": 276,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 43.21666666666422,
+    "damageTaken": 0,
+    "hpEnd": 283,
+    "hpMax": 283,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 48.65000000001278,
+    "damageTaken": 0,
+    "hpEnd": 272,
+    "hpMax": 283,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 33.83333333336026,
+    "damageTaken": 0,
+    "hpEnd": 283,
+    "hpMax": 283,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 36.966666666696085,
+    "damageTaken": 0,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 41.11666666669157,
+    "damageTaken": 0,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 41.833333333295286,
+    "damageTaken": 0,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 50.316666666620904,
+    "damageTaken": 0,
+    "hpEnd": 339,
+    "hpMax": 339,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 37.99999999996544,
+    "damageTaken": 0,
+    "hpEnd": 339,
+    "hpMax": 339,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 43.18333333329406,
+    "damageTaken": 0,
+    "hpEnd": 339,
+    "hpMax": 339,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 43.74999999996021,
+    "damageTaken": 0,
+    "hpEnd": 360,
+    "hpMax": 360,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 64.96666666660758,
+    "damageTaken": 0,
+    "hpEnd": 360,
+    "hpMax": 360,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 67.06666666660567,
+    "damageTaken": 0,
+    "hpEnd": 360,
+    "hpMax": 360,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 52.28333333328578,
+    "damageTaken": 0,
+    "hpEnd": 437,
+    "hpMax": 437,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 52.69999999995207,
+    "damageTaken": 0,
+    "hpEnd": 437,
+    "hpMax": 437,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 61.699999999943884,
+    "damageTaken": 0,
+    "hpEnd": 437,
+    "hpMax": 437,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 52.099999999952615,
+    "damageTaken": 0,
+    "hpEnd": 437,
+    "hpMax": 437,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 55.04999999994993,
+    "damageTaken": 0,
+    "hpEnd": 437,
+    "hpMax": 437,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 45.76666666662504,
+    "damageTaken": 0,
+    "hpEnd": 437,
+    "hpMax": 437,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 459,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 519,
+  "perfectDodges": 216,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "taro",
+  "skill": 0.9,
+  "seed": 2,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 786,
+  "kills": 1096,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 13.633333333333702,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 32.01666666666485,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 28.18333333333174,
+    "damageTaken": 0,
+    "hpEnd": 220,
+    "hpMax": 230,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 35.149999999998,
+    "damageTaken": 0,
+    "hpEnd": 265,
+    "hpMax": 265,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 46.20000000002541,
+    "damageTaken": 0,
+    "hpEnd": 265,
+    "hpMax": 265,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 30.483333333357592,
+    "damageTaken": 0,
+    "hpEnd": 299,
+    "hpMax": 299,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 39.683333333364914,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 299,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 38.633333333336594,
+    "damageTaken": 0,
+    "hpEnd": 267,
+    "hpMax": 267,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 37.91666666663218,
+    "damageTaken": 0,
+    "hpEnd": 267,
+    "hpMax": 267,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 33.46666666663623,
+    "damageTaken": 0,
+    "hpEnd": 267,
+    "hpMax": 267,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 42.383333333294786,
+    "damageTaken": 0,
+    "hpEnd": 267,
+    "hpMax": 267,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 52.03333333328601,
+    "damageTaken": 0,
+    "hpEnd": 262,
+    "hpMax": 267,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 43.71666666662691,
+    "damageTaken": 1.344879999999852,
+    "hpEnd": 267,
+    "hpMax": 267,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 46.683333333290875,
+    "damageTaken": 0,
+    "hpEnd": 301,
+    "hpMax": 301,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 30.04999999997267,
+    "damageTaken": 0,
+    "hpEnd": 301,
+    "hpMax": 301,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 38.23333333329856,
+    "damageTaken": 5.456666666666656,
+    "hpEnd": 326,
+    "hpMax": 326,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 58.14999999994711,
+    "damageTaken": 14.999999999999979,
+    "hpEnd": 326,
+    "hpMax": 326,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 47.81666666662318,
+    "damageTaken": 16.999999999999986,
+    "hpEnd": 326,
+    "hpMax": 326,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 46.116666666624724,
+    "damageTaken": 0,
+    "hpEnd": 404,
+    "hpMax": 404,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 25.9833333333097,
+    "damageTaken": 0,
+    "hpEnd": 404,
+    "hpMax": 404,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 404,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 395,
+  "perfectDodges": 139,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "taro",
+  "skill": 0.9,
+  "seed": 3,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 788,
+  "kills": 1108,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 12.10000000000031,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 30.26666666666501,
+    "damageTaken": 0,
+    "hpEnd": 251,
+    "hpMax": 251,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 31.766666666664868,
+    "damageTaken": 0,
+    "hpEnd": 251,
+    "hpMax": 251,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 42.89999999999756,
+    "damageTaken": 0,
+    "hpEnd": 255,
+    "hpMax": 255,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 51.80000000003673,
+    "damageTaken": 0,
+    "hpEnd": 255,
+    "hpMax": 255,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 36.16666666669545,
+    "damageTaken": 0,
+    "hpEnd": 326,
+    "hpMax": 326,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 53.583333333359064,
+    "damageTaken": 0,
+    "hpEnd": 326,
+    "hpMax": 326,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 45.2999999999588,
+    "damageTaken": 0,
+    "hpEnd": 326,
+    "hpMax": 326,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 48.38333333328933,
+    "damageTaken": 0,
+    "hpEnd": 326,
+    "hpMax": 326,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 36.09999999996717,
+    "damageTaken": 0,
+    "hpEnd": 326,
+    "hpMax": 326,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 35.78333333330079,
+    "damageTaken": 0,
+    "hpEnd": 326,
+    "hpMax": 326,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 44.683333333292694,
+    "damageTaken": 0,
+    "hpEnd": 326,
+    "hpMax": 326,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 34.983333333301516,
+    "damageTaken": 0,
+    "hpEnd": 326,
+    "hpMax": 326,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 44.11666666662654,
+    "damageTaken": 0,
+    "hpEnd": 326,
+    "hpMax": 326,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 26.74999999997567,
+    "damageTaken": 0,
+    "hpEnd": 326,
+    "hpMax": 326,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 48.0499999999563,
+    "damageTaken": 0,
+    "hpEnd": 311,
+    "hpMax": 311,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 45.3333333332921,
+    "damageTaken": 0,
+    "hpEnd": 311,
+    "hpMax": 311,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 36.733333333299925,
+    "damageTaken": 0,
+    "hpEnd": 311,
+    "hpMax": 311,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 41.599999999962165,
+    "damageTaken": 0,
+    "hpEnd": 311,
+    "hpMax": 311,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 22.31666666664637,
+    "damageTaken": 0,
+    "hpEnd": 311,
+    "hpMax": 311,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 311,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 383,
+  "perfectDodges": 150,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "mei",
+  "skill": 0.9,
+  "seed": 1,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 688,
+  "kills": 1092,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 12.516666666666998,
+    "damageTaken": 8,
+    "hpEnd": 190,
+    "hpMax": 190,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 20.2833333333322,
+    "damageTaken": 11,
+    "hpEnd": 190,
+    "hpMax": 190,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 23.333333333332007,
+    "damageTaken": 36,
+    "hpEnd": 190,
+    "hpMax": 190,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 29.93333333333164,
+    "damageTaken": 52,
+    "hpEnd": 190,
+    "hpMax": 190,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 22.96666666666536,
+    "damageTaken": 78,
+    "hpEnd": 256,
+    "hpMax": 256,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 26.35000000001034,
+    "damageTaken": 34,
+    "hpEnd": 256,
+    "hpMax": 256,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 39.350000000031315,
+    "damageTaken": 73,
+    "hpEnd": 256,
+    "hpMax": 256,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 40.98333333336595,
+    "damageTaken": 34,
+    "hpEnd": 256,
+    "hpMax": 256,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 45.1833333333457,
+    "damageTaken": 0,
+    "hpEnd": 256,
+    "hpMax": 256,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 23.86666666664496,
+    "damageTaken": 0,
+    "hpEnd": 256,
+    "hpMax": 256,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 39.09999999996444,
+    "damageTaken": 0,
+    "hpEnd": 256,
+    "hpMax": 256,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 48.53333333328919,
+    "damageTaken": 0,
+    "hpEnd": 305,
+    "hpMax": 305,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 42.43333333329474,
+    "damageTaken": 0,
+    "hpEnd": 305,
+    "hpMax": 305,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 45.96666666662486,
+    "damageTaken": 0,
+    "hpEnd": 305,
+    "hpMax": 305,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 28.816666666640458,
+    "damageTaken": 0,
+    "hpEnd": 305,
+    "hpMax": 305,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 40.383333333296605,
+    "damageTaken": 0,
+    "hpEnd": 308,
+    "hpMax": 308,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 43.799999999960164,
+    "damageTaken": 0,
+    "hpEnd": 284,
+    "hpMax": 284,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 38.64999999996485,
+    "damageTaken": 0,
+    "hpEnd": 284,
+    "hpMax": 284,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 40.08333333329688,
+    "damageTaken": 0,
+    "hpEnd": 232,
+    "hpMax": 232,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 16.433333333318387,
+    "damageTaken": 0,
+    "hpEnd": 328,
+    "hpMax": 328,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 328,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 257,
+  "perfectDodges": 100,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "mei",
+  "skill": 0.9,
+  "seed": 2,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 678,
+  "kills": 1084,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 14.133333333333674,
+    "damageTaken": 8,
+    "hpEnd": 170,
+    "hpMax": 170,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 20.249999999998852,
+    "damageTaken": 2,
+    "hpEnd": 170,
+    "hpMax": 170,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 20.966666666665475,
+    "damageTaken": 0,
+    "hpEnd": 170,
+    "hpMax": 170,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 35.81666666666464,
+    "damageTaken": 0,
+    "hpEnd": 170,
+    "hpMax": 170,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 27.183333333331788,
+    "damageTaken": 0,
+    "hpEnd": 170,
+    "hpMax": 170,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 28.283333333353156,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 30.76666666669115,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 34.00000000002706,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 41.900000000022715,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 22.733333333312657,
+    "damageTaken": 0,
+    "hpEnd": 230,
+    "hpMax": 230,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 41.11666666662927,
+    "damageTaken": 0,
+    "hpEnd": 288,
+    "hpMax": 288,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 43.96666666662668,
+    "damageTaken": 0,
+    "hpEnd": 288,
+    "hpMax": 288,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 39.833333333297105,
+    "damageTaken": 0,
+    "hpEnd": 288,
+    "hpMax": 288,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 45.249999999958845,
+    "damageTaken": 0,
+    "hpEnd": 326,
+    "hpMax": 326,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 26.366666666642686,
+    "damageTaken": 0,
+    "hpEnd": 326,
+    "hpMax": 326,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 39.31666666663091,
+    "damageTaken": 0,
+    "hpEnd": 288,
+    "hpMax": 288,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 41.54999999996221,
+    "damageTaken": 0,
+    "hpEnd": 288,
+    "hpMax": 288,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 43.483333333293785,
+    "damageTaken": 0,
+    "hpEnd": 288,
+    "hpMax": 288,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 37.166666666632864,
+    "damageTaken": 0,
+    "hpEnd": 288,
+    "hpMax": 288,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 24.583333333310975,
+    "damageTaken": 0,
+    "hpEnd": 288,
+    "hpMax": 288,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 288,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 264,
+  "perfectDodges": 96,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "mei",
+  "skill": 0.9,
+  "seed": 3,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 654,
+  "kills": 1072,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 11.96666666666697,
+    "damageTaken": 10,
+    "hpEnd": 170,
+    "hpMax": 170,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 22.133333333332153,
+    "damageTaken": 5,
+    "hpEnd": 170,
+    "hpMax": 170,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 23.533333333331996,
+    "damageTaken": 9,
+    "hpEnd": 170,
+    "hpMax": 170,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 31.499999999998217,
+    "damageTaken": 61,
+    "hpEnd": 190,
+    "hpMax": 190,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 18.866666666665594,
+    "damageTaken": 52,
+    "hpEnd": 190,
+    "hpMax": 190,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 28.45000000001113,
+    "damageTaken": 27,
+    "hpEnd": 190,
+    "hpMax": 190,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 38.06666666669696,
+    "damageTaken": 32,
+    "hpEnd": 170,
+    "hpMax": 192,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 36.666666666695846,
+    "damageTaken": 42,
+    "hpEnd": 211,
+    "hpMax": 250,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 44.58333333335398,
+    "damageTaken": 116,
+    "hpEnd": 250,
+    "hpMax": 250,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 25.016666666643914,
+    "damageTaken": 71,
+    "hpEnd": 293,
+    "hpMax": 293,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 40.01666666663027,
+    "damageTaken": 0,
+    "hpEnd": 293,
+    "hpMax": 293,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 39.58333333329733,
+    "damageTaken": 0,
+    "hpEnd": 293,
+    "hpMax": 293,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 37.13333333329956,
+    "damageTaken": 0,
+    "hpEnd": 293,
+    "hpMax": 293,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 40.8666666666295,
+    "damageTaken": 0,
+    "hpEnd": 293,
+    "hpMax": 293,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 21.86666666664678,
+    "damageTaken": 0,
+    "hpEnd": 293,
+    "hpMax": 293,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 38.81666666663136,
+    "damageTaken": 0,
+    "hpEnd": 293,
+    "hpMax": 293,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 42.96666666662759,
+    "damageTaken": 0,
+    "hpEnd": 293,
+    "hpMax": 293,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 35.81666666663409,
+    "damageTaken": 0,
+    "hpEnd": 293,
+    "hpMax": 293,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 34.199999999968895,
+    "damageTaken": 0,
+    "hpEnd": 293,
+    "hpMax": 293,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 22.53333333331284,
+    "damageTaken": 0,
+    "hpEnd": 293,
+    "hpMax": 293,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 293,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 220,
+  "perfectDodges": 76,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "sena",
+  "skill": 0.9,
+  "seed": 1,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 1016,
+  "kills": 1154,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 12.76666666666701,
+    "damageTaken": 0,
+    "hpEnd": 160,
+    "hpMax": 160,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 28.566666666665046,
+    "damageTaken": 0,
+    "hpEnd": 160,
+    "hpMax": 160,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 28.616666666665047,
+    "damageTaken": 0,
+    "hpEnd": 160,
+    "hpMax": 160,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 47.14999999999732,
+    "damageTaken": 0,
+    "hpEnd": 160,
+    "hpMax": 160,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 69.86666666671783,
+    "damageTaken": 24,
+    "hpEnd": 219,
+    "hpMax": 219,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 51.86666666670794,
+    "damageTaken": 0,
+    "hpEnd": 219,
+    "hpMax": 219,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 42.399999999978206,
+    "damageTaken": 0,
+    "hpEnd": 219,
+    "hpMax": 219,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 48.31666666662272,
+    "damageTaken": 9.309999999999999,
+    "hpEnd": 219,
+    "hpMax": 219,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 50.8333333332871,
+    "damageTaken": 0,
+    "hpEnd": 219,
+    "hpMax": 219,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 55.616666666616084,
+    "damageTaken": 5.490000000000011,
+    "hpEnd": 219,
+    "hpMax": 219,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 59.19999999994616,
+    "damageTaken": 0,
+    "hpEnd": 219,
+    "hpMax": 219,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 64.71666666660781,
+    "damageTaken": 0,
+    "hpEnd": 251,
+    "hpMax": 251,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 53.766666666617766,
+    "damageTaken": 0,
+    "hpEnd": 251,
+    "hpMax": 251,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 88.49999999991951,
+    "damageTaken": 0,
+    "hpEnd": 251,
+    "hpMax": 251,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 37.33333333329938,
+    "damageTaken": 0,
+    "hpEnd": 251,
+    "hpMax": 251,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 53.83333333328437,
+    "damageTaken": 0,
+    "hpEnd": 252,
+    "hpMax": 252,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 52.93333333328519,
+    "damageTaken": 0,
+    "hpEnd": 252,
+    "hpMax": 252,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 57.09999999994807,
+    "damageTaken": 0,
+    "hpEnd": 252,
+    "hpMax": 252,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 54.44999999995048,
+    "damageTaken": 0,
+    "hpEnd": 252,
+    "hpMax": 252,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 39.14999999996439,
+    "damageTaken": 0,
+    "hpEnd": 252,
+    "hpMax": 252,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 252,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 314,
+  "perfectDodges": 88,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "sena",
+  "skill": 0.9,
+  "seed": 2,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 1044,
+  "kills": 1180,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 12.566666666667,
+    "damageTaken": 0,
+    "hpEnd": 160,
+    "hpMax": 160,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 27.2333333333318,
+    "damageTaken": 0,
+    "hpEnd": 177,
+    "hpMax": 177,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 31.049999999998242,
+    "damageTaken": 0,
+    "hpEnd": 177,
+    "hpMax": 177,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 46.64999999999735,
+    "damageTaken": 0,
+    "hpEnd": 184,
+    "hpMax": 184,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 41.383333333362174,
+    "damageTaken": 0,
+    "hpEnd": 184,
+    "hpMax": 184,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 33.9666666666937,
+    "damageTaken": 0,
+    "hpEnd": 228,
+    "hpMax": 228,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 43.53333333336798,
+    "damageTaken": 0,
+    "hpEnd": 226,
+    "hpMax": 228,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 44.59999999997902,
+    "damageTaken": 0,
+    "hpEnd": 228,
+    "hpMax": 228,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 54.59999999995034,
+    "damageTaken": 0,
+    "hpEnd": 228,
+    "hpMax": 228,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 59.44999999994593,
+    "damageTaken": 0.3200000000000003,
+    "hpEnd": 228,
+    "hpMax": 228,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 60.98333333327787,
+    "damageTaken": 0,
+    "hpEnd": 228,
+    "hpMax": 228,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 70.43333333326927,
+    "damageTaken": 0,
+    "hpEnd": 228,
+    "hpMax": 228,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 57.299999999947886,
+    "damageTaken": 0,
+    "hpEnd": 228,
+    "hpMax": 228,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 76.18333333326404,
+    "damageTaken": 0,
+    "hpEnd": 228,
+    "hpMax": 228,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 56.34999999994875,
+    "damageTaken": 0,
+    "hpEnd": 228,
+    "hpMax": 228,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 58.183333333280416,
+    "damageTaken": 0,
+    "hpEnd": 350,
+    "hpMax": 350,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 58.98333333327969,
+    "damageTaken": 0,
+    "hpEnd": 350,
+    "hpMax": 350,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 64.76666666660776,
+    "damageTaken": 0,
+    "hpEnd": 350,
+    "hpMax": 350,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 75.24999999993156,
+    "damageTaken": 0,
+    "hpEnd": 350,
+    "hpMax": 350,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 51.799999999953,
+    "damageTaken": 1.4050000000000011,
+    "hpEnd": 391,
+    "hpMax": 391,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 391,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 345,
+  "perfectDodges": 88,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "sena",
+  "skill": 0.9,
+  "seed": 3,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 1036,
+  "kills": 1182,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 14.283333333333665,
+    "damageTaken": 0,
+    "hpEnd": 207,
+    "hpMax": 207,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 21.449999999998784,
+    "damageTaken": 0,
+    "hpEnd": 180,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 30.31666666666495,
+    "damageTaken": 0,
+    "hpEnd": 180,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 37.96666666666451,
+    "damageTaken": 0,
+    "hpEnd": 180,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 49.51666666669048,
+    "damageTaken": 58,
+    "hpEnd": 166,
+    "hpMax": 180,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 40.10000000003191,
+    "damageTaken": 20,
+    "hpEnd": 236,
+    "hpMax": 270,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 54.26666666670985,
+    "damageTaken": 38,
+    "hpEnd": 171,
+    "hpMax": 270,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 46.3999999999578,
+    "damageTaken": 0,
+    "hpEnd": 231,
+    "hpMax": 287,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 44.93333333329247,
+    "damageTaken": 5,
+    "hpEnd": 255,
+    "hpMax": 287,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 50.41666666662081,
+    "damageTaken": 0,
+    "hpEnd": 287,
+    "hpMax": 287,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 73.71666666659962,
+    "damageTaken": 0,
+    "hpEnd": 270,
+    "hpMax": 270,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 60.51666666661163,
+    "damageTaken": 0,
+    "hpEnd": 270,
+    "hpMax": 270,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 43.89999999996007,
+    "damageTaken": 28,
+    "hpEnd": 270,
+    "hpMax": 270,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 89.11666666658562,
+    "damageTaken": 0,
+    "hpEnd": 270,
+    "hpMax": 270,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 43.98333333329333,
+    "damageTaken": 0,
+    "hpEnd": 270,
+    "hpMax": 270,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 60.66666666661149,
+    "damageTaken": 0,
+    "hpEnd": 311,
+    "hpMax": 311,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 68.34999999993784,
+    "damageTaken": 10,
+    "hpEnd": 311,
+    "hpMax": 311,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 81.43333333325927,
+    "damageTaken": 0,
+    "hpEnd": 311,
+    "hpMax": 311,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 56.833333333281644,
+    "damageTaken": 0,
+    "hpEnd": 311,
+    "hpMax": 311,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 48.38333333328944,
+    "damageTaken": 4.34,
+    "hpEnd": 311,
+    "hpMax": 311,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 311,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 327,
+  "perfectDodges": 72,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "ren",
+  "skill": 0.9,
+  "seed": 1,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 936,
+  "kills": 1148,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 13.116666666667028,
+    "damageTaken": 0,
+    "hpEnd": 180,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 23.483333333332002,
+    "damageTaken": 0,
+    "hpEnd": 180,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 29.69999999999832,
+    "damageTaken": 11,
+    "hpEnd": 232,
+    "hpMax": 232,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 44.61666666666413,
+    "damageTaken": 20,
+    "hpEnd": 200,
+    "hpMax": 226,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 60.6166666667052,
+    "damageTaken": 123,
+    "hpEnd": 192,
+    "hpMax": 226,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 30.366666666690833,
+    "damageTaken": 30,
+    "hpEnd": 212,
+    "hpMax": 263,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 38.75000000003084,
+    "damageTaken": 6,
+    "hpEnd": 245,
+    "hpMax": 263,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 42.98333333330655,
+    "damageTaken": 0,
+    "hpEnd": 263,
+    "hpMax": 263,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 54.89999999995007,
+    "damageTaken": 0,
+    "hpEnd": 273,
+    "hpMax": 273,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 45.366666666625406,
+    "damageTaken": 0,
+    "hpEnd": 273,
+    "hpMax": 273,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 63.08333333327596,
+    "damageTaken": 22.009999999999998,
+    "hpEnd": 273,
+    "hpMax": 273,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 55.64999999994939,
+    "damageTaken": 0,
+    "hpEnd": 277,
+    "hpMax": 277,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 50.59999999995398,
+    "damageTaken": 0,
+    "hpEnd": 277,
+    "hpMax": 277,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 63.66666666660876,
+    "damageTaken": 0,
+    "hpEnd": 277,
+    "hpMax": 277,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 39.66666666663059,
+    "damageTaken": 26,
+    "hpEnd": 277,
+    "hpMax": 277,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 48.06666666662295,
+    "damageTaken": 6,
+    "hpEnd": 277,
+    "hpMax": 277,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 59.56666666661249,
+    "damageTaken": 0,
+    "hpEnd": 295,
+    "hpMax": 295,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 51.649999999953025,
+    "damageTaken": 15.490019999999987,
+    "hpEnd": 295,
+    "hpMax": 295,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 61.73333333327719,
+    "damageTaken": 0,
+    "hpEnd": 295,
+    "hpMax": 295,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 39.066666666631136,
+    "damageTaken": 0,
+    "hpEnd": 307,
+    "hpMax": 307,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 307,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 234,
+  "perfectDodges": 54,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "ren",
+  "skill": 0.9,
+  "seed": 2,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 937,
+  "kills": 1162,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 13.150000000000363,
+    "damageTaken": 0,
+    "hpEnd": 180,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 25.333333333331897,
+    "damageTaken": 0,
+    "hpEnd": 197,
+    "hpMax": 197,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 27.149999999998464,
+    "damageTaken": 0,
+    "hpEnd": 197,
+    "hpMax": 197,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 38.08333333333117,
+    "damageTaken": 16,
+    "hpEnd": 197,
+    "hpMax": 197,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 54.45000000002749,
+    "damageTaken": 0,
+    "hpEnd": 190,
+    "hpMax": 197,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 33.11666666669302,
+    "damageTaken": 0,
+    "hpEnd": 347,
+    "hpMax": 347,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 38.73333333336416,
+    "damageTaken": 0,
+    "hpEnd": 347,
+    "hpMax": 347,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 48.28333333331986,
+    "damageTaken": 0,
+    "hpEnd": 347,
+    "hpMax": 347,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 54.36666666661722,
+    "damageTaken": 0,
+    "hpEnd": 347,
+    "hpMax": 347,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 30.966666666638503,
+    "damageTaken": 0,
+    "hpEnd": 347,
+    "hpMax": 347,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 48.6333333332891,
+    "damageTaken": 0,
+    "hpEnd": 347,
+    "hpMax": 347,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 61.23333333327764,
+    "damageTaken": 0,
+    "hpEnd": 347,
+    "hpMax": 347,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 64.76666666660776,
+    "damageTaken": 12,
+    "hpEnd": 347,
+    "hpMax": 347,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 65.73333333327355,
+    "damageTaken": 15,
+    "hpEnd": 347,
+    "hpMax": 347,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 39.049999999964484,
+    "damageTaken": 0,
+    "hpEnd": 347,
+    "hpMax": 347,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 44.08333333329324,
+    "damageTaken": 0,
+    "hpEnd": 347,
+    "hpMax": 347,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 51.999999999952706,
+    "damageTaken": 0,
+    "hpEnd": 347,
+    "hpMax": 347,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 74.84999999993192,
+    "damageTaken": 0,
+    "hpEnd": 347,
+    "hpMax": 347,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 59.76666666661231,
+    "damageTaken": 0,
+    "hpEnd": 347,
+    "hpMax": 347,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 44.33333333329301,
+    "damageTaken": 15.26809,
+    "hpEnd": 347,
+    "hpMax": 347,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 347,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 237,
+  "perfectDodges": 44,
+  "potionsUsed": 0,
+  "errors": []
+ },
+ {
+  "hero": "ren",
+  "skill": 0.9,
+  "seed": 3,
+  "reached": 21,
+  "cleared": 20,
+  "won": true,
+  "died": false,
+  "time": 1080,
+  "kills": 1192,
+  "waves": [
+   {
+    "wave": 1,
+    "boss": null,
+    "time": 11.9000000000003,
+    "damageTaken": 0,
+    "hpEnd": 180,
+    "hpMax": 180,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 2,
+    "boss": null,
+    "time": 29.61666666666507,
+    "damageTaken": 0,
+    "hpEnd": 200,
+    "hpMax": 200,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 3,
+    "boss": null,
+    "time": 32.44999999999816,
+    "damageTaken": 21,
+    "hpEnd": 200,
+    "hpMax": 200,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 4,
+    "boss": null,
+    "time": 52.21666666666633,
+    "damageTaken": 0,
+    "hpEnd": 200,
+    "hpMax": 200,
+    "potionsLeft": 3,
+    "cleared": true
+   },
+   {
+    "wave": 5,
+    "boss": "captain",
+    "time": 82.11666666673202,
+    "damageTaken": 93,
+    "hpEnd": 200,
+    "hpMax": 200,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 6,
+    "boss": null,
+    "time": 29.666666666690276,
+    "damageTaken": 0,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 7,
+    "boss": null,
+    "time": 50.96666666663856,
+    "damageTaken": 5,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 8,
+    "boss": null,
+    "time": 52.59999999995216,
+    "damageTaken": 0,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 9,
+    "boss": null,
+    "time": 69.31666666660362,
+    "damageTaken": 0,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 4,
+    "cleared": true
+   },
+   {
+    "wave": 10,
+    "boss": "oracle",
+    "time": 46.033333333291466,
+    "damageTaken": 0,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 11,
+    "boss": null,
+    "time": 45.04999999995903,
+    "damageTaken": 0,
+    "hpEnd": 328,
+    "hpMax": 328,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 12,
+    "boss": null,
+    "time": 71.84999999993465,
+    "damageTaken": 0,
+    "hpEnd": 328,
+    "hpMax": 328,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 13,
+    "boss": null,
+    "time": 81.8333333332589,
+    "damageTaken": 0,
+    "hpEnd": 328,
+    "hpMax": 328,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 14,
+    "boss": null,
+    "time": 89.61666666658516,
+    "damageTaken": 0,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 5,
+    "cleared": true
+   },
+   {
+    "wave": 15,
+    "boss": "arbiter",
+    "time": 45.799999999958345,
+    "damageTaken": 0,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 16,
+    "boss": null,
+    "time": 40.51666666662982,
+    "damageTaken": 0,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 17,
+    "boss": null,
+    "time": 72.3833333332675,
+    "damageTaken": 0,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 18,
+    "boss": null,
+    "time": 65.21666666660735,
+    "damageTaken": 0,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 19,
+    "boss": null,
+    "time": 52.74999999995214,
+    "damageTaken": 0,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 6,
+    "cleared": true
+   },
+   {
+    "wave": 20,
+    "boss": "sovereign",
+    "time": 39.29999999996426,
+    "damageTaken": 0,
+    "hpEnd": 300,
+    "hpMax": 300,
+    "potionsLeft": 7,
+    "cleared": true
+   },
+   {
+    "wave": 21,
+    "boss": null,
+    "time": 0,
+    "damageTaken": 0,
+    "hpEnd": 0,
+    "hpMax": 300,
+    "potionsLeft": 0,
+    "cleared": false
+   }
+  ],
+  "deathCause": null,
+  "dodges": 302,
+  "perfectDodges": 87,
+  "potionsUsed": 0,
+  "errors": []
+ }
+]

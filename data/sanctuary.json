@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "notes": "Sanctuaire d'Akar : méta-progression entre les runs. Reprend la clé de profil du prototype (shadow-chronicles-akar-progression-v21) et ses 3 améliorations (endurance, offense, guard) via 'migration'. Voir PROGRESSION.md §5.",
+
+  "currencies": {
+    "eclats":    { "name": "Éclats d'Akar",     "icon": "✦", "color": "#d9ab74", "keptOnDeath": 1.0,
+                   "sources": "Contrats de vague (2 à 5), +1 par vague franchie, boss +10, défi quotidien, succès." },
+    "poussiere": { "name": "Poussière d'étoile", "icon": "✧", "color": "#9ccaff", "keptOnDeath": 1.0,
+                   "sources": "Démantèlement d'objets (voir loot.json salvage). Sert à la Forge." },
+    "sceaux":    { "name": "Sceaux du Juge",    "icon": "♛", "color": "#ea7683", "keptOnDeath": 1.0,
+                   "sources": "1 par boss vaincu pour la première fois dans un niveau de Pacte, 1 par série de 7 défis quotidiens, certains succès. Monnaie rare des déblocages." }
+  },
+
+  "deathPayout": {
+    "desc": "Écran de fin de run : on montre ce qui est gagné AVANT ce qui est perdu, avec un compteur animé et la prochaine amélioration abordable mise en avant.",
+    "eclatsPerWaveReached": 1,
+    "bonusIfNewBestWave": 5,
+    "showNextAffordable": true,
+    "showProgressToNextUnlock": true
+  },
+
+  "buildings": [
+    {
+      "id": "veillee", "name": "La Veillée", "icon": "♥", "currency": "eclats", "unlockedAtStart": true,
+      "desc": "Améliorations permanentes et modestes de toutes les statistiques.",
+      "upgrades": [
+        { "id": "endurance", "name": "Vigueur du Sanctuaire", "icon": "♥", "stat": "maxHpPct",   "perRank": 2,    "maxRank": 5, "cost": [8, 16, 28, 44, 64] },
+        { "id": "offense",   "name": "Tranchant Hérité",      "icon": "⚔", "stat": "atkPct",     "perRank": 2,    "maxRank": 5, "cost": [8, 16, 28, 44, 64] },
+        { "id": "guard",     "name": "Pierre des Veilleurs",  "icon": "◈", "stat": "defPct",     "perRank": 2,    "maxRank": 5, "cost": [8, 16, 28, 44, 64] },
+        { "id": "focus",     "name": "Œil de la Brume",       "icon": "✧", "stat": "crit",       "perRank": 0.01, "maxRank": 5, "cost": [12, 22, 36, 54, 78] },
+        { "id": "wisdom",    "name": "Source Lunaire",        "icon": "☾", "stat": "maxManaPct", "perRank": 3,    "maxRank": 5, "cost": [10, 18, 30, 46, 66] },
+        { "id": "potions",   "name": "Fioles du Sanctuaire",  "icon": "⚗", "stat": "potionCharges", "perRank": 1, "maxRank": 2, "cost": [40, 90] },
+        { "id": "fortune",   "name": "Bourse d'Akar",         "icon": "◉", "stat": "goldFindPct","perRank": 5,    "maxRank": 4, "cost": [14, 26, 42, 62] }
+      ]
+    },
+    {
+      "id": "autel", "name": "Autel des Serments", "icon": "⛨", "currency": "eclats", "unlockedAtStart": true,
+      "desc": "Contrôle les bénédictions : patrons disponibles, choix, relances, chance de rareté.",
+      "startingPatrons": ["veilleurs", "lune", "sang"],
+      "upgrades": [
+        { "id": "patron_orage", "name": "Invoquer l'Orage",        "unlocksPatron": "orage", "maxRank": 1, "cost": [30], "requires": "bestWave>=6" },
+        { "id": "patron_brume", "name": "Pacte Interdit",          "unlocksPatron": "brume", "maxRank": 1, "cost": [2], "currency": "sceaux", "requires": "bossKilled:5" },
+        { "id": "reroll",       "name": "Encens de Relance",       "stat": "blessingRerolls", "perRank": 1, "maxRank": 3, "cost": [20, 45, 80] },
+        { "id": "luck",         "name": "Faveur des Patrons",      "stat": "blessingRarityLuckPct", "perRank": 10, "maxRank": 5, "cost": [18, 32, 50, 72, 100] },
+        { "id": "duo_sight",    "name": "Vision Jumelle",          "stat": "duoOfferChanceAdd", "perRank": 0.1, "maxRank": 2, "cost": [60, 110] },
+        { "id": "start_boon",   "name": "Bénédiction du Seuil",    "desc": "Commence chaque run avec une bénédiction commune au choix parmi 3.", "maxRank": 1, "cost": [70] },
+        { "id": "banish",       "name": "Bannissement",            "stat": "blessingBanishes", "perRank": 1, "maxRank": 2, "cost": [55, 95],
+          "desc": "Retire définitivement (pour la run) une bénédiction des offres." }
+      ]
+    },
+    {
+      "id": "forge", "name": "Forge d'Akar", "icon": "⚒", "currency": "poussiere", "unlockedAtStart": false, "unlockCost": { "eclats": 25 }, "requires": "bestWave>=4",
+      "desc": "Qualité du butin et objets qui survivent à la mort.",
+      "upgrades": [
+        { "id": "quality",   "name": "Feu Ancien",          "stat": "lootRarityLuckPct", "perRank": 8, "maxRank": 5, "cost": [20, 45, 80, 130, 200] },
+        { "id": "heirloom",  "name": "Coffre-Souvenir",     "stat": "heirloomSlots", "perRank": 1, "maxRank": 2, "cost": [120, 260],
+          "desc": "Garde 1 objet (puis 2) entre les runs. Il redescend au niveau d'objet de la vague 1 et remonte avec la run." },
+        { "id": "ancestral", "name": "Braises Ancestrales", "desc": "Débloque la rareté Ancestrale en mode Survie.", "maxRank": 1, "cost": [300], "requires": "legendaryFound>=5" },
+        { "id": "reforge",   "name": "Enclume des Serments","desc": "Au marchand : relancer un affixe d'un objet (coût en or croissant).", "maxRank": 1, "cost": [90] }
+      ]
+    },
+    {
+      "id": "archives", "name": "Archives du Sceau", "icon": "✦", "currency": "eclats", "unlockedAtStart": false, "unlockCost": { "eclats": 40 }, "requires": "runs>=3",
+      "desc": "Savoir et confort : contrats, codex, talents.",
+      "upgrades": [
+        { "id": "contracts",  "name": "Quatrième Contrat",   "desc": "Une offre de contrat supplémentaire avant chaque vague.", "maxRank": 1, "cost": [45] },
+        { "id": "contract_x", "name": "Primes Doublées",     "stat": "contractShardPct", "perRank": 15, "maxRank": 4, "cost": [25, 45, 70, 100] },
+        { "id": "talent_head","name": "Mémoire des Voies",   "desc": "Commence chaque run avec 1 point de talent.", "maxRank": 1, "cost": [80] },
+        { "id": "codex",      "name": "Codex des Brumes",    "desc": "Affiche les effets des bénédictions non découvertes et les synergies possibles dans l'offre.", "maxRank": 1, "cost": [35] },
+        { "id": "route_sight","name": "Cartographe",         "desc": "Révèle les deux routes suivantes au lieu d'une.", "maxRank": 1, "cost": [50] }
+      ]
+    }
+  ],
+
+  "pacts": {
+    "name": "Pactes de la Brume",
+    "desc": "Système de difficulté volontaire (« chaleur ») débloqué après avoir vaincu le boss de la vague 10. Chaque pacte ajoute des points de Brume ; récompenses multipliées et Sceaux pour chaque nouveau palier battu.",
+    "requires": "bossKilled:10",
+    "rewardPerPoint": { "eclatsPct": 6, "lootRarityLuckPct": 3 },
+    "milestones": [ { "points": 5, "reward": { "sceaux": 1, "title": "Voyageur des Brumes" } },
+                    { "points": 10, "reward": { "sceaux": 2, "cosmetic": "aura_brume" } },
+                    { "points": 20, "reward": { "sceaux": 3, "title": "Celui qui ne revient pas" } },
+                    { "points": 32, "reward": { "sceaux": 5, "cosmetic": "skin_eclipse" } } ],
+    "list": [
+      { "id": "p_vigueur",   "name": "Ennemis Endurcis",   "ranks": 3, "pointsPerRank": 1, "effect": "PV ennemis +15 % par rang." },
+      { "id": "p_rage",      "name": "Rage des Exilés",    "ranks": 3, "pointsPerRank": 1, "effect": "ATQ ennemis +10 % par rang." },
+      { "id": "p_nombre",    "name": "Marée Noire",        "ranks": 2, "pointsPerRank": 2, "effect": "+20 % d'ennemis par vague par rang." },
+      { "id": "p_elites",    "name": "Garde Corrompue",    "ranks": 2, "pointsPerRank": 2, "effect": "+1 élite par vague par rang." },
+      { "id": "p_avare",     "name": "Marchand Avare",     "ranks": 2, "pointsPerRank": 1, "effect": "Prix du marchand +25 % par rang." },
+      { "id": "p_pas_soin",  "name": "Feux Éteints",       "ranks": 1, "pointsPerRank": 2, "effect": "La route Sanctuaire ne soigne plus que 15 %." },
+      { "id": "p_failles",   "name": "Lune Brisée",        "ranks": 2, "pointsPerRank": 2, "effect": "Les failles de la route Faille apparaissent dans toutes les vagues (rang 2 : plus fréquentes)." },
+      { "id": "p_boss",      "name": "Jugement Sévère",    "ranks": 2, "pointsPerRank": 3, "effect": "Les boss gagnent une phase supplémentaire (rang 2 : invocations)." },
+      { "id": "p_chrono",    "name": "Sablier",            "ranks": 2, "pointsPerRank": 2, "effect": "Chaque vague doit être finie en 90 s (rang 2 : 70 s), sinon des renforts arrivent." },
+      { "id": "p_benediction","name": "Patrons Silencieux","ranks": 1, "pointsPerRank": 3, "effect": "2 choix de bénédiction au lieu de 3." },
+      { "id": "p_fragile",   "name": "Verre Lunaire",      "ranks": 1, "pointsPerRank": 4, "effect": "Tu subis +35 % de dégâts." }
+    ]
+  },
+
+  "heroMastery": {
+    "desc": "Chaque héros gagne de l'expérience de maîtrise à chaque run (même perdue). Paliers = récompenses cosmétiques et petits avantages propres au héros. Forte motivation à « encore une run avec Mei ».",
+    "xpPerWave": 10, "xpPerBoss": 40, "xpWinBonus": 150,
+    "levels": [
+      { "level": 1,  "xp": 0,    "reward": null },
+      { "level": 2,  "xp": 60,   "reward": { "type": "title", "id": "t_{hero}_novice" } },
+      { "level": 3,  "xp": 160,  "reward": { "type": "stat", "stat": "atkPct", "value": 2 } },
+      { "level": 4,  "xp": 320,  "reward": { "type": "cosmetic", "id": "trail_{hero}" } },
+      { "level": 5,  "xp": 550,  "reward": { "type": "startBlessingAffinity", "desc": "La bénédiction du Seuil propose toujours un patron d'affinité du héros." } },
+      { "level": 6,  "xp": 850,  "reward": { "type": "stat", "stat": "maxHpPct", "value": 3 } },
+      { "level": 7,  "xp": 1250, "reward": { "type": "cosmetic", "id": "skin_{hero}_alt" } },
+      { "level": 8,  "xp": 1750, "reward": { "type": "legendaryBias", "desc": "La légendaire propre au héros est 2× plus fréquente." } },
+      { "level": 9,  "xp": 2400, "reward": { "type": "cosmetic", "id": "portrait_{hero}_gold" } },
+      { "level": 10, "xp": 3200, "reward": { "type": "title", "id": "t_{hero}_legende" } }
+    ]
+  },
+
+  "costCurve": {
+    "desc": "Total pour tout maximiser (hors Pactes) : ~2 480 éclats, ~1 250 poussières, 2 sceaux. Avec ~25 éclats par run moyenne (≈ 8 vagues) puis ~60 en fin de partie, cela représente 50 à 65 runs, soit 18 à 28 h. La première amélioration doit être achetable après la 1re run (8 éclats)."
+  },
+
+  "migration": {
+    "fromKey": "shadow-chronicles-akar-progression-v21",
+    "map": { "shards": "eclats", "levels.endurance": "veillee.endurance", "levels.offense": "veillee.offense", "levels.guard": "veillee.guard", "best": "stats.bestWave", "runs": "stats.runs", "completed": "stats.contractsCompleted" },
+    "badgesKey": "sc-v3-badges",
+    "badgesMap": { "first": "a_premieres_cendres", "chapter": "a_passage_veilleurs", "judge": "a_premier_jugement", "lore": "a_eclat_lune", "depths": "a_profondeurs" }
+  }
+}

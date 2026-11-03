@@ -1,0 +1,57 @@
+# Publie le jeu sur GitHub Pages à chaque push sur main.
+# Réglage unique dans le dépôt : Settings → Pages → Source : « GitHub Actions ».
+# Si le jeu n'est pas à la racine du dépôt, changer GAME_DIR (ex. "game").
+name: Déployer sur GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  GAME_DIR: .
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ${{ env.GAME_DIR }}/package-lock.json
+      - name: Installer
+        working-directory: ${{ env.GAME_DIR }}
+        run: npm ci
+      - name: Tests
+        working-directory: ${{ env.GAME_DIR }}
+        run: npm test
+      - name: Build (types + Vite + service worker)
+        working-directory: ${{ env.GAME_DIR }}
+        run: npm run build
+      - name: Fichier 404 (liens profonds) et désactivation de Jekyll
+        working-directory: ${{ env.GAME_DIR }}
+        run: cp dist/index.html dist/404.html && touch dist/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ env.GAME_DIR }}/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

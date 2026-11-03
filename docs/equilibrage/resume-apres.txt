@@ -1,0 +1,35 @@
+héros  niveau  victoires  vague méd.  durée victoire  morts (cause)
+mei 0.3        1/5        4           14 min          {"ashMage":2,"boss captain p2":1,"boss captain p3":1}
+mei 0.6        3/5        20          15 min          {"wolf":1,"ironRam":1}
+mei 0.9        5/5        20          14 min          {}
+ren 0.3        2/5        12          20 min          {"ashMage":1,"shade":1,"wolf":1}
+ren 0.6        3/5        20          19 min          {"ironRam":1,"shade":1}
+ren 0.9        5/5        20          19 min          {}
+sena 0.3       0/5        6           -               {"boss captain p3":2,"shade":2,"brute":1}
+sena 0.6       2/5        19          21 min          {"frostWraith":1,"boss oracle p3":1,"boss sovereign p3":1}
+sena 0.9       4/5        20          20 min          {"ironRam":1}
+taro 0.3       1/5        17          16 min          {"ashMage":1,"frostWraith":1,"ironRam":1,"voidHerald":1}
+taro 0.6       5/5        20          16 min          {}
+taro 0.9       5/5        20          16 min          {}
+
+vague  durée moy.  dégâts PV (% max)  bouclier absorbé  coups  survie (passé / atteint)
+ 1           13 s       4 %                2 %               2      60/60
+ 2           27 s       10 %               9 %               5      60/60
+ 3           30 s       14 %               9 %               5      60/60
+ 4           40 s       24 %               19 %              9      60/60
+ 5 captain   57 s       47 %               46 %              17     53/60
+ 6           36 s       12 %               20 %              7      53/53
+ 7           45 s       17 %               33 %              10     49/53
+ 8           46 s       18 %               32 %              9      48/49
+ 9           53 s       22 %               41 %              11     44/48
+10 oracle    56 s       27 %               64 %              15     43/44
+11           55 s       22 %               53 %              12     43/43
+12           65 s       25 %               76 %              14     42/43
+13           64 s       25 %               79 %              14     41/42
+14           71 s       37 %               92 %              17     41/41
+15 arbiter   61 s       43 %               79 %              16     41/41
+16           56 s       27 %               69 %              14     40/41
+17           70 s       52 %               99 %              18     40/40
+18           65 s       37 %               90 %              15     39/40
+19           64 s       51 %               98 %              17     38/39
+20 sovereign 60 s       46 %               86 %              17     36/38

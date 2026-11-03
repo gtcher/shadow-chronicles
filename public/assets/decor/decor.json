@@ -1,0 +1,238 @@
+{
+ "ch1": {
+  "pilier": {
+   "image": "decor/ch1/pilier.webp",
+   "w": 200,
+   "h": 380,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "stele": {
+   "image": "decor/ch1/stele.webp",
+   "w": 180,
+   "h": 260,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "gravats": {
+   "image": "decor/ch1/gravats.webp",
+   "w": 260,
+   "h": 150,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "arche": {
+   "image": "decor/ch1/arche.webp",
+   "w": 420,
+   "h": 400,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "cristal": {
+   "image": "decor/ch1/cristal.webp",
+   "w": 200,
+   "h": 300,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "brasero": {
+   "image": "decor/ch1/brasero.webp",
+   "frames": 8,
+   "w": 200,
+   "h": 300,
+   "fps": 12,
+   "ancre": [
+    0.5,
+    0.97
+   ],
+   "lumiere": "#ffb35c"
+  }
+ },
+ "ch2": {
+  "pilier": {
+   "image": "decor/ch2/pilier.webp",
+   "w": 200,
+   "h": 380,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "stele": {
+   "image": "decor/ch2/stele.webp",
+   "w": 180,
+   "h": 260,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "gravats": {
+   "image": "decor/ch2/gravats.webp",
+   "w": 260,
+   "h": 150,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "arche": {
+   "image": "decor/ch2/arche.webp",
+   "w": 420,
+   "h": 400,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "cristal": {
+   "image": "decor/ch2/cristal.webp",
+   "w": 200,
+   "h": 300,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "brasero": {
+   "image": "decor/ch2/brasero.webp",
+   "frames": 8,
+   "w": 200,
+   "h": 300,
+   "fps": 12,
+   "ancre": [
+    0.5,
+    0.97
+   ],
+   "lumiere": "#ff7a2a"
+  }
+ },
+ "ch3": {
+  "pilier": {
+   "image": "decor/ch3/pilier.webp",
+   "w": 200,
+   "h": 380,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "stele": {
+   "image": "decor/ch3/stele.webp",
+   "w": 180,
+   "h": 260,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "gravats": {
+   "image": "decor/ch3/gravats.webp",
+   "w": 260,
+   "h": 150,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "arche": {
+   "image": "decor/ch3/arche.webp",
+   "w": 420,
+   "h": 400,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "cristal": {
+   "image": "decor/ch3/cristal.webp",
+   "w": 200,
+   "h": 300,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "brasero": {
+   "image": "decor/ch3/brasero.webp",
+   "frames": 8,
+   "w": 200,
+   "h": 300,
+   "fps": 12,
+   "ancre": [
+    0.5,
+    0.97
+   ],
+   "lumiere": "#bfe6ff"
+  }
+ },
+ "ch4": {
+  "pilier": {
+   "image": "decor/ch4/pilier.webp",
+   "w": 200,
+   "h": 380,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "stele": {
+   "image": "decor/ch4/stele.webp",
+   "w": 180,
+   "h": 260,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "gravats": {
+   "image": "decor/ch4/gravats.webp",
+   "w": 260,
+   "h": 150,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "arche": {
+   "image": "decor/ch4/arche.webp",
+   "w": 420,
+   "h": 400,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "cristal": {
+   "image": "decor/ch4/cristal.webp",
+   "w": 200,
+   "h": 300,
+   "ancre": [
+    0.5,
+    0.95
+   ]
+  },
+  "brasero": {
+   "image": "decor/ch4/brasero.webp",
+   "frames": 8,
+   "w": 200,
+   "h": 300,
+   "fps": 12,
+   "ancre": [
+    0.5,
+    0.97
+   ],
+   "lumiere": "#b46bff"
+  }
+ }
+}

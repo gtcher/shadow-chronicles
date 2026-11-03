@@ -16,6 +16,9 @@ export interface TitleOptions {
   onPacts?: () => void;
   onSanctuary: () => void;
   onSettings: () => void;
+  /** Codex des Brumes : % découvert et découvertes pas encore consultées. */
+  codex?: { pct: number; fresh: number };
+  onCodex?: () => void;
   /** Chapitre le plus loin atteint (0..3) : choisit le fond peint du menu. */
   chapter?: number;
 }
@@ -57,6 +60,8 @@ export function titleScreen(o: TitleOptions): HTMLElement {
       h('div', { class: 'sc-row' },
         h('button', { class: `sc-btn${o.resume ? '' : ' sc-primary'}`, style: { minWidth: '220px', fontSize: '1.15em' }, onclick: () => o.onPlay(hero) }, o.resume ? '⚔  Nouvelle run' : '⚔  Partir en run'),
         h('button', { class: 'sc-btn', onclick: o.onSanctuary }, '♜ Sanctuaire'),
+        o.onCodex ? h('button', { class: 'sc-btn sc-codex-btn', onclick: (e: Event) => { (e.currentTarget as HTMLElement).querySelector('.sc-badge')?.remove(); o.onCodex!(); }, title: o.codex ? `Codex des Brumes · ${o.codex.pct} % découvert` : 'Codex des Brumes' },
+          '📜 Codex', o.codex?.fresh ? h('span', { class: 'sc-badge', 'aria-label': `${o.codex.fresh} nouvelles découvertes` }, String(Math.min(99, o.codex.fresh))) : null) : null,
         o.pacts && o.onPacts ? h('button', { class: 'sc-btn', onclick: o.onPacts, title: 'Pactes de la Brume' }, `☁ Pactes${o.pacts.points ? ` · ${o.pacts.points}` : ''}`) : null,
         h('button', { class: 'sc-btn sc-ghost', onclick: o.onSettings, 'aria-label': 'Réglages' }, '⚙ Réglages')),
       o.daily ? h('button', { class: 'sc-daily sc-panel sc-btn sc-ghost', onclick: o.onDaily },

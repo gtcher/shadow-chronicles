@@ -5,6 +5,7 @@
 import blessingsJson from '../../data/blessings.json';
 import sanctuaryJson from '../../data/sanctuary.json';
 import achievementsJson from '../../data/achievements.json';
+import lootJson from '../../data/loot.json';
 
 export type HeroId = 'taro' | 'mei' | 'sena' | 'ren';
 export type Rarity = 'commun' | 'rare' | 'epique' | 'heroique';
@@ -32,6 +33,7 @@ export const HERO_IDS = Object.keys(HERO_INFO) as HeroId[];
 export interface Patron { name: string; domain: string; icon: string; color: string; pitch: string; heroAffinity: string[]; resonance: { count: number; desc: string }[] }
 export interface Blessing { id: string; patron: string; slot: string; name: string; desc: string; values?: Partial<Record<Rarity, number>>; tags: string[] }
 export interface Duo { id: string; patrons: string[]; name: string; requires: { anyTags: string[][] }; desc: string }
+export interface PatronLegendary { id: string; patron: string; name: string; desc: string; requires: { patronCount: number; anyOf: string[] } }
 
 export const BLESSINGS = blessingsJson as unknown as {
   rarities: Record<Rarity, { name: string; color: string; weight: number; minWave: number }>;
@@ -40,15 +42,23 @@ export const BLESSINGS = blessingsJson as unknown as {
   patrons: Record<string, Patron>;
   blessings: Blessing[];
   duos: Duo[];
+  legendaries: PatronLegendary[];
   offerRules: { choices: number; maxSamePatronInOffer: number; heroAffinityWeightBonus: number; rerollGoldCost: number[] };
 };
 
-export interface Upgrade { id: string; name: string; icon?: string; stat?: string; perRank?: number; maxRank: number; cost: number[]; currency?: string; requires?: string; unlocksPatron?: string }
+export interface Upgrade { id: string; name: string; icon?: string; desc?: string; stat?: string; perRank?: number; maxRank: number; cost: number[]; currency?: string; requires?: string; unlocksPatron?: string }
 export interface Building { id: string; name: string; icon: string; currency: string; unlockedAtStart: boolean; unlockCost?: Record<string, number>; requires?: string; desc: string; upgrades: Upgrade[] }
 export const SANCTUARY = sanctuaryJson as unknown as {
   currencies: Record<string, { name: string; icon: string; color: string }>;
   buildings: Building[];
   heroMastery: { levels: { level: number; xp: number }[]; xpPerWave: number };
+};
+
+/** Pouvoirs légendaires des objets (loot.json), recensés dans le Codex. */
+export interface LegendaryPower { id: string; slot: string; hero?: HeroId; name: string; short: string; desc: string; patronHint?: string }
+export const LOOT_UI = lootJson as unknown as {
+  slots: Record<string, { icon: string; label: string }>;
+  legendaryPowers: LegendaryPower[];
 };
 
 export interface Achievement { id: string; tier: string; icon: string; name: string; desc: string; secret?: boolean; cond: { stat: string; op: string; value: number } }
@@ -93,10 +103,19 @@ export function upgradeText(u: Upgrade): string {
   if (u.stat && u.perRank !== undefined && STAT_LABEL[u.stat]) return `${STAT_LABEL[u.stat](u.perRank)} par rang.`;
   return u.maxRank > 1 ? `${u.maxRank} rangs.` : 'Déblocage unique.';
 }
+/** Condition de sanctuary.json en clair : « bestWave>=6 », « runs>=3 », « bossKilled:5 », « legendaryFound>=5 ». */
 export function requirementText(req?: string): string {
   if (!req) return '';
+  const boss = /^bossKilled:(\d+)$/.exec(req);
+  if (boss) return `Vaincre le boss de la vague ${boss[1]}`;
   const m = req.match(/^(\w+)>=(\d+)$/);
   if (!m) return req;
-  const what: Record<string, string> = { bestWave: 'Atteindre la vague', runs: 'Terminer runs :' };
-  return `${what[m[1]] ?? m[1]} ${m[2]}`;
+  const n = Number(m[2]);
+  const what: Record<string, string> = {
+    bestWave: `Atteindre la vague ${n}`,
+    runs: `Terminer ${n} run${n > 1 ? 's' : ''}`,
+    legendaryFound: `Trouver ${n} objet${n > 1 ? 's' : ''} légendaire${n > 1 ? 's' : ''}`,
+    bossKilled: `Vaincre ${n} boss`,
+  };
+  return what[m[1]] ?? `${m[1]} ${n}`;
 }

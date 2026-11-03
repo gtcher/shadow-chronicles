@@ -282,6 +282,11 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
     scene.onEnd = (r) => end(scene, r, kind, pts);
     let lastKills = 0;
     scene.onFrame = (sc) => {
+      if (ui.inRun && ui.tutorial.running) {
+        const inp = game.input;
+        if (Math.hypot(inp.move.x, inp.move.y) > 0.3) ui.tutorial.notify('move');
+        if (inp.held('attack')) ui.tutorial.notify('attack');
+      }
       const s = sc.snapshot();
       ui.hud.setVitals({ hp: Math.ceil(s.hp), max: s.maxHp, shield: Math.ceil(s.shield), mana: Math.floor(s.mana), manaMax: s.maxMana });
       s.skills.forEach((k, i) => ui.hud.setCooldown(i, k.cd, k.maxCd));
@@ -291,8 +296,14 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
       ui.hud.setWave(s.wave, s.phase === 'active' ? 1 - s.enemiesLeft / total : 1, info);
       while (lastKills < s.kills) { lastKills++; ui.hud.addKill(); }
     };
+    // Tutoriel : chaque étape se valide dès que le joueur fait le geste demandé.
+    const tuto = () => game.scenes.current === scene && ui.inRun;
+    offRun.push(game.events.on('player:dash', () => { if (tuto()) ui.tutorial.notify('dash'); }));
+    offRun.push(game.events.on('player:skill', (p) => { if (tuto()) ui.tutorial.notify(p.slot === 0 ? 'attack' : 'skill'); }));
+    offRun.push(game.events.on('enemy:killed', () => { if (tuto()) ui.tutorial.notify('kill'); }));
     offRun.push(game.events.on('wave:clear', (p) => {
       if (game.scenes.current !== scene || !ui.inRun) return;
+      ui.tutorial.waveCleared();
       unlock(scene, true);
       if (scene.isFinalWave(p.wave)) return; // fin du défi : pas d'offre
       scene.holdIntermission = true;
@@ -326,6 +337,7 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
     type Pause = ReturnType<UiRoot['pauseInfo']>;
     ui.pauseInfo = () => ({ hero: h, owned: scene.bless.owned as unknown as Pause['owned'], wave: scene.wave });
     if (!ui.settings.get().tutorialDone) ui.tutorial.start(game.input.lastDevice);
+    else ui.tutorial.stop();
   };
 
   if (opts.skipTitle) await startRun(hero, opts.wave ?? 1);
@@ -333,6 +345,7 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
     // Un fond animé derrière le titre : une run sans HUD en attente.
     await startRun(hero, 1);
     ui.inRun = false;
+    ui.tutorial.stop(); // pas de tutoriel derrière l'écran titre
     title();
   }
   return ui;

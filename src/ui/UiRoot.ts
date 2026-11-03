@@ -154,7 +154,9 @@ export class UiRoot {
     const pause = this.screens.some((s) => s.pauses);
     this.game.setPaused(pause);
     this.hud.dim(this.screens.length > 0);
-    this.root.querySelector('.sc-coach')?.toggleAttribute('hidden', this.screens.length > 0);
+    // Tout le calque du tutoriel (panneau, anneaux, main), pas seulement le panneau du moment :
+    // un panneau recréé pendant qu'un écran est ouvert resterait sinon visible par-dessus.
+    this.tutorial.el.toggleAttribute('hidden', this.screens.length > 0);
     if (pause) { this.game.input.setVirtualMove(0, 0); this.game.input.setVirtualHeld('attack', false); }
   }
 

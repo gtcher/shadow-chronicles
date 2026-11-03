@@ -1,3 +1,4 @@
+import { regionForWave } from './combat/rules';
 import type { Game } from '@engine';
 import type { GameEvents } from './events';
 import type { HeroId } from './components';
@@ -79,8 +80,12 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
   const title = () => {
     const d = buildDaily();
     const pactsOpen = !!save?.profile.pacts.unlocked;
+    // Fond du menu : chapitre de la meilleure vague atteinte (?menu=1..4 pour forcer).
+    const best = save ? Math.max(0, ...Object.values(save.profile.stats.bestWaveByMode as Record<string, number>)) : 0;
+    const forced = Number(new URLSearchParams(location.search).get('menu'));
+    const chapter = forced >= 1 && forced <= 4 ? forced - 1 : best > 0 ? regionForWave(best) : 0;
     ui.showTitle({
-      assetUrl: url, hero, mastery: mastery(),
+      assetUrl: url, hero, mastery: mastery(), chapter,
       daily: { label: `${HERO_NAME[d.hero] ?? d.hero} · ${d.modifiers.map((m) => m.name).join(', ')}`, streak: save?.profile.daily.streak ?? 0 },
       onDaily: () => dailyIntro(),
       pacts: pactsOpen ? { points: pactPoints(loadPacts()) } : undefined,

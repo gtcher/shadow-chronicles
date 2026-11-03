@@ -12,14 +12,23 @@ const AUDIO = /\.(ogg|mp3|wav|m4a)$/i;
 
 export class AssetStore {
   private manifest: Record<string, string> = {};
+  /** Clés exposées seulement en URL (fonds d'écran DOM) : jamais chargées comme textures par défaut. */
+  private lazy = new Set<string>();
   private base: string;
 
   constructor(base: string = import.meta.env.BASE_URL) { this.base = base.endsWith('/') ? base : base + '/'; }
 
-  async loadManifest(path = 'assets/manifest.json'): Promise<void> {
+  /**
+   * Ajoute un manifest (les clés s'ajoutent aux précédentes).
+   * `preload: false` : ses clés ne sont pas chargées par `loadImages()` sans argument
+   * (images utilisées seulement par l'interface DOM, ou chargées à la demande).
+   */
+  async loadManifest(path = 'assets/manifest.json', opts: { preload?: boolean } = {}): Promise<void> {
     const res = await fetch(this.base + path);
     if (!res.ok) throw new Error(`Manifest introuvable : ${path}`);
-    this.manifest = await res.json();
+    const m = (await res.json()) as Record<string, string>;
+    if (opts.preload === false) for (const k of Object.keys(m)) this.lazy.add(k);
+    Object.assign(this.manifest, m);
   }
 
   /** Clés connues, filtrables par préfixe (« enemy- », « skill-taro- »…). */
@@ -32,8 +41,8 @@ export class AssetStore {
   }
 
   /** Charge toutes les images (ou celles des clés données). `onProgress` reçoit 0..1. */
-  async loadImages(keys = this.keys(), onProgress?: (p: number) => void): Promise<void> {
-    const imgs = keys.filter((k) => !AUDIO.test(this.manifest[k]));
+  async loadImages(keys = this.keys().filter((k) => !this.lazy.has(k)), onProgress?: (p: number) => void): Promise<void> {
+    const imgs = keys.filter((k) => !AUDIO.test(this.manifest[k]) && !/\.json$/i.test(this.manifest[k]));
     for (const k of imgs) if (!Assets.cache.has(k)) Assets.add({ alias: k, src: this.url(k) });
     await Assets.load(imgs, onProgress);
   }

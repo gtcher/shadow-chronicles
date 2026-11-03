@@ -1,4 +1,4 @@
-import { Container, Graphics, Sprite, Text, TilingSprite, type Texture } from 'pixi.js';
+import { Container, Graphics, Sprite, Text, type Texture } from 'pixi.js';
 import {
   Collider, Layers, Lifetime, MovementSystem, PhysicsSystem, Rng, Scene, SystemPriority, Transform, Velocity, View,
   World, attachView, installViewCleanup, makeTransform, makeVelocity, syncViews, CameraTarget,
@@ -6,7 +6,7 @@ import {
 } from '@engine';
 import { Health, type HeroId } from '../components';
 import type { GameEvents } from '../events';
-import { makeFxTextures, makeSeamless, type FxTextures } from '../textures';
+import { makeFxTextures, type FxTextures } from '../textures';
 import { Vfx } from '../vfx';
 import { Foe, Hero, Shot, type FoeC, type HeroC } from '../combat/components';
 import { BODY_Y, type CombatCtx, type ParticleSink, type FoeHitOpts, type HeroHitOpts } from '../combat/context';
@@ -22,8 +22,9 @@ import { DODGE, castSkill, updateHero } from '../combat/hero';
 import { updateFoes } from '../combat/foes';
 import { enterPhase, updateBosses } from '../combat/boss';
 import { WaveDirector } from '../combat/waves';
+import { ChapterArena } from '../arena/ChapterArena';
 import { RIG_KEY_BY_BOSS, RIG_KEY_BY_FAMILY, RIG_LEN, bakeRig, rigDef, rigFrame, type RigAnim, type RigSheet } from '../rig';
-import { CAMPAIGN_WAVES, bossScaling, enemyPool, enemyScaling, mitigate, phaseForHp, zoneHits, type WavePlan, type Zone } from '../combat/rules';
+import { CAMPAIGN_WAVES, regionForWave, bossScaling, enemyPool, enemyScaling, mitigate, phaseForHp, zoneHits, type WavePlan, type Zone } from '../combat/rules';
 
 /** Arène de combat : rectangle borné, ruines en obstacles. */
 const ARENA: Rect = { x: -1500, y: -1300, w: 3000, h: 2600 };
@@ -90,6 +91,7 @@ export class RunScene extends Scene implements CombatCtx {
   fx!: FxTextures;
   particles!: ParticleSink;
   vfx!: Vfx;
+  private arena!: ChapterArena;
   hazards!: HazardField;
   feedback!: CombatFeedback;
   bounds = ARENA;
@@ -203,6 +205,7 @@ export class RunScene extends Scene implements CombatCtx {
       kindColors: { ashMage: 0xff7a3a, frostWraith: 0x8bdefb, moonStalker: 0x8bb0ff, voidHerald: 0xa070ff, eclipseReaver: 0xd070c0 },
     });
     (window as unknown as { vfx: Vfx }).vfx = this.vfx;
+    this.arena.attach(this.vfx);
     this.particles = this.vfx.particles;
     this.feedback = new CombatFeedback(renderer.layers.overlay);
     this.buildHud();
@@ -255,6 +258,7 @@ export class RunScene extends Scene implements CombatCtx {
     this.rigs.clear(); this.corpses = [];
     for (const sh of this.sheets.values()) sh.frames.idle[0].source.destroy();
     this.sheets.clear();
+    this.arena.destroy();
     this.vfx.destroy();
     this.hazards.clear();
     this.world.clear();
@@ -672,6 +676,7 @@ export class RunScene extends Scene implements CombatCtx {
     this.stats.newWave();
     this.bless.waveStart();
     this.loot.waveStart();
+    this.arena.setChapter(plan.region);
     const label = plan.wave > CAMPAIGN_WAVES ? `Vague ${plan.wave} · Infini` : `Vague ${plan.wave} / ${CAMPAIGN_WAVES}`;
     if (plan.boss) {
       const b = BOSS_DEFS[plan.boss];
@@ -843,6 +848,7 @@ export class RunScene extends Scene implements CombatCtx {
       if (n.visible) this.vfx.lighting.push(n.x, n.y - BODY_Y, 110, this.world.get(e, Shot)!.side === 'hero' ? h.def.color : 0xb07bff, 0.6);
     }
     this.vfx.setHealth(hp.hp / hp.max);
+    this.arena.update(frameDt);
     this.vfx.update(frameDt);
     this.bannerT -= frameDt;
     const ba = Math.max(0, Math.min(1, this.bannerT * 1.5));
@@ -1007,61 +1013,10 @@ export class RunScene extends Scene implements CombatCtx {
   // ================================================================ Arène
 
   private buildArena(): void {
-    const { renderer } = this.game;
-    const groundTex = makeSeamless(this.g.assets.texture('stone-ground'));
-    const pad = 900;
-    const ground = new TilingSprite({ texture: groundTex, width: ARENA.w + pad * 2, height: ARENA.h + pad * 2 });
-    ground.position.set(ARENA.x - pad, ARENA.y - pad); ground.tileScale.set(0.75); ground.tint = 0x9aa6b8;
-    const ground2 = new TilingSprite({ texture: groundTex, width: ARENA.w + pad * 2, height: ARENA.h + pad * 2 });
-    ground2.position.set(ARENA.x - pad, ARENA.y - pad);
-    ground2.tileScale.set(1.9); ground2.tilePosition.set(311, 157); ground2.tileRotation = 0.6;
-    ground2.alpha = 0.35; ground2.tint = 0x6f7d92; ground2.blendMode = 'multiply';
-    renderer.layers.ground.addChild(ground, ground2);
-    for (let i = 0; i < 40; i++) {
-      const blot = new Sprite(this.fx.light);
-      blot.anchor.set(0.5);
-      blot.position.set(this.rng.range(ARENA.x, ARENA.x + ARENA.w), this.rng.range(ARENA.y, ARENA.y + ARENA.h));
-      blot.scale.set(this.rng.range(1.2, 3.2), this.rng.range(0.8, 2)); blot.rotation = this.rng.range(0, Math.PI);
-      blot.tint = this.rng.pick([0x3b6b8f, 0x2f5a3a, 0x6a4c8f]); blot.alpha = this.rng.range(0.5, 1); blot.blendMode = 'add';
-      renderer.layers.decals.addChild(blot);
-    }
-    // Bord de l'arène : brume sombre au-delà des limites.
-    const edge = new Graphics();
-    edge.rect(ARENA.x - pad, ARENA.y - pad, ARENA.w + pad * 2, pad).fill({ color: 0x03060c, alpha: 0.7 });
-    edge.rect(ARENA.x - pad, ARENA.y + ARENA.h, ARENA.w + pad * 2, pad).fill({ color: 0x03060c, alpha: 0.7 });
-    edge.rect(ARENA.x - pad, ARENA.y, pad, ARENA.h).fill({ color: 0x03060c, alpha: 0.7 });
-    edge.rect(ARENA.x + ARENA.w, ARENA.y, pad, ARENA.h).fill({ color: 0x03060c, alpha: 0.7 });
-    edge.rect(ARENA.x, ARENA.y, ARENA.w, ARENA.h).stroke({ color: 0x8a5cff, width: 4, alpha: 0.35 });
-    renderer.layers.decals.addChild(edge);
-    const stone = this.g.assets.texture('stone-ground');
-    for (let i = 0; i < 22; i++) {
-      const x = this.rng.range(ARENA.x + 160, ARENA.x + ARENA.w - 160);
-      const y = this.rng.range(ARENA.y + 160, ARENA.y + ARENA.h - 160);
-      if (Math.hypot(x, y) < 560) continue;
-      if (this.physics.walls.some((wl) => Math.abs(wl.x + wl.w / 2 - x) < 260 && Math.abs(wl.y - y) < 200)) continue;
-      const ruin = this.makeRuin(stone);
-      ruin.position.set(x, y); ruin.zIndex = y;
-      renderer.layers.entities.addChild(ruin);
-      const w = ruin.width * 0.8;
-      this.physics.walls.push({ x: x - w / 2, y: y - 26, w, h: 34 });
-    }
-  }
-
-  private makeRuin(stone: Texture): Container {
-    const c = new Container();
-    const sh = new Sprite(this.fx.shadow);
-    sh.anchor.set(0.5); sh.width = 190; sh.height = 60; sh.y = -6;
-    const w = this.rng.range(46, 70), h = this.rng.range(90, 200), lean = this.rng.range(-8, 8);
-    const g = new Graphics();
-    g.roundRect(-w * 0.95, -26, w * 1.9, 30, 6).fill({ texture: stone, color: 0x8f9aae }).stroke({ color: 0x0b111c, width: 3 });
-    const pts = [-w / 2, -22, -w / 2 + lean, -h];
-    for (let i = 1; i <= 4; i++) pts.push(-w / 2 + lean + (w * i) / 4, -h + (i % 2 ? this.rng.range(14, 34) : this.rng.range(-6, 6)));
-    pts.push(w / 2, -22);
-    g.poly(pts).fill({ texture: stone, color: 0xa7b2c4 }).stroke({ color: 0x0b111c, width: 3 });
-    g.poly([w / 6, -22, w / 6 + lean, -h + 18, w / 2 + lean * 0.9, -h + 20, w / 2, -22]).fill({ color: 0x050a14, alpha: 0.45 });
-    g.rect(-w / 2 + 4 + lean * 0.5, -h * 0.85, 4, h * 0.6).fill({ color: 0xcfe0ff, alpha: 0.18 });
-    c.addChild(sh, g);
-    return c;
+    // Générateur séparé : l'arène ne consomme pas l'aléatoire des vagues.
+    this.arena = new ChapterArena(this.game, ARENA, new Rng((this.rng.seed ^ 0x5bd1e995) >>> 0), this.fx.light);
+    this.physics.walls.push(...this.arena.walls);
+    this.arena.setChapter(regionForWave(this.startWave), true);
   }
 
   // ================================================================ HUD minimal (remplaçable par l'UI)

@@ -20,7 +20,12 @@ async function boot(): Promise<void> {
   const bar = document.getElementById('loading-bar')!;
   const game = await Game.create<GameEvents>(host);
   await game.assets.loadManifest();
-  await game.assets.loadImages(undefined, (p) => (bar.style.width = `${Math.round(p * 100)}%`));
+  // Direction artistique : tuiles et décors des 4 chapitres (arène), fonds peints des menus (DOM).
+  await game.assets.loadManifest('assets/da-manifest.json', { preload: false });
+  await game.assets.loadManifest('assets/art/art-manifest.json', { preload: false });
+  const arena = [...game.assets.keys('tiles-'), ...game.assets.keys('decor-ch')];
+  const keys = game.assets.keys().filter((k) => !/^(tiles-|decor-|sprites-|menu-|select-)/.test(k)).concat(arena);
+  await game.assets.loadImages(keys, (p) => (bar.style.width = `${Math.round(p * 100)}%`));
   document.getElementById('loading')!.remove();
 
   const param = new URLSearchParams(location.search).get('hero');

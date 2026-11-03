@@ -109,6 +109,9 @@ function tickHeroStatuses(c: CombatCtx, h: HeroC, hp: { hp: number; max: number 
   void c;
 }
 
+/** Visée assistée tactile / manette (réglage « Visée automatique », branché par src/game/settingsLink.ts). */
+export const aimAssist = { on: true };
+
 /** Point visé : souris si elle sert, sinon l'ennemi le plus pertinent dans la direction de visée. */
 export function aimPoint(c: CombatCtx, h: HeroC, x: number, y: number, range: number): { x: number; y: number } {
   const input = c.g.input;
@@ -118,7 +121,7 @@ export function aimPoint(c: CombatCtx, h: HeroC, x: number, y: number, range: nu
     if (d <= range) return w;
     return { x: x + (dx / d) * range, y: y + (dy / d) * range };
   }
-  const f = bestTarget(c, x, y, range, h.aimX, h.aimY);
+  const f = aimAssist.on ? bestTarget(c, x, y, range, h.aimX, h.aimY) : undefined;
   if (f !== undefined) { const ft = c.world.get(f, Transform)!; return { x: ft.x, y: ft.y }; }
   return { x: x + h.aimX * range * 0.6, y: y + h.aimY * range * 0.6 };
 }
@@ -143,7 +146,7 @@ export function castSkill(c: CombatCtx, h: HeroC, i: number, echo = 1): boolean 
   const t = c.world.get(c.player, Transform)!;
   // Visée assistée hors souris : l'attaque de base se tourne vers l'ennemi le plus proche.
   const dev = c.g.input.lastDevice;
-  if (dev === 'touch' || dev === 'gamepad') {
+  if (aimAssist.on && (dev === 'touch' || dev === 'gamepad')) {
     const f = bestTarget(c, t.x, t.y, Math.max(sk.range, 260) + 80, h.aimX, h.aimY);
     if (f !== undefined) {
       const ft = c.world.get(f, Transform)!; const d = Math.hypot(ft.x - t.x, ft.y - t.y) || 1;

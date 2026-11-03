@@ -31,13 +31,15 @@ export function connectSave(ui: UiRoot, save: SaveManager): void {
   st.set('highContrast', s.accessibility.highContrast);
   st.set('reduceMotion', s.accessibility.reducedMotion);
   st.set('damageNumbers', s.video.damageNumbers);
+  st.set('masterVolume', s.audio.master);
+  st.set('muted', s.audio.muted);
   st.set('musicVolume', s.audio.music);
   st.set('sfxVolume', s.audio.sfx);
   st.set('tutorialDone', s.tutorialDone);
   if (!s.video.screenShake) st.set('shake', 0);
   // 2. Puis chaque changement de l'UI est recopié.
-  st.onChange((v, k) => {
-    if (k === null) return;
+  // (k === null : réinitialisation, recopiée elle aussi, sinon la sauvegarde rétablit les anciennes valeurs au rechargement.)
+  st.onChange((v) => {
     save.updateSettings((x) => {
       x.accessibility.textScale = v.textScale;
       x.accessibility.largeText = v.textScale >= 1.2;
@@ -46,6 +48,8 @@ export function connectSave(ui: UiRoot, save: SaveManager): void {
       x.accessibility.bigTap = v.touchScale >= 1.15;
       x.video.damageNumbers = v.damageNumbers;
       x.video.screenShake = v.shake > 0;
+      x.audio.master = v.masterVolume;
+      x.audio.muted = v.muted;
       x.audio.music = v.musicVolume;
       x.audio.sfx = v.sfxVolume;
       x.tutorialDone = v.tutorialDone;

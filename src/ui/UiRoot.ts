@@ -40,6 +40,7 @@ export class UiRoot {
   /** Une run est en cours : la pause est autorisée. */
   inRun = false;
 
+  private sound: (id: string) => void = () => {};
   private screens: Array<{ el: HTMLElement; release: () => void; pauses: boolean }> = [];
   private device: Dev = 'keyboard';
   private lastPadStart = false;
@@ -66,6 +67,11 @@ export class UiRoot {
     this.hud.onSkillUp = (i) => { if (i === 0) input.setVirtualHeld('attack', false); };
     this.hud.onPause = () => this.togglePause();
     this.tutorial.onDone = () => this.settings.set('tutorialDone', true);
+
+    // Sons d'interface (bus « ui », réglé par le curseur Effets).
+    const sound = (id: string) => (game.events as unknown as { emit: (e: string, p: unknown) => void }).emit('ui:sound', { id });
+    this.root.addEventListener('click', (e) => { if ((e.target as Element).closest?.('button, .sc-btn')) sound('ui_click'); });
+    this.sound = sound;
 
     // Réglages appliqués en direct.
     this.settings.onChange((s) => {
@@ -99,6 +105,7 @@ export class UiRoot {
     const release = focusTrap(el);
     this.screens.push({ el, release, pauses });
     this.syncPause();
+    this.sound('ui_open');
     requestAnimationFrame(() => (el.querySelector<HTMLElement>('[data-autofocus]') ?? el.querySelector<HTMLElement>('button'))?.focus({ preventScroll: true }));
   }
 

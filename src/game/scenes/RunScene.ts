@@ -613,7 +613,8 @@ export class RunScene extends Scene implements CombatCtx {
 
   /** Résumé de la run en cours. */
   result(): RunResult {
-    return { hero: this.heroId, wave: this.wave, wavesCleared: this.wavesCleared, bossWaves: [...this.bossWaves], won: this.won || this.wavesCleared >= CAMPAIGN_WAVES,
+    // Pendant le compte à rebours de la première vague, le directeur est encore à startWave - 1.
+    return { hero: this.heroId, wave: Math.max(this.startWave, this.wave), wavesCleared: this.wavesCleared, bossWaves: [...this.bossWaves], won: this.won || this.wavesCleared >= CAMPAIGN_WAVES,
       kills: this.kills, timeSec: Math.round(this.time), bestCombo: this.bestCombo, perfectDodges: this.perfectTotal,
       counters: this.runCounters(), fastestBossKill: this.stats.fastestBossKill, dust: this.loot.dust, legendaryPity: this.loot.legendaryPity,
       blessings: this.bless.owned.map((o) => ({ id: o.blessing.id, name: o.blessing.name, patron: o.blessing.patron, rarity: o.rarity })),
@@ -1167,7 +1168,7 @@ export class RunScene extends Scene implements CombatCtx {
         return { name: sk.name, cd: h.cds[i], maxCd: i === 0 ? sk.cd : sk.cd * h.cdMul, cost, ready: h.cds[i] <= 0 && h.mana >= cost };
       }),
       dashCharges: h.dashCharges, dashMax: h.dashMax, gold: this.loot.gold, dashCd: h.dashCd, potions: h.potions,
-      wave: this.wave, waveTotal: CAMPAIGN_WAVES, region: REGIONS[plan?.region ?? 0], theme: plan?.theme ?? '', phase: this.director.phase,
+      wave: Math.max(this.startWave, this.wave), waveTotal: CAMPAIGN_WAVES, region: REGIONS[plan?.region ?? 0], theme: plan?.theme ?? '', phase: this.director.phase,
       enemiesLeft: enemies + this.director.remainingToSpawn, kills: this.kills, combo: this.combo, time: this.time, over: this.over, boss,
     };
   }

@@ -2,7 +2,7 @@
  * Réglages joueur (accessibilité, confort, son) — persistés dans localStorage.
  * Lus par l'UI (classes CSS) et exposés aux autres agents :
  *   - Rendu/caméra : `settings.get().shake` (0..1) et `flashes`
- *   - Audio : `musicVolume`, `sfxVolume`
+ *   - Audio : `masterVolume`, `musicVolume`, `sfxVolume`, `ambienceVolume`, `muted` (branchés dans src/main.ts)
  *   - Gameplay : `autoAim`, `damageNumbers`
  * L'agent Sauvegarde peut reprendre la clé `STORAGE_KEY` dans le profil v2.
  */
@@ -20,8 +20,11 @@ export interface Settings {
   touchScale: number;      // 0.8 .. 1.3
   leftHanded: boolean;     // joystick à droite, boutons à gauche
   autoAim: boolean;        // visée automatique en tactile
+  masterVolume: number;    // 0 .. 1
   musicVolume: number;     // 0 .. 1
-  sfxVolume: number;       // 0 .. 1
+  sfxVolume: number;       // 0 .. 1 (bruitages et sons d'interface)
+  ambienceVolume: number;  // 0 .. 1
+  muted: boolean;
   tutorialDone: boolean;
 }
 
@@ -33,7 +36,7 @@ const prefersContrast = typeof matchMedia !== 'undefined' && matchMedia('(prefer
 export const DEFAULT_SETTINGS: Settings = {
   textScale: 1, highContrast: prefersContrast, colorBlind: 'none', reduceMotion: prefersReduced,
   shake: prefersReduced ? 0.3 : 1, flashes: !prefersReduced, damageNumbers: true, vibration: true,
-  touchScale: 1, leftHanded: false, autoAim: true, musicVolume: 0.7, sfxVolume: 0.8, tutorialDone: false,
+  touchScale: 1, leftHanded: false, autoAim: true, masterVolume: 0.8, musicVolume: 0.7, sfxVolume: 0.8, ambienceVolume: 0.5, muted: false, tutorialDone: false,
 };
 
 type Listener = (s: Readonly<Settings>, changed: keyof Settings | null) => void;

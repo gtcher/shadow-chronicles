@@ -22,10 +22,20 @@ import { DODGE, castSkill, updateHero } from '../combat/hero';
 import { updateFoes } from '../combat/foes';
 import { enterPhase, updateBosses } from '../combat/boss';
 import { WaveDirector } from '../combat/waves';
+import { RIG_KEY_BY_BOSS, RIG_KEY_BY_FAMILY, RIG_LEN, bakeRig, rigDef, rigFrame, type RigAnim, type RigSheet } from '../rig';
 import { CAMPAIGN_WAVES, bossScaling, enemyPool, enemyScaling, mitigate, phaseForHp, zoneHits, type WavePlan, type Zone } from '../combat/rules';
 
 /** Arène de combat : rectangle borné, ruines en obstacles. */
 const ARENA: Rect = { x: -1500, y: -1300, w: 3000, h: 2600 };
+
+/**
+ * Combattants v2 (squelette animé). `?persos=v1` dans l'URL rend les anciens sprites (comparaison).
+ * Désactivé hors navigateur (tests) : pas de Canvas 2D.
+ */
+const RIG_ON = typeof document !== 'undefined' && typeof location !== 'undefined' && new URLSearchParams(location.search).get('persos') !== 'v1';
+
+/** État d'animation d'un combattant v2. */
+interface RigState { sheet: RigSheet; anim: RigAnim; t: number; hurt: number; atk: number; wind: number; flash: number; hp: number; prevState: string }
 
 /** Instantané lisible par l'UI (HUD DOM, mobile) à chaque image. */
 /** Résumé de fin de run (pour l'écran de fin et la sauvegarde). */
@@ -122,6 +132,13 @@ export class RunScene extends Scene implements CombatCtx {
   private overT = 0;
   private bossEntity = 0;
   private renderTime = 0;
+  /** Feuilles cuites par clé (héros, ennemi + teinte, boss). */
+  private sheets = new Map<string, RigSheet>();
+  private rigs = new Map<number, RigState>();
+  private corpses: Array<{ node: Container; sheet: RigSheet; t: number }> = [];
+  private heroAtkSeq = 0;
+  private heroAtkSeen = 0;
+  private offRig: (() => void) | null = null;
 
   // Rendu
   private hud!: Text;
@@ -202,6 +219,7 @@ export class RunScene extends Scene implements CombatCtx {
     this.loot.onChange = () => { this.bless.itemBonus = this.loot.blessBonus(); this.recomputeHero(); };
     this.bless.echo = (skill, scale) => { const h = this.world.get(this.player, Hero); if (h) castSkill(this, h, skill, scale); };
     this.g.events.on('player:skill', () => { this.lastAttackT = this.time; });
+    this.offRig = this.g.events.on('player:skill', () => { this.heroAtkSeq++; });
     this.spawnHero();
     camera.bounds = ARENA;
     camera.zoom = camera.targetZoom = this.zoom(window.innerWidth < 700 ? 0.68 : 0.92);
@@ -233,6 +251,10 @@ export class RunScene extends Scene implements CombatCtx {
 
   exit(): void {
     this.offResize?.();
+    this.offRig?.();
+    this.rigs.clear(); this.corpses = [];
+    for (const sh of this.sheets.values()) sh.frames.idle[0].source.destroy();
+    this.sheets.clear();
     this.vfx.destroy();
     this.hazards.clear();
     this.world.clear();
@@ -300,7 +322,7 @@ export class RunScene extends Scene implements CombatCtx {
     } as HeroC);
     this.world.add(e, CameraTarget, true);
     this.recomputeHero();
-    attachView(this.world, this.g.renderer, e, this.character(this.g.assets.texture(`hero-${d.id}`), d.height, 22));
+    attachView(this.world, this.g.renderer, e, this.character(this.g.assets.texture(`hero-${d.id}`), d.height, 22, 0xffffff, undefined, this.rigSheet(d.id, d.id, d.height, 'A'), e));
     const t = this.world.get(e, Transform)!;
     this.g.camera.follow(t, this.world.get(e, Velocity)!);
     this.vfx.follow(t, this.world.get(e, View)!.node, d.color);
@@ -341,7 +363,8 @@ export class RunScene extends Scene implements CombatCtx {
     const hp = Math.round(d.hp * s.hp * this.mods.foeHp);
     this.world.add(e, Health, { hp, max: hp });
     this.world.add(e, Foe, this.makeFoe(d, d.dmg * s.dmg * this.mods.foeDmg, d.speed * this.rng.range(0.92, 1.08)));
-    const node = this.character(this.g.assets.texture(d.tex), d.h, d.r, d.tint, d.elite ? STATUS_COLORS[d.status ?? 'void'] : undefined);
+    const sheet = this.rigSheet(`${d.id}`, RIG_KEY_BY_FAMILY[d.family] ?? d.id, d.h, 'B', d.tint);
+    const node = this.character(this.g.assets.texture(d.tex), d.h, d.r, sheet ? 0xffffff : d.tint, d.elite ? STATUS_COLORS[d.status ?? 'void'] : undefined, sheet, e);
     attachView(this.world, this.g.renderer, e, node);
     if (o.portal !== false) {
       this.feedback.ring(x, y, d.r * 2.6, d.elite ? 0xff5ad1 : 0x8a5cff, 0.5, 5);
@@ -369,7 +392,8 @@ export class RunScene extends Scene implements CombatCtx {
     const base = { ...ENEMY_DEFS.brute, name: b.name, tex: b.tex, tint: b.tint, h: b.h, r: b.r, hp, dmg: b.dmg, speed: b.speed, elite: true, guard: false };
     const f = this.world.add(e, Foe, this.makeFoe(base, b.dmg * (1 + 0.25 * (k - 1)) * this.mods.foeDmg, b.speed));
     f.boss = { def: b, phase: 1, transition: 0, next: 2.2, step: 0, spin: 0, edge: 0 };
-    attachView(this.world, this.g.renderer, e, this.character(this.g.assets.texture(b.tex), b.h, b.r, b.tint, b.color));
+    const sheet = this.rigSheet(`boss-${id}`, RIG_KEY_BY_BOSS[id] ?? id, b.h, 'B');
+    attachView(this.world, this.g.renderer, e, this.character(this.g.assets.texture(b.tex), b.h, b.r, sheet ? 0xffffff : b.tint, b.color, sheet, e));
     this.bossEntity = e;
     this.feedback.ring(x, y, 360, b.color, 1.2, 20);
     this.particles.emit(x, y - 60, { color: b.color, count: 80, speed: 420, size: 1, life: 1.1 });
@@ -475,6 +499,7 @@ export class RunScene extends Scene implements CombatCtx {
     this.bless.onKill(e, f, t.x, t.y);
     this.loot.onKill(e, f, t.x, t.y);
     if (f.boss) this.killBoss(e, f, t);
+    this.spawnCorpse(e, t);
     this.world.destroy(e);
   }
 
@@ -797,13 +822,16 @@ export class RunScene extends Scene implements CombatCtx {
     const h = this.world.get(this.player, Hero)!, v = this.world.get(this.player, Velocity)!, hp = this.world.get(this.player, Health)!;
     const blink = h.invuln > 0 && h.dashT <= 0 && !h.rush && Math.floor(time * 20) % 2 === 0;
     this.animateBody(this.player, Math.hypot(v.x, v.y) / h.speed, h.facing, this.over ? 0.35 : blink ? 0.45 : 1, 0, 0, h.dashT > 0 || !!h.rush ? 0x9fe8ff : 0xffffff);
+    this.animateHeroRig(frameDt, Math.hypot(v.x, v.y) / h.speed, hp.hp);
     for (const e of this.world.query(Foe, View)) {
       const f = this.world.get(e, Foe)!, ev = this.world.get(e, Velocity)!;
       const windup = f.state === 'windup' || (f.boss?.transition ?? 0) > 0;
       const tint = f.statuses.gel ? 0x8fd0ff : f.statuses.givre ? 0xc8ecff : windup && Math.floor(time * 16) % 2 === 0 ? 0xffe0c0 : 0xffffff;
       const appear = Math.min(1, f.spawnT * (f.boss ? 1 : 2.5));
       this.animateBody(e, Math.hypot(ev.x, ev.y) / Math.max(1, f.speed), f.facing, appear, f.flash, e * 0.37, tint, f.def.tint, windup ? 1.08 : 1);
+      this.animateFoeRig(e, f, frameDt, Math.hypot(ev.x, ev.y) / Math.max(1, f.speed));
     }
+    this.animateCorpses(frameDt);
     // Lumières : boss et élites rayonnent, les projectiles éclairent le sol.
     for (const e of this.world.query(Foe, View)) {
       const f = this.world.get(e, Foe)!, n = this.world.get(e, View)!.node;
@@ -828,6 +856,14 @@ export class RunScene extends Scene implements CombatCtx {
     if (!node.visible) return;
     const body = node.getChildByLabel('body') as Sprite;
     const base = Math.abs(body.scale.y);
+    if (this.rigs.has(e)) {
+      body.scale.x = facing * base * grow; body.scale.y = base * grow;
+      body.alpha = alpha;
+      body.tint = flash > 0 ? 0xffb0a0 : tint;
+      const aura = node.getChildByLabel('aura') as Sprite | null;
+      if (aura) aura.alpha = 0.3 + 0.12 * Math.sin(this.renderTime * 3 + phase);
+      return;
+    }
     const m = Math.min(1, moving);
     const bob = Math.sin(this.renderTime * 14 + phase) * m;
     const breathe = Math.sin(this.renderTime * 2.4 + phase) * (1 - m);
@@ -842,7 +878,7 @@ export class RunScene extends Scene implements CombatCtx {
   }
 
   /** Personnage = ombre + aura facultative + corps (animé sans toucher à la position). */
-  private character(tex: Texture, height: number, radius: number, tint = 0xffffff, aura?: number): Container {
+  private character(tex: Texture, height: number, radius: number, tint = 0xffffff, aura?: number, sheet: RigSheet | null = null, entity = -1): Container {
     const node = new Container();
     const shadow = new Sprite(this.fx.shadow);
     shadow.anchor.set(0.5); shadow.width = radius * 3.2; shadow.height = radius * 1.1; shadow.label = 'shadow';
@@ -853,10 +889,115 @@ export class RunScene extends Scene implements CombatCtx {
       a.width = radius * 5; a.height = radius * 2.2;
       node.addChild(a);
     }
+    if (sheet) {
+      const body = new Sprite(sheet.frames.idle[0]);
+      body.anchor.set(sheet.anchorX, sheet.anchorY); body.scale.set(sheet.scale); body.label = 'body'; body.tint = tint;
+      node.addChild(body);
+      if (entity >= 0) this.rigs.set(entity, { sheet, anim: 'idle', t: Math.random(), hurt: 0, atk: -1, wind: 0, flash: 0, hp: Infinity, prevState: 'move' });
+      return node;
+    }
     const body = new Sprite(tex);
     body.anchor.set(0.5, 0.92); body.scale.set(height / tex.height); body.label = 'body'; body.tint = tint;
     node.addChild(body);
     return node;
+  }
+
+  // ================================================================ Combattants v2 (squelette animé)
+
+  /** Feuille de sprites d'un combattant, cuite une fois par run et par clé. */
+  private rigSheet(cacheKey: string, rigKey: string, height: number, style: 'A' | 'B', tint?: number): RigSheet | null {
+    if (!RIG_ON) return null;
+    const hit = this.sheets.get(cacheKey);
+    if (hit) return hit;
+    const def = rigDef(rigKey, tint);
+    if (!def) return null;
+    const sheet = bakeRig(def, height, style);
+    this.sheets.set(cacheKey, sheet);
+    return sheet;
+  }
+
+  private setRigFrame(e: number, r: RigState, anim: RigAnim, p: number): void {
+    r.anim = anim;
+    const body = (this.world.get(e, View)!.node as Container).getChildByLabel('body') as Sprite;
+    body.texture = rigFrame(r.sheet, anim, p);
+  }
+
+  private animateHeroRig(dt: number, moving: number, hp: number): void {
+    const r = this.rigs.get(this.player);
+    if (!r) return;
+    if (hp < r.hp - 0.5) r.hurt = RIG_LEN.touche;
+    r.hp = hp;
+    if (this.heroAtkSeq !== this.heroAtkSeen) {
+      this.heroAtkSeen = this.heroAtkSeq;
+      // Le coup part tout de suite en jeu : on démarre juste avant l'impact, l'élan est sauté.
+      r.atk = RIG_LEN.attaque * 0.3;
+    }
+    r.t += dt;
+    if (r.hurt > 0) { r.hurt -= dt; this.setRigFrame(this.player, r, 'touche', 1 - r.hurt / RIG_LEN.touche); return; }
+    if (r.atk >= 0) {
+      r.atk += dt * 1.25;
+      if (r.atk < RIG_LEN.attaque * 0.8) { this.setRigFrame(this.player, r, 'attaque', r.atk / RIG_LEN.attaque); return; }
+      r.atk = -1;
+    }
+    if (moving > 0.15) this.setRigFrame(this.player, r, 'course', r.t * Math.min(1.4, 0.6 + moving) / RIG_LEN.course);
+    else this.setRigFrame(this.player, r, 'idle', r.t / RIG_LEN.idle);
+  }
+
+  private animateFoeRig(e: number, f: FoeC, dt: number, moving: number): void {
+    const r = this.rigs.get(e);
+    if (!r) return;
+    r.t += dt;
+    if (f.flash > r.flash + 0.02) r.hurt = RIG_LEN.touche * 0.7;
+    r.flash = f.flash;
+    const st = f.state as string;
+    // Élan calé sur la fenêtre d'attaque télégraphiée, frappe quand elle se termine.
+    if (st === 'windup') {
+      if (r.prevState !== 'windup') r.wind = Math.max(0.05, f.t);
+      r.atk = -1;
+      r.prevState = st;
+      this.setRigFrame(e, r, 'attaque', (1 - f.t / r.wind) * 0.36);
+      return;
+    }
+    if (r.prevState === 'windup') r.atk = RIG_LEN.attaque * 0.36;
+    r.prevState = st;
+    if (r.atk >= 0) {
+      r.atk += dt;
+      if (r.atk < RIG_LEN.attaque) { this.setRigFrame(e, r, 'attaque', r.atk / RIG_LEN.attaque); return; }
+      r.atk = -1;
+    }
+    if (r.hurt > 0) { r.hurt -= dt; this.setRigFrame(e, r, 'touche', 1 - r.hurt / (RIG_LEN.touche * 0.7)); return; }
+    if (moving > 0.12 || f.boss) this.setRigFrame(e, r, moving > 0.12 ? 'course' : 'idle', r.t * Math.min(1.5, 0.5 + moving) / RIG_LEN[moving > 0.12 ? 'course' : 'idle']);
+    else this.setRigFrame(e, r, 'idle', r.t / RIG_LEN.idle);
+  }
+
+  /** Dépouille : le corps du combattant joue sa mort (effondrement puis braises) à l'endroit du coup fatal. */
+  private spawnCorpse(e: number, t: { x: number; y: number }): void {
+    const r = this.rigs.get(e);
+    this.rigs.delete(e);
+    if (!r) return;
+    const view = this.world.get(e, View);
+    const old = view?.node as Container | undefined;
+    const ob = old?.getChildByLabel('body') as Sprite | undefined;
+    const node = new Container();
+    const body = new Sprite(r.sheet.frames.mort[0]);
+    body.anchor.set(r.sheet.anchorX, r.sheet.anchorY);
+    body.scale.set(ob ? ob.scale.x : r.sheet.scale, r.sheet.scale);
+    node.addChild(body);
+    node.position.set(t.x, t.y);
+    node.zIndex = t.y;
+    this.g.renderer.layers.entities.addChild(node);
+    this.corpses.push({ node, sheet: r.sheet, t: 0 });
+  }
+
+  private animateCorpses(dt: number): void {
+    for (const c of this.corpses) {
+      c.t += dt;
+      const p = c.t / RIG_LEN.mort;
+      (c.node.children[0] as Sprite).texture = rigFrame(c.sheet, 'mort', p / 0.86);
+      c.node.alpha = p > 0.75 ? Math.max(0, 1 - (p - 0.75) / 0.12) : 1;
+    }
+    for (const c of this.corpses) if (c.t >= RIG_LEN.mort * 0.87) c.node.destroy();
+    this.corpses = this.corpses.filter((c) => !c.node.destroyed);
   }
 
   // ================================================================ Arène

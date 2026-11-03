@@ -4,3 +4,4 @@ dist
 dist-ui
 test-results
 playwright-report
+reports

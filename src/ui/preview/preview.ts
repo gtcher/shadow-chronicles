@@ -20,6 +20,7 @@ async function boot(): Promise<void> {
   const save = await SaveManager.open();
   const game = await Game.create<GameEvents>(host);
   await game.assets.loadManifest();
+  await game.assets.loadManifest('assets/art/art-manifest.json', { preload: false });
   await game.assets.loadImages(undefined, (p) => (bar.style.width = `${Math.round(p * 100)}%`));
   document.getElementById('loading')!.remove();
   game.renderer.layers.hud.visible = false; // l'ancien texte de la démo est remplacé par l'UI DOM

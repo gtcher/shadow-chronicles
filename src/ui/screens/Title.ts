@@ -16,6 +16,16 @@ export interface TitleOptions {
   onPacts?: () => void;
   onSanctuary: () => void;
   onSettings: () => void;
+  /** Chapitre le plus loin atteint (0..3) : choisit le fond peint du menu. */
+  chapter?: number;
+}
+
+/** Nom des chapitres (guide DA §4), affiché discrètement sous le titre. */
+const CHAPTER_NAMES = ['La Cour des Veilleurs', 'Les Remparts écarlates', 'La Nécropole lunaire', 'La Porte de l’Éclipse'];
+
+/** URL d'un asset, ou `fallback` s'il n'existe pas (anciens manifests, aperçu UI). */
+function art(o: TitleOptions, key: string, fallback: string): string | undefined {
+  try { return o.assetUrl(key) ?? o.assetUrl(fallback); } catch { try { return o.assetUrl(fallback); } catch { return undefined; } }
 }
 
 /** Écran titre : choix du héros + accès Sanctuaire, défi du jour, réglages. */
@@ -25,16 +35,20 @@ export function titleScreen(o: TitleOptions): HTMLElement {
     const info = HERO_INFO[id];
     const m = o.mastery?.[id];
     const card = h('button', { class: 'sc-herocard', '--c': info.color, 'aria-pressed': String(id === hero), 'aria-label': `${info.name}, ${info.role}`,
-      style: { backgroundImage: `url(${o.assetUrl(`hero-${id}`)})` },
+      style: { backgroundImage: `url(${art(o, `select-${id}`, `hero-${id}`)})` },
       onclick: () => { if (hero === id) o.onPlay(hero); hero = id; cards.forEach((c, i) => c.setAttribute('aria-pressed', String(HERO_IDS[i] === id))); },
       ondblclick: () => o.onPlay(id) },
     h('div', {}, h('h4', {}, info.name), h('p', {}, info.role),
       h('div', { class: 'sc-mast', title: `Maîtrise ${m?.level ?? 1}` }, h('i', { style: { width: `${(m?.progress ?? 0) * 100}%` } }))));
     return card;
   });
-  return h('section', { class: 'sc-screen sc-bg', style: { backgroundImage: `url(${o.assetUrl('ruined-citadel')})` }, role: 'dialog', 'aria-label': 'Menu principal' },
+  const ch = Math.max(0, Math.min(3, o.chapter ?? 0));
+  return h('section', { class: `sc-screen sc-bg sc-menu sc-ch${ch + 1}`, role: 'dialog', 'aria-label': 'Menu principal' },
+    h('div', { class: 'sc-bgart', 'aria-hidden': 'true', style: { backgroundImage: `url(${art(o, `menu-ch${ch + 1}`, 'ruined-citadel')})` } }),
+    h('div', { class: 'sc-motes', 'aria-hidden': 'true' }, ...Array.from({ length: 18 }, (_, i) => h('i', { style: { left: `${(i * 53) % 100}%`, animationDelay: `${-(i * 1.7) % 14}s`, animationDuration: `${10 + (i * 7) % 9}s` } }))),
     h('div', { class: 'sc-center' },
       h('h1', { class: 'sc-title sc-logo' }, 'Shadow Chronicles', h('small', {}, 'Les Serments d\'Akar')),
+      ch > 0 ? h('p', { class: 'sc-chapter' }, `Chapitre ${ch + 1} · ${CHAPTER_NAMES[ch]}`) : null,
       h('div', { class: 'sc-heroes', role: 'group', 'aria-label': 'Choix du héros' }, ...cards),
       o.resume ? h('div', { class: 'sc-next', style: { maxWidth: '560px', margin: '0 auto 14px' } }, h('i', {}, '⟲'),
         h('div', { style: { flex: '1' } }, h('b', {}, 'Expédition en cours'), h('div', { style: { color: 'var(--mute)', fontSize: '0.9em' } }, o.resume.label)),

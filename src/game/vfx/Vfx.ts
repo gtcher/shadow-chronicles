@@ -81,6 +81,9 @@ export class Vfx {
   private ghostT = 0;
   private t = 0;
   private emberT = 0;
+  private lastCoreT = -1;
+  private lastCoreX = 0;
+  private lastCoreY = 0;
 
   constructor(private readonly game: Game<GameEvents>, opts: VfxOptions = {}) {
     const { renderer } = game;
@@ -163,6 +166,8 @@ export class Vfx {
     this.numbers.enabled = false;
   }
   enabled = true;
+  /** Intensité de référence du bloom (modulée par la densité d'effets). */
+  bloomBase = 0.62;
 
   /** Applique les options d'accessibilité (à appeler après modification de `settings`). */
   applySettings(): void {
@@ -187,7 +192,11 @@ export class Vfx {
     let ang = -Math.PI / 2;
     if (this.target) ang = Math.atan2(y - this.target.y, x - this.target.x);
     this.particles.emit(x, by, { shape: 'spark', color: 0xffd28a, endColor: 0xff5a2a, count: crit ? 10 : 6, speed: 380, angle: ang, spread: 1.4, size: 0.5, life: 0.22, drag: 6 });
-    this.particles.emit(x, by, { color: 0xfff1c8, count: 1, speed: 0, size: crit ? 1.6 : 1, life: 0.09, grow: 4 });
+    // Éclat central : un seul par zone toutes les 60 ms (sinon une mêlée de 6 coups devient une tache blanche).
+    if (crit || this.t - this.lastCoreT > 0.06 || Math.abs(x - this.lastCoreX) + Math.abs(by - this.lastCoreY) > 90) {
+      this.lastCoreT = this.t; this.lastCoreX = x; this.lastCoreY = by;
+      this.particles.emit(x, by, { color: crit ? 0xffe6b0 : 0xffd9a8, count: 1, speed: 0, size: crit ? 1.3 : 0.8, life: 0.09, grow: 4, alpha: crit ? 0.95 : 0.75 });
+    }
     this.lighting.flash(x, by, crit ? 200 : 120, 0xffb070, crit ? 0.9 : 0.5, 0.1);
     this.numbers.show(x, by - 24, dmg, crit ? 'crit' : 'normal', id);
     this.game.camera.shake(crit ? 0.12 : 0.04);
@@ -204,7 +213,7 @@ export class Vfx {
     this.particles.emit(x, by, { color: col, count: 16 * k, speed: 220 * Math.sqrt(k), size: 0.6, life: 0.6, gravity: 380, drag: 2, jitter: 10 });
     this.particles.emit(x, by + 10, { shape: 'smoke', color: 0x1a1622, count: 6 * k, speed: 60, size: 0.9 * k, life: 1.1, grow: 0.9, drag: 2, gravity: -30, alpha: 0.75, jitter: 14, spin: 1.5 });
     this.particles.emit(x, by, { color: 0x9a8cff, endColor: 0x3a2c8f, count: 5 * k, speed: 40, angle: -Math.PI / 2, spread: 1.2, size: 0.8, life: 1.3, drag: 1, gravity: -90, alpha: 0.7, jitter: 12 });
-    this.particles.emit(x, by, { color: 0xffffff, count: 1, speed: 0, size: 2.2 * k, life: 0.12, grow: 5, alpha: 0.9 });
+    this.particles.emit(x, by, { color: 0xfff0d8, count: 1, speed: 0, size: 1.8 * k, life: 0.12, grow: 5, alpha: 0.75 });
     this.lighting.flash(x, by, 260 * k, 0xff9a5a, 1, heavy ? 0.35 : 0.2);
     this.decal(x, y, col, heavy ? 1.6 : 0.9);
     if (heavy) {
@@ -357,6 +366,12 @@ export class Vfx {
     this.whiteFlash.alpha = Math.max(0, this.whiteFlash.alpha - frameDt * 4);
     const danger = Math.max(0, 1 - this.hpRatio / 0.3);
     this.lowHp.alpha = danger > 0 ? danger * (0.45 + 0.35 * Math.sin(this.t * (5 + danger * 4))) : 0;
+    // Quads plein écran invisibles : on ne les dessine pas (le remplissage coûte cher sur mobile).
+    this.lowHp.visible = this.lowHp.alpha > 0.004;
+    this.hurtFlash.visible = this.hurtFlash.alpha > 0.004;
+    this.whiteFlash.visible = this.whiteFlash.alpha > 0.004;
+    // Bloom moins fort quand l'écran est déjà saturé d'effets.
+    this.bloom.strength = this.bloomBase * (0.55 + 0.45 * this.particles.crowd);
   }
 
   private spawnGhost(node: Container): void {

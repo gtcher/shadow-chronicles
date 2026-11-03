@@ -12,6 +12,8 @@ export default defineConfig({
     },
   },
   build: { target: 'es2022', assetsDir: 'js', chunkSizeWarningLimit: 1500 },
+  // Worker de cuisson des combattants (src/game/rig/bake.worker.ts) en module ES.
+  worker: { format: 'es' },
   // tests/e2e : Playwright (npm run e2e), pas Vitest.
   test: { environment: 'node', exclude: ['tests/e2e/**', 'node_modules/**'] },
 });

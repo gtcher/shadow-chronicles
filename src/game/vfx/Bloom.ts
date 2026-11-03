@@ -12,7 +12,7 @@ export class Bloom {
   /** Intensité de l'ajout (0..1.5). */
   strength = 0.75;
   /** Seuil de luminosité (0..1) au-dessus duquel un pixel « brille ». */
-  threshold = 0.62;
+  threshold = 0.68;
   private scale = 0.25;
   private src: RenderTexture | null = null;
   private dst: RenderTexture | null = null;

@@ -2,7 +2,9 @@ import { regionForWave } from './combat/rules';
 import type { Game } from '@engine';
 import type { GameEvents } from './events';
 import type { HeroId } from './components';
-import { RunScene, type RunResult, type RunOptions } from './scenes/RunScene';
+// La run (combat, effets, combattants) est chargée à la demande : l'écran titre arrive plus vite.
+import type { RunScene, RunResult, RunOptions } from './scenes/RunScene';
+const loadRun = () => import('./scenes/RunScene');
 import { HERO_DEFS } from './combat/data';
 import { BLESSING_DATA, DEFAULT_RUN_CONFIG, type OfferChoice, type RunConfig } from './combat/blessings';
 import { LOOT, type Item } from './combat/loot';
@@ -63,7 +65,7 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
   const url = (k: string) => game.assets.url(k);
   if (save) ui.codexInfo = () => ({ ...codexFromProfile(save.profile), assetUrl: url });
   // Flashs et chiffres de dégâts suivent les réglages, même modifiés en pleine run.
-  ui.settings.onChange((s) => { applyGameplaySettings(s); const sc = game.scenes.current; if (sc instanceof RunScene && sc.vfx) applyVfxSettings(sc.vfx, s); });
+  ui.settings.onChange((s) => { applyGameplaySettings(s); const sc = game.scenes.current; const vfx = (sc as Partial<RunScene> | null)?.vfx; if (vfx) applyVfxSettings(vfx, s); });
   let hero = opts.hero;
   const hex = (c: number) => `#${c.toString(16).padStart(6, '0')}`;
   let offRun: Array<() => void> = [];
@@ -292,6 +294,7 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
         o.loot = { ...o.loot, luckPct: (o.loot?.luckPct ?? 0) + pts * PACTS.rewardPerPoint.lootRarityLuckPct };
       }
     }
+    const { RunScene } = await loadRun();
     const scene = new RunScene(h, wave, o);
     scene.showBuiltinHud = false;
     scene.onAnnounce = (t, s, c) => ui.hud.banner(t, s, c !== undefined ? hex(c) : undefined);

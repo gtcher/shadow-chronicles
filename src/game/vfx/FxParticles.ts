@@ -91,7 +91,16 @@ export class FxParticles {
     }
   }
 
+  /**
+   * Atténuation des lueurs additives quand elles s'empilent : au-delà de ~140 particules vives,
+   * chacune éclaire un peu moins. Les grosses mêlées restent lisibles au lieu de virer au blanc.
+   */
+  crowd = 1;
+
   update(dt: number): void {
+    const target = 1 / (1 + Math.max(0, this.front.children.length - 140) / 300);
+    this.crowd += (target - this.crowd) * Math.min(1, dt * 6);
+    const crowd = this.crowd;
     for (let i = this.live.length - 1; i >= 0; i--) {
       const p = this.live[i];
       p.life -= dt;
@@ -112,7 +121,7 @@ export class FxParticles {
           const v = Math.hypot(p.vx, p.vy);
           p.s.rotation = Math.atan2(p.vy, p.vx);
           p.s.scale.set(p.size * (0.4 + v / 260), p.size * 0.9);
-          p.s.alpha = p.a0 * Math.min(1, t * 3);
+          p.s.alpha = p.a0 * Math.min(1, t * 3) * crowd;
           break;
         }
         case 'smoke':
@@ -123,11 +132,11 @@ export class FxParticles {
           break;
         case 'ring':
           p.s.scale.set(p.size);
-          p.s.alpha = p.a0 * t * t;
+          p.s.alpha = p.a0 * t * t * crowd;
           break;
         default:
           p.s.scale.set(p.size);
-          p.s.alpha = p.a0 * Math.min(1, t * 2);
+          p.s.alpha = p.a0 * Math.min(1, t * 2) * crowd;
       }
     }
   }

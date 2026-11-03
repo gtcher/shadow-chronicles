@@ -6,7 +6,14 @@
  * gardé tel quel (non typé) pour que la planche et le jeu dessinent exactement la même chose.
  * Point d'entrée typé : ./index.ts (cuisson en feuilles de sprites Pixi).
  */
-export const RIG = { now: 0, projectiles: false };
+export const RIG = { now: 0, projectiles: false, loop: 0, phase: 0 };
+/**
+ * Jeu : en cuisson d'une animation en boucle (idle, course), RIG.loop = durée de la boucle (ms) et
+ * RIG.phase = avancement 0..1. Les ondulations « au temps » (cape, lueurs, lames en orbite) font
+ * alors un nombre entier de cycles par boucle : plus de saut quand l'animation reboucle.
+ * Hors boucle, angle = RIG.now / per (comportement de la planche).
+ */
+const cyc=(per)=>{if(!RIG.loop)return RIG.now/per;const n=Math.max(1,Math.round(RIG.loop/(per*TAU)));return RIG.phase*TAU*n};
 const TAU = Math.PI*2;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const lerp=(a,b,t)=>a+(b-a)*t;
@@ -196,7 +203,7 @@ function drawWeapon(g,c,P,style,which){
     g.beginPath();g.rect(-2,-W*.9,4,W*1.8);fillShape(g,metal,style);
     g.beginPath();g.moveTo(2,-W/2);g.lineTo(2+L*.85,-W/2);g.lineTo(2+L,0);g.lineTo(2+L*.85,W/2);g.lineTo(2,W/2);g.closePath();
     fillShape(g,style==='B'?mix('#9aa0ad','#06070c',.75):'#c8ccd8',style);
-    glow(g,gc,8+(c.group==='h'?6*Math.sin(RIG.now/260):0),style);g.strokeStyle=gc;g.lineWidth=1.6;g.beginPath();g.moveTo(5,-W/2+.8);g.lineTo(2+L*.85,-W/2+.8);g.lineTo(2+L-1,0);g.stroke();noGlow(g);
+    glow(g,gc,8+(c.group==='h'?6*Math.sin(cyc(260)):0),style);g.strokeStyle=gc;g.lineWidth=1.6;g.beginPath();g.moveTo(5,-W/2+.8);g.lineTo(2+L*.85,-W/2+.8);g.lineTo(2+L-1,0);g.stroke();noGlow(g);
   } else if(w==='daggers'){
     g.rotate(-.2);
     g.beginPath();g.moveTo(1,-2.4);g.lineTo(17,-1);g.lineTo(20,0);g.lineTo(17,1.4);g.lineTo(1,2.4);g.closePath();
@@ -345,8 +352,7 @@ function drawHumanoid(g,c,P,style){
     g.restore();
   }
   if(c.weapon==='blades'){ // lames en orbite derrière
-    const tt=RIG.now/1000;
-    for(let i=0;i<3;i++){const a=tt*1.2+i*TAU/3; g.save(); g.translate(Math.cos(a)*24-6,-T-6+Math.sin(a)*8); g.rotate(a*.5+Math.PI/2);
+    for(let i=0;i<3;i++){const a=cyc(1000/1.2)+i*TAU/3; g.save(); g.translate(Math.cos(a)*24-6,-T-6+Math.sin(a)*8); g.rotate(a*.5+Math.PI/2);
       g.beginPath();g.moveTo(0,-14);g.lineTo(3,0);g.lineTo(0,14);g.lineTo(-3,0);g.closePath();fillShape(g,style==='B'?mix('#cfc6e6','#06070c',.7):'#d7d0ea',style);
       glow(g,glowCol(c,style),10,style);g.strokeStyle=glowCol(c,style);g.lineWidth=1;g.beginPath();g.moveTo(0,-13);g.lineTo(0,13);g.stroke();noGlow(g);g.restore()}
   }
@@ -357,7 +363,7 @@ function drawHumanoid(g,c,P,style){
   // robe / traîne flottante
   if(c.robe||c.float){
     g.save(); g.rotate(lean*.3);
-    const hem=c.float?L*.85:L-1, fw=c.hw*(c.float?2:1.9), sway=Math.sin(RIG.now/300)*2-(P.capeFlow-4)*.25;
+    const hem=c.float?L*.85:L-1, fw=c.hw*(c.float?2:1.9), sway=Math.sin(cyc(300))*2-(P.capeFlow-4)*.25;
     g.beginPath(); g.moveTo(-c.hw*.6,-2); g.lineTo(c.hw*.6,-2);
     if(c.float){ g.quadraticCurveTo(fw*.8,hem*.5,sway+4,hem); g.quadraticCurveTo(-fw*.2,hem*.6,-fw*.9+sway,hem*.75); g.quadraticCurveTo(-fw*.7,hem*.3,-c.hw*.6,-2);}
     else { g.lineTo(fw*.55+sway*.5,hem); for(let i=0;i<5;i++){g.lineTo(fw*.55-(i+1)*fw*.22+sway*.5,hem+(i%2?-3:0))} g.closePath(); }
@@ -526,7 +532,7 @@ function drawHeroHead(g,c,P,style){
 
 /* ===================== RENDU COMPLET (liseré, flash, dissolution, effets) ===================== */
 const pool={};
-function oc(id,w,h){let c=pool[id];if(!c){c=pool[id]=document.createElement('canvas')}if(c.width!==w||c.height!==h){c.width=w;c.height=h}return c}
+function oc(id,w,h){let c=pool[id];if(!c){c=pool[id]=typeof document!=='undefined'?document.createElement('canvas'):new OffscreenCanvas(w,h)}if(c.width!==w||c.height!==h){c.width=w;c.height=h}return c}
 
 function renderSprite(id,c,anim,p,style,s,k){
   // s = pixels par unité ; retourne {cv, ox, oy} avec ox,oy = position des pieds dans cv
@@ -626,8 +632,8 @@ function drawFx(g,c,P,style,s){
       g.save(); glow(g,col,12,style); g.globalAlpha=(1-f.d)*.9; g.strokeStyle=col; g.lineWidth=2.2;
       for(let i=0;i<3;i++){g.beginPath();g.moveTo(f.x+40+i*4,-40+i*6);g.quadraticCurveTo(f.x+56+i*4,-26+i*6,f.x+48+i*4,-8+i*6);g.stroke()} noGlow(g); g.restore();
     }
-    if(f.t==='motes'){ const tt=RIG.now/1000; g.save(); glow(g,col,10,style);
-      for(let i=0;i<4;i++){const a=tt*(1+i*.15)+i*1.7; const x=Math.cos(a)*(26+i*3), y=-62+Math.sin(a*1.3)*16-i*4; g.globalAlpha=.55+.45*Math.sin(a*2); g.fillStyle=i%2?'#ffffff':col; g.beginPath(); g.arc(x,y,1.3+(i%2),0,TAU); g.fill()}
+    if(f.t==='motes'){ g.save(); glow(g,col,10,style);
+      for(let i=0;i<4;i++){const a=cyc(1000/(1+i*.15))+i*1.7; const x=Math.cos(a)*(26+i*3), y=-62+Math.sin(RIG.loop?a+i:a*1.3)*16-i*4; g.globalAlpha=.55+.45*Math.sin(a*2); g.fillStyle=i%2?'#ffffff':col; g.beginPath(); g.arc(x,y,1.3+(i%2),0,TAU); g.fill()}
       noGlow(g); g.restore(); }
     if(f.t==='embers'){
       g.save(); glow(g,col,8,style);

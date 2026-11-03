@@ -11,7 +11,10 @@ import { open, waitRun, type W } from './helpers';
  * qui sont fiables, plutôt que le nombre d'images par seconde.
  */
 const BUDGET = {
-  /** JS principal compressé (gzip). */
+  /**
+   * JS compressé (gzip) chargé avant l'écran titre : le point d'entrée et ses modulepreload.
+   * La run (combat, effets, combattants), le worker de cuisson et le rendu WebGPU se chargent à part.
+   */
   jsGzipKB: 300,
   /** Octets téléchargés avant l'écran titre. */
   bootMB: 9,
@@ -32,9 +35,13 @@ test.afterAll(() => {
 });
 
 test('poids : JS compressé et téléchargement au démarrage', async ({ page }) => {
-  const js = fs.readdirSync('dist/js').filter((f) => f.endsWith('.js'));
-  const gz = js.reduce((s, f) => s + zlib.gzipSync(fs.readFileSync(path.join('dist/js', f))).byteLength, 0);
-  perf.jsGzipKB = Math.round(gz / 1024);
+  const gzKB = (files: string[]) => Math.round(files.reduce((s, f) => s + zlib.gzipSync(fs.readFileSync(path.join('dist', f))).byteLength, 0) / 1024);
+  const html = fs.readFileSync('dist/index.html', 'utf8');
+  const boot = [...html.matchAll(/(?:src|href)="\.\/(js\/[^"]+\.js)"/g)].map((m) => m[1]);
+  expect(boot.length, 'scripts du démarrage trouvés dans index.html').toBeGreaterThan(0);
+  perf.jsGzipKB = gzKB(boot);
+  // Total (chargé à la demande compris), pour suivre la tendance.
+  perf.jsTotalGzipKB = gzKB(fs.readdirSync('dist/js').filter((f) => f.endsWith('.js')).map((f) => `js/${f}`));
   const t0 = Date.now();
   await open(page);
   await expect(page.getByRole('dialog', { name: 'Menu principal' })).toBeVisible();

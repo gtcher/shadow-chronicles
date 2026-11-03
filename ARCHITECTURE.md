@@ -200,6 +200,9 @@ Détail et résultats : [docs/tests-equilibrage.md](docs/tests-equilibrage.md).
 Héros dessinés en piste A (« peint encré »), ennemis et boss en piste B (« ombres à contre-jour »), validés sur la planche `docs/planche-persos-v2/index.html`.
 
 - `rig/draw.ts` : squelette animé en Canvas 2D, le même code que la planche (non typé, `@ts-nocheck`). Fiches dans `CAST`.
-- `rig/index.ts` : `bakeRig(def, hauteurPx, 'A'|'B')` cuit 36 images (idle 8, course 8, attaque 7, touché 3, mort 10) dans un atlas, une fois par run et par combattant (`RunScene.rigSheet`). Les variantes régionales recolorent le contre-jour avec leur `tint`.
+- `rig/atlas.ts` : cuisson d'un combattant en 50 images (idle 12, course 12, attaque 10, touché 4, mort 12), chaque image rognée au plus juste et rangée en étagères (`trim`/`orig` Pixi). Les boucles (idle, course) sont cuites avec `RIG.loop` : cape, lueurs et lames en orbite rebouclent sans saut.
+- `rig/index.ts` : `rigBaker` (cache partagé entre les runs) cuit dans 1 ou 2 workers (`bake.worker.ts`, OffscreenCanvas) ; repli en petites tranches sur le fil principal. `rigBaker.request` = en arrière-plan, `rigBaker.now` = tout de suite (cas imprévu, compté dans `rigBaker.stats.sync`). Résolution selon l'écran (`bakeResolution`). Les variantes régionales recolorent le contre-jour avec leur `tint`.
+- `rig/roster.ts` : qui cuire et quand. Les 4 héros dès le démarrage (`main.ts`), puis à l'entrée d'une run et à chaque vague les ennemis de la vague suivante et le prochain boss (`waveOrders`). **Ne jamais cuire à l'apparition** : 0,2 à 0,5 s de gel par type d'ennemi. Test : `tests/e2e/rig.spec.ts`.
+- Flash blanc : 1re image de « touché » seulement, au plus une fois toutes les 0,3 s par ennemi ; la mort démarre après le flash (l'éclat vient des effets).
 - `RunScene` choisit l'image : course ou idle selon la vitesse, attaque à chaque technique du héros ou calée sur la fenêtre `windup` des ennemis, touché sur dégâts, mort jouée par une dépouille (`spawnCorpse`).
 - `?persos=v1` dans l'URL revient aux anciens sprites (comparaison).

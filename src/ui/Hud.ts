@@ -38,6 +38,24 @@ export class Hud {
   private readonly comboWindow = 3;
   private mana = 1;
   private hero: HeroId = 'taro';
+  /**
+   * Dernières valeurs écrites dans le DOM. Le HUD est mis à jour à chaque image : réécrire un texte
+   * ou une largeur identique invalide quand même le style et la mise en page (coûteux sur mobile).
+   * On n'écrit donc que ce qui change.
+   */
+  private readonly written = new Map<HTMLElement, Record<string, string>>();
+  private changed(el: HTMLElement, key: string, v: string): boolean {
+    let m = this.written.get(el);
+    if (!m) this.written.set(el, (m = {}));
+    if (m[key] === v) return false;
+    m[key] = v;
+    return true;
+  }
+  private text(el: HTMLElement, v: string): void { if (this.changed(el, 'text', v)) el.textContent = v; }
+  private width(el: HTMLElement, ratio: number): void {
+    const v = `${Math.round(Math.max(0, Math.min(1, ratio)) * 1000) / 10}%`;
+    if (this.changed(el, 'width', v)) el.style.width = v;
+  }
 
   constructor() {
     this.el = h('div', { class: 'sc-hud' });
@@ -115,17 +133,22 @@ export class Hud {
   setVitals(v: Vitals): void {
     const max = Math.max(1, v.max);
     const k = Math.max(0, Math.min(1, v.hp / max));
-    this.hpFill.style.width = `${k * 100}%`;
-    this.hpGhost.style.width = `${k * 100}%`;
+    this.width(this.hpFill, k);
+    this.width(this.hpGhost, k);
     const sh = Math.min(1, (v.shield ?? 0) / max);
-    this.hpShield.style.width = `${sh * 100}%`;
-    this.hpText.textContent = `${fmt(Math.ceil(v.hp))} / ${fmt(max)}${v.shield ? `  +${fmt(v.shield)}` : ''}`;
-    this.hpBar.classList.toggle('sc-low', k < 0.3 && k > 0);
-    this.hpBar.setAttribute('aria-valuenow', String(Math.round(k * 100)));
+    this.width(this.hpShield, sh);
+    this.text(this.hpText, `${fmt(Math.ceil(v.hp))} / ${fmt(max)}${v.shield ? `  +${fmt(v.shield)}` : ''}`);
+    const low = k < 0.3 && k > 0;
+    if (this.changed(this.hpBar, 'low', String(low))) this.hpBar.classList.toggle('sc-low', low);
+    const now = String(Math.round(k * 100));
+    if (this.changed(this.hpBar, 'aria', now)) this.hpBar.setAttribute('aria-valuenow', now);
     if (v.mana !== undefined && v.manaMax) {
       this.mana = v.mana;
-      this.manaFill.style.width = `${(v.mana / v.manaMax) * 100}%`;
-      HERO_INFO[this.hero].skills.forEach((s, i) => this.skills[i]?.classList.toggle('sc-nomana', s.cost > this.mana));
+      this.width(this.manaFill, v.mana / v.manaMax);
+      HERO_INFO[this.hero].skills.forEach((s, i) => {
+        const b = this.skills[i], off = s.cost > this.mana;
+        if (b && this.changed(b, 'nomana', String(off))) b.classList.toggle('sc-nomana', off);
+      });
     }
   }
 
@@ -135,16 +158,17 @@ export class Hud {
     if (!b) return;
     const was = this.cds[i];
     this.cds[i] = remaining;
-    b.style.setProperty('--cd', total > 0 ? String(Math.max(0, remaining / total)) : '0');
-    const label = b.querySelector('b')!;
-    if (i < 4) label.textContent = remaining > 0.05 && total >= 1.5 ? (remaining >= 1 ? String(Math.ceil(remaining)) : remaining.toFixed(1)) : '';
+    const cd = total > 0 ? String(Math.round(Math.max(0, remaining / total) * 500) / 500) : '0';
+    if (this.changed(b, 'cd', cd)) b.style.setProperty('--cd', cd);
+    const label = b.querySelector('b');
+    if (i < 4 && label) this.text(label, remaining > 0.05 && total >= 1.5 ? (remaining >= 1 ? String(Math.ceil(remaining)) : remaining.toFixed(1)) : '');
     if (was > 0.05 && remaining <= 0.05 && total >= 1.5) { b.classList.remove('sc-ready'); void b.offsetWidth; b.classList.add('sc-ready'); }
   }
 
   setWave(n: number, progress: number, info?: string): void {
-    this.waveTitle.textContent = `Vague ${n}`;
-    this.waveTrack.style.width = `${Math.max(0, Math.min(1, progress)) * 100}%`;
-    this.waveInfo.innerHTML = info ?? '';
+    this.text(this.waveTitle, `Vague ${n}`);
+    this.width(this.waveTrack, progress);
+    if (this.changed(this.waveInfo, 'html', info ?? '')) this.waveInfo.innerHTML = info ?? '';
   }
 
   setGold(n: number): void { this.bump(this.gold, n); }

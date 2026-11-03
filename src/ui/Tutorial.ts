@@ -13,9 +13,9 @@ interface Step {
 }
 
 const STEPS: Step[] = [
-  { id: 'move', title: 'Déplace-toi', goal: 1.2, hand: true,
+  { id: 'move', title: 'Déplace-toi', goal: 1, hand: true,
     text: { kb: 'Utilise <span class="sc-kbd">Z</span><span class="sc-kbd">Q</span><span class="sc-kbd">S</span><span class="sc-kbd">D</span> ou les flèches.', pad: 'Incline le stick gauche.', touch: 'Pose le pouce à gauche de l\'écran et glisse.' } },
-  { id: 'attack', title: 'Frappe', goal: 1.5, target: '.sc-skill[data-i="0"]',
+  { id: 'attack', title: 'Frappe', goal: 1, target: '.sc-skill[data-i="0"]',
     text: { kb: 'Maintiens le <b>clic gauche</b> (ou <span class="sc-kbd">J</span>) : tu vises à la souris.', pad: 'Maintiens <b>RT</b>, vise au stick droit.', touch: 'Maintiens le gros bouton : la visée est automatique.' } },
   { id: 'dash', title: 'Esquive', goal: 1, target: '.sc-skill[data-i="4"]',
     text: { kb: '<span class="sc-kbd">Espace</span> ou clic droit : tu traverses les coups.', pad: '<b>LT</b> pour esquiver.', touch: 'Touche ➶ pour traverser les ennemis.' } },
@@ -43,6 +43,9 @@ export class Tutorial {
   private device: Dev = 'keyboard';
   private active = false;
   private offerTipShown = false;
+  /** Incrémenté à chaque start/stop : les minuteries d'une session close ne font plus rien. */
+  private gen = 0;
+  private textEl?: HTMLElement;
 
   constructor(private readonly locate: (sel: string) => HTMLElement | null, private readonly restPos: () => { x: number; y: number }) {
     this.el = h('div', { class: 'sc-tuto', 'aria-live': 'polite' });
@@ -50,10 +53,25 @@ export class Tutorial {
 
   get running(): boolean { return this.active; }
 
-  start(device: Dev): void { this.device = device; this.active = true; this.i = -1; this.next(); }
-  stop(): void { this.active = false; this.clear(); this.el.replaceChildren(); }
+  start(device: Dev): void { this.gen++; this.device = device; this.active = true; this.i = -1; this.next(); }
+  stop(): void { this.gen++; this.active = false; this.clear(); this.el.replaceChildren(); }
 
-  setDevice(d: Dev): void { if (d !== this.device && this.active) { this.device = d; this.show(); } }
+  /** Passer : ferme le tutoriel pour de bon (mémorisé par `onDone`). */
+  skip(): void { if (!this.active) return; this.stop(); this.onDone(); }
+
+  /**
+   * Changement de périphérique : on ne reconstruit jamais le panneau (sinon il « saute » à chaque
+   * alternance clavier/souris et le bouton Passer est remplacé sous le doigt avant le clic).
+   * Seul le texte change, et seulement s'il diffère (clavier et souris partagent le même).
+   */
+  setDevice(d: Dev): void {
+    if (d === this.device) return;
+    const before = this.key();
+    this.device = d;
+    if (!this.active || this.key() === before) return;
+    const s = STEPS[this.i];
+    if (s && this.textEl && this.panel && !this.panel.classList.contains('sc-done')) { this.textEl.innerHTML = s.text[this.key()]; this.decorate(s); }
+  }
 
   notify(ev: TutoEvent, amount = 1): void {
     if (ev === 'offer') { this.offerTip(); return; }
@@ -70,16 +88,22 @@ export class Tutorial {
 
   private complete(): void {
     const p = this.panel;
-    if (p) { p.classList.add('sc-done'); p.querySelector('.sc-step')!.textContent = '✓'; }
+    if (!p || p.classList.contains('sc-done')) return;   // déjà validée : pas de double avance
+    p.classList.add('sc-done'); p.querySelector('.sc-step')!.textContent = '✓';
     this.clear(false);
-    setTimeout(() => this.next(), 650);
+    const g = this.gen;
+    // Le panneau validé s'efface tout de suite ; l'étape suivante arrive un peu après.
+    setTimeout(() => { if (g === this.gen && this.panel === p) { p.remove(); this.panel = undefined; } }, 350);
+    setTimeout(() => { if (g === this.gen) this.next(); }, 900);
   }
 
   private next(): void {
+    if (!this.active) return;
     this.i++; this.acc = 0;
     if (this.i >= STEPS.length) { this.stop(); this.onDone(); return; }
     this.show();
-    if (STEPS[this.i].id === 'wave') setTimeout(() => { if (STEPS[this.i]?.id === 'wave') this.complete(); }, 6000);
+    const g = this.gen, i = this.i;
+    if (STEPS[i].id === 'wave') setTimeout(() => { if (g === this.gen && this.i === i) this.complete(); }, 6000);
   }
 
   private key(): 'kb' | 'pad' | 'touch' { return this.device === 'gamepad' ? 'pad' : this.device === 'touch' ? 'touch' : 'kb'; }
@@ -88,12 +112,24 @@ export class Tutorial {
     const s = STEPS[this.i];
     if (!s) return;
     this.clear();
+    // Passer réagit dès l'appui (pointerdown) : rien ne peut remplacer le bouton entre l'appui et le clic.
+    const skip = (e: Event) => { e.preventDefault(); e.stopPropagation(); this.skip(); };
+    const btn = h('button', { class: 'sc-btn sc-ghost', type: 'button', style: { minHeight: '36px', padding: '4px 10px', fontSize: '0.75em' }, 'aria-label': 'Passer le tutoriel' }, 'Passer');
+    btn.addEventListener('pointerdown', skip);
+    btn.addEventListener('click', skip);
     this.panel = h('div', { class: 'sc-coach sc-panel', role: 'status' },
       h('span', { class: 'sc-step' }, String(this.i + 1)),
-      h('div', {}, h('h4', {}, s.title), h('p', { html: s.text[this.key()] })),
-      h('button', { class: 'sc-btn sc-ghost', style: { minHeight: '36px', padding: '4px 10px', fontSize: '0.75em' }, onclick: () => { this.stop(); this.onDone(); }, 'aria-label': 'Passer le tutoriel' }, 'Passer'),
+      h('div', {}, h('h4', {}, s.title), (this.textEl = h('p', { html: s.text[this.key()] }))),
+      btn,
       h('div', { class: 'sc-prog' }, (this.bar = h('i'))));
     this.el.replaceChildren(this.panel);
+    this.decorate(s);
+  }
+
+  /** Main fantôme et anneau autour du bouton, en tactile seulement. */
+  private decorate(s: Step): void {
+    for (const e of this.extra) e.remove();
+    this.extra = [];
     if (this.device === 'touch') {
       if (s.hand) { const p = this.restPos(); const g = h('div', { class: 'sc-ghost-hand', style: { left: `${p.x}px`, top: `${p.y}px` } }); this.extra.push(g); this.el.append(g); }
       if (s.target) {

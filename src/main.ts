@@ -7,6 +7,8 @@ import { GameAudio } from '@game/audio';
 import { initPwa } from './pwa';
 import { Bot } from '@game/bot/Bot';
 import { RunScene } from '@game/scenes/RunScene';
+import { linkAudioSettings } from '@game/settingsLink';
+import type { UiRoot } from './ui';
 
 /**
  * Démarrage : moteur → assets → scène.
@@ -33,15 +35,19 @@ async function boot(): Promise<void> {
   // ?demo : scène du moteur ; ?hero= / ?wave= : directement en run ; sinon écran titre.
   // Tests / équilibrage : ?seed=123 fixe l'aléatoire de la run, ?bot (ou ?bot=0.5) laisse jouer le robot.
   if (params.has('seed')) RunScene.seed = Number(params.get('seed')) || 1;
+  let ui: UiRoot | null = null;
   if (params.has('demo')) await game.scenes.switch(new DemoScene(hero));
-  else await startApp(game, { hero, wave, skipTitle: params.has('hero') || params.has('wave') });
+  else ui = await startApp(game, { hero, wave, skipTitle: params.has('hero') || params.has('wave') });
   if (params.has('bot')) {
     const skill = Math.max(0, Math.min(1, Number(params.get('bot')) || 0.85));
     (window as unknown as { bot: Bot }).bot = Bot.attach(game, skill, RunScene.seed ?? 1);
   }
   game.start();
   // Audio : se débloque au premier clic / touche (règle des navigateurs). Console : window.audio
-  (window as unknown as { audio: unknown }).audio = GameAudio.attach(game, { hero });
+  const audio = GameAudio.attach(game, { hero });
+  (window as unknown as { audio: unknown }).audio = audio;
+  // Curseurs Son de l'écran Réglages → volumes réels.
+  if (ui) linkAudioSettings(ui.settings, audio);
 
   // Accès console pour le débogage : window.game
   (window as unknown as { game: unknown }).game = game;

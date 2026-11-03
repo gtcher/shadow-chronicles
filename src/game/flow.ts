@@ -9,6 +9,7 @@ import { LOOT, type Item } from './combat/loot';
 import { checkAchievements, nearAchievements, tierColor, type RunView } from './achievements';
 import { BASE_MODS, PACTS, applyDailyMods, applyPacts, buildDaily, dailyScore, pactPoints, seedStream, shareText, type DailyConfig, type PactRanks } from './modes';
 import { dailyIntroScreen, dailyResultScreen, pactsScreen } from './screens';
+import { applyVfxSettings, applyGameplaySettings } from './settingsLink';
 import { mountUI, connectSave, metaFromProfile, sanctuaryActions, type UiRoot } from '../ui';
 import { SaveManager, recordRunEnd, recordBest, recordDaily, masteryLevel, unlockAchievement, upgradeRank, addCurrency, grant, type Profile } from '../save';
 import sanctuaryJson from '../../data/sanctuary.json';
@@ -60,6 +61,8 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
   // Outils de test (robot, console) : accès à la sauvegarde et aux écrans.
   (window as unknown as { sc: unknown }).sc = { save, ui, title: () => title(), pacts: () => pacts(), daily: () => dailyIntro() };
   const url = (k: string) => game.assets.url(k);
+  // Flashs et chiffres de dégâts suivent les réglages, même modifiés en pleine run.
+  ui.settings.onChange((s) => { applyGameplaySettings(s); const sc = game.scenes.current; if (sc instanceof RunScene && sc.vfx) applyVfxSettings(sc.vfx, s); });
   let hero = opts.hero;
   const hex = (c: number) => `#${c.toString(16).padStart(6, '0')}`;
   let offRun: Array<() => void> = [];
@@ -151,6 +154,8 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
     let best = r.wave;
     let near: ReturnType<typeof nearAchievements> = [];
     if (save) {
+      // Record d'avant cette run (sinon « nouveau record » ne s'affiche jamais).
+      best = Math.max(0, ...Object.values(save.profile.stats.bestWaveByMode as Record<string, number>));
       const rew = save.update((p) => {
         const out = recordRunEnd(p, {
           hero: r.hero, mode: scene.mode, wave: r.wave, wavesCleared: r.wavesCleared, bossWaves: r.bossWaves, won: r.won, daily: false, pactPoints: pts,
@@ -176,7 +181,6 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
       near = nearAchievements(save.profile, view(scene, r, false));
       gains = { eclats: rew.currencies.eclats };
       from = rew.mastery.from; to = rew.mastery.to; level = to;
-      best = Math.max(r.wave, ...Object.values(save.profile.stats.bestWaveByMode as Record<string, number>));
     }
     ui.hud.el.hidden = true;
     ui.showRunEnd({
@@ -185,6 +189,7 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
       near,
       onRetry: () => void startRun(r.hero, 1),
       onSanctuary: () => sanctuary(),
+      onMenu: () => title(),
     });
   };
 
@@ -316,6 +321,7 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
       scene.later(1.4, () => { if (ui.inRun && !scene.snapshot().over) offer(scene, p.wave); else scene.nextWave(); });
     }));
     await game.scenes.switch(scene);
+    applyVfxSettings(scene.vfx, ui.settings.get());
     // Le butin existe une fois la scène entrée.
     scene.loot.onItem = (it: Item, equipped: boolean, dust: number) => {
       const R = LOOT.rarities[it.rarity];

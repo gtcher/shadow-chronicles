@@ -12,6 +12,8 @@ export interface RunEndOptions {
   near: Array<{ icon: string; name: string; progress: number; label: string }>;
   onRetry: () => void;
   onSanctuary: () => void;
+  /** Retour à l'écran titre. */
+  onMenu?: () => void;
 }
 
 /** Fin de run « gains d'abord » : ce qui est gagné, la prochaine amélioration, les succès presque atteints. */
@@ -38,7 +40,8 @@ export function runEndScreen(o: RunEndOptions): HTMLElement {
           return h('div', {}, h('span', {}, a.icon), h('span', {}, a.name), h('small', { style: { color: 'var(--mute)' } }, a.label), h('div', { class: 'sc-track' }, bar)); })) : null,
       h('div', { class: 'sc-row' },
         h('button', { class: 'sc-btn sc-primary', onclick: o.onRetry, 'data-autofocus': true }, '⟳ Encore une run'),
-        h('button', { class: `sc-btn${o.next?.affordable ? ' sc-primary' : ''}`, onclick: o.onSanctuary }, '♜ Sanctuaire'))));
+        h('button', { class: `sc-btn${o.next?.affordable ? ' sc-primary' : ''}`, onclick: o.onSanctuary }, '♜ Sanctuaire'),
+        o.onMenu ? h('button', { class: 'sc-btn sc-ghost', onclick: o.onMenu }, 'Menu principal') : null)));
   requestAnimationFrame(() => {
     gains.forEach((g, i) => setTimeout(() => countUp(vals[i], g.value, 800, g.icon ? `+` : ''), 150 + i * 220));
     requestAnimationFrame(() => (xpBar.style.width = `${o.mastery.to * 100}%`));

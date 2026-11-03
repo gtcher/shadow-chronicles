@@ -20,3 +20,25 @@ test('mobile : titre lisible, commandes tactiles et joystick virtuel', async ({ 
   expect(after - before).toBeGreaterThan(100);
   expect(errors).toEqual([]);
 });
+
+test('mobile : bouton pause, réglages défilables (volume compris), fermer et reprendre', async ({ page }) => {
+  const errors = await open(page, '?hero=sena&seed=4');
+  await waitRun(page);
+  await page.locator('.sc-hud').getByRole('button', { name: 'Pause' }).tap();
+  const pause = page.getByRole('dialog', { name: 'Pause' });
+  await expect(pause).toBeVisible();
+  await pause.getByRole('button', { name: 'Réglages' }).tap();
+  const settings = page.getByRole('dialog', { name: 'Réglages' });
+  await expect(settings).toBeVisible();
+  const music = settings.locator('label.sc-field', { hasText: 'Musique' }).locator('input');
+  await music.scrollIntoViewIfNeeded();
+  await music.fill('0.25');
+  expect(await page.evaluate(() => (window as unknown as { audio: { engine: { settings: { music: number } } } }).audio.engine.settings.music)).toBe(0.25);
+  const close = settings.getByRole('button', { name: 'Fermer' });
+  await close.scrollIntoViewIfNeeded();
+  await close.tap();
+  await expect(pause).toBeVisible();
+  await pause.getByRole('button', { name: 'Reprendre' }).tap();
+  await expect.poll(() => page.evaluate(() => (window as unknown as W).game.paused)).toBe(false);
+  expect(errors).toEqual([]);
+});

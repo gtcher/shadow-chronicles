@@ -193,3 +193,12 @@ Détail et résultats : [docs/tests-equilibrage.md](docs/tests-equilibrage.md).
 - `npm run bot -- --skill 0.3,0.6,0.9 --seeds 1,2,3,4,5 --out reports/x.json` puis `npm run bot:summary reports/x.json` (serveur `npm run preview` lancé avant).
 - `npm run e2e` : build + Playwright (titre, run, pause, mort → fin → nouvelle run, 4 héros, 4 boss à 3 phases, ennemis « zombies », mobile, budget de perf → `reports/perf.json`).
 - Leviers d'équilibrage : `combat/rules.ts` (`enemyScaling`, `enemyTempo`, `shieldCap`, `planWave`), `combat/data.ts` (héros, ennemis, boss), `data/*.json`.
+
+## Combattants v2 (`src/game/rig/`)
+
+Héros dessinés en piste A (« peint encré »), ennemis et boss en piste B (« ombres à contre-jour »), validés sur la planche `docs/planche-persos-v2/index.html`.
+
+- `rig/draw.ts` : squelette animé en Canvas 2D, le même code que la planche (non typé, `@ts-nocheck`). Fiches dans `CAST`.
+- `rig/index.ts` : `bakeRig(def, hauteurPx, 'A'|'B')` cuit 36 images (idle 8, course 8, attaque 7, touché 3, mort 10) dans un atlas, une fois par run et par combattant (`RunScene.rigSheet`). Les variantes régionales recolorent le contre-jour avec leur `tint`.
+- `RunScene` choisit l'image : course ou idle selon la vitesse, attaque à chaque technique du héros ou calée sur la fenêtre `windup` des ennemis, touché sur dégâts, mort jouée par une dépouille (`spawnCorpse`).
+- `?persos=v1` dans l'URL revient aux anciens sprites (comparaison).

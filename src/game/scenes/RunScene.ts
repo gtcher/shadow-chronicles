@@ -856,8 +856,11 @@ export class RunScene extends Scene implements CombatCtx {
     if (!node.visible) return;
     const body = node.getChildByLabel('body') as Sprite;
     const base = Math.abs(body.scale.y);
-    if (this.rigs.has(e)) {
-      body.scale.x = facing * base * grow; body.scale.y = base * grow;
+    const rig = this.rigs.get(e);
+    if (rig) {
+      // Échelle repartie de la feuille à chaque image : le grossissement d'élan ne se cumule pas.
+      const k = rig.sheet.scale * grow;
+      body.scale.x = facing * k; body.scale.y = k;
       body.alpha = alpha;
       body.tint = flash > 0 ? 0xffb0a0 : tint;
       const aura = node.getChildByLabel('aura') as Sprite | null;

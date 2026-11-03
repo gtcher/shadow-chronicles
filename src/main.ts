@@ -1,12 +1,18 @@
 import { Game } from '@engine';
-import { DemoScene } from '@game/scenes/DemoScene';
 import { startApp } from '@game/flow';
+// Pixi enregistre ses « pipes » de rendu (TilingSprite, Text, BitmapText, Graphics…) à l'import du
+// module. La run étant chargée à la demande, on les importe ici pour que le moteur de rendu les
+// connaisse dès sa création (sinon : « reading 'validateRenderable' » au premier affichage).
+import 'pixi.js/sprite-tiling';
+import 'pixi.js/text';
+import 'pixi.js/text-bitmap';
+import 'pixi.js/graphics';
+import 'pixi.js/mesh';
+import 'pixi.js/filters';
 import type { HeroId } from '@game/components';
 import type { GameEvents } from '@game/events';
 import { GameAudio } from '@game/audio';
 import { initPwa } from './pwa';
-import { Bot } from '@game/bot/Bot';
-import { RunScene } from '@game/scenes/RunScene';
 import { linkAudioSettings } from '@game/settingsLink';
 import type { UiRoot } from './ui';
 
@@ -34,13 +40,22 @@ async function boot(): Promise<void> {
   const wave = Math.max(1, Math.min(99, Number(params.get('wave')) || 1));
   // ?demo : scène du moteur ; ?hero= / ?wave= : directement en run ; sinon écran titre.
   // Tests / équilibrage : ?seed=123 fixe l'aléatoire de la run, ?bot (ou ?bot=0.5) laisse jouer le robot.
-  if (params.has('seed')) RunScene.seed = Number(params.get('seed')) || 1;
+  if (params.has('seed')) (await import('@game/scenes/RunScene')).RunScene.seed = Number(params.get('seed')) || 1;
   let ui: UiRoot | null = null;
-  if (params.has('demo')) await game.scenes.switch(new DemoScene(hero));
+  // Combattants : cuisson en arrière-plan (worker) dès maintenant, envoi au GPU dès qu'ils sont prêts.
+  // (module chargé à part, comme toute la run : l'écran titre n'attend pas ce code).
+  const rig = import('@game/rig/roster').then(({ prewarmHeroes, rigBaker }) => {
+    rigBaker.upload = (src) => (game.renderer.app.renderer as unknown as { texture?: { initSource?: (s: unknown) => void } }).texture?.initSource?.(src);
+    prewarmHeroes(hero ?? undefined);
+    (window as unknown as { rigBaker: typeof rigBaker }).rigBaker = rigBaker;
+  });
+  if (params.has('hero') || params.has('wave')) await rig;
+  if (params.has('demo')) await game.scenes.switch(new (await import('@game/scenes/DemoScene')).DemoScene(hero));
   else ui = await startApp(game, { hero, wave, skipTitle: params.has('hero') || params.has('wave') });
   if (params.has('bot')) {
     const skill = Math.max(0, Math.min(1, Number(params.get('bot')) || 0.85));
-    (window as unknown as { bot: Bot }).bot = Bot.attach(game, skill, RunScene.seed ?? 1);
+    const [{ Bot }, { RunScene }] = await Promise.all([import('@game/bot/Bot'), import('@game/scenes/RunScene')]);
+    (window as unknown as { bot: unknown }).bot = Bot.attach(game, skill, RunScene.seed ?? 1);
   }
   game.start();
   // Audio : se débloque au premier clic / touche (règle des navigateurs). Console : window.audio
@@ -48,6 +63,9 @@ async function boot(): Promise<void> {
   (window as unknown as { audio: unknown }).audio = audio;
   // Curseurs Son de l'écran Réglages → volumes réels.
   if (ui) linkAudioSettings(ui.settings, audio);
+
+  // Le code de la run se télécharge pendant que le joueur est sur l'écran titre.
+  setTimeout(() => { void import('@game/scenes/RunScene'); }, 800);
 
   // Accès console pour le débogage : window.game
   (window as unknown as { game: unknown }).game = game;

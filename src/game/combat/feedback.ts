@@ -71,12 +71,15 @@ export class CombatFeedback {
       const s = n.t.scale.x;
       n.t.scale.set(s + (1 - s) * Math.min(1, dt * 14));
     }
+    const crowd = 1 / (1 + Math.max(0, this.arcs.length - 4) * 0.12);
     for (let i = this.arcs.length - 1; i >= 0; i--) {
       const a = this.arcs[i];
       a.life -= dt;
       a.g.clear();
       if (a.life <= 0) { a.g.removeFromParent(); this.arcPool.push(a.g); this.arcs.splice(i, 1); continue; }
       a.draw(a.g, a.life / a.max);
+      // Arcs additifs superposés (mêlée, attaques rapides) : atténués pour ne pas saturer en blanc.
+      a.g.alpha = crowd;
     }
   }
 

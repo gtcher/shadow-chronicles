@@ -23,7 +23,8 @@ import { updateFoes } from '../combat/foes';
 import { enterPhase, updateBosses } from '../combat/boss';
 import { WaveDirector } from '../combat/waves';
 import { ChapterArena } from '../arena/ChapterArena';
-import { RIG_KEY_BY_BOSS, RIG_KEY_BY_FAMILY, RIG_LEN, bakeRig, rigDef, rigFrame, type RigAnim, type RigSheet } from '../rig';
+import { RIG_LEN, rigBaker, rigFrame, type RigAnim, type RigSheet } from '../rig';
+import { bossOrder, foeOrder, heroOrder, prefetch, waveOrders, type RigOrder } from '../rig/roster';
 import { CAMPAIGN_WAVES, regionForWave, bossScaling, enemyPool, enemyScaling, mitigate, phaseForHp, zoneHits, type WavePlan, type Zone } from '../combat/rules';
 
 /** Arène de combat : rectangle borné, ruines en obstacles. */
@@ -36,7 +37,7 @@ const ARENA: Rect = { x: -1500, y: -1300, w: 3000, h: 2600 };
 const RIG_ON = typeof document !== 'undefined' && typeof location !== 'undefined' && new URLSearchParams(location.search).get('persos') !== 'v1';
 
 /** État d'animation d'un combattant v2. */
-interface RigState { sheet: RigSheet; anim: RigAnim; t: number; hurt: number; atk: number; wind: number; flash: number; hp: number; prevState: string }
+interface RigState { sheet: RigSheet; anim: RigAnim; t: number; hurt: number; atk: number; wind: number; flash: number; hp: number; prevState: string; lastHurt?: number }
 
 /** Instantané lisible par l'UI (HUD DOM, mobile) à chaque image. */
 /** Résumé de fin de run (pour l'écran de fin et la sauvegarde). */
@@ -135,7 +136,6 @@ export class RunScene extends Scene implements CombatCtx {
   private bossEntity = 0;
   private renderTime = 0;
   /** Feuilles cuites par clé (héros, ennemi + teinte, boss). */
-  private sheets = new Map<string, RigSheet>();
   private rigs = new Map<number, RigState>();
   private corpses: Array<{ node: Container; sheet: RigSheet; t: number }> = [];
   private heroAtkSeq = 0;
@@ -223,6 +223,12 @@ export class RunScene extends Scene implements CombatCtx {
     this.bless.echo = (skill, scale) => { const h = this.world.get(this.player, Hero); if (h) castSkill(this, h, skill, scale); };
     this.g.events.on('player:skill', () => { this.lastAttackT = this.time; });
     this.offRig = this.g.events.on('player:skill', () => { this.heroAtkSeq++; });
+    // Combattants de cette run : on ne garde en cache que ceux-là, et on lance leur cuisson tout de suite.
+    if (RIG_ON) {
+      const orders = [heroOrder(this.heroId), ...waveOrders(this.startWave)].filter((o): o is RigOrder => !!o);
+      rigBaker.retain(new Set(orders.map((o) => o.key)));
+      prefetch(orders);
+    }
     this.spawnHero();
     camera.bounds = ARENA;
     camera.zoom = camera.targetZoom = this.zoom(window.innerWidth < 700 ? 0.68 : 0.92);
@@ -256,8 +262,6 @@ export class RunScene extends Scene implements CombatCtx {
     this.offResize?.();
     this.offRig?.();
     this.rigs.clear(); this.corpses = [];
-    for (const sh of this.sheets.values()) sh.frames.idle[0].source.destroy();
-    this.sheets.clear();
     this.arena.destroy();
     this.vfx.destroy();
     this.hazards.clear();
@@ -326,7 +330,7 @@ export class RunScene extends Scene implements CombatCtx {
     } as HeroC);
     this.world.add(e, CameraTarget, true);
     this.recomputeHero();
-    attachView(this.world, this.g.renderer, e, this.character(this.g.assets.texture(`hero-${d.id}`), d.height, 22, 0xffffff, undefined, this.rigSheet(d.id, d.id, d.height, 'A'), e));
+    attachView(this.world, this.g.renderer, e, this.character(this.g.assets.texture(`hero-${d.id}`), d.height, 22, 0xffffff, undefined, this.rigSheet(heroOrder(d.id)), e));
     const t = this.world.get(e, Transform)!;
     this.g.camera.follow(t, this.world.get(e, Velocity)!);
     this.vfx.follow(t, this.world.get(e, View)!.node, d.color);
@@ -367,7 +371,7 @@ export class RunScene extends Scene implements CombatCtx {
     const hp = Math.round(d.hp * s.hp * this.mods.foeHp);
     this.world.add(e, Health, { hp, max: hp });
     this.world.add(e, Foe, this.makeFoe(d, d.dmg * s.dmg * this.mods.foeDmg, d.speed * this.rng.range(0.92, 1.08)));
-    const sheet = this.rigSheet(`${d.id}`, RIG_KEY_BY_FAMILY[d.family] ?? d.id, d.h, 'B', d.tint);
+    const sheet = this.rigSheet(foeOrder(id));
     const node = this.character(this.g.assets.texture(d.tex), d.h, d.r, sheet ? 0xffffff : d.tint, d.elite ? STATUS_COLORS[d.status ?? 'void'] : undefined, sheet, e);
     attachView(this.world, this.g.renderer, e, node);
     if (o.portal !== false) {
@@ -396,7 +400,7 @@ export class RunScene extends Scene implements CombatCtx {
     const base = { ...ENEMY_DEFS.brute, name: b.name, tex: b.tex, tint: b.tint, h: b.h, r: b.r, hp, dmg: b.dmg, speed: b.speed, elite: true, guard: false };
     const f = this.world.add(e, Foe, this.makeFoe(base, b.dmg * (1 + 0.25 * (k - 1)) * this.mods.foeDmg, b.speed));
     f.boss = { def: b, phase: 1, transition: 0, next: 2.2, step: 0, spin: 0, edge: 0 };
-    const sheet = this.rigSheet(`boss-${id}`, RIG_KEY_BY_BOSS[id] ?? id, b.h, 'B');
+    const sheet = this.rigSheet(bossOrder(id));
     attachView(this.world, this.g.renderer, e, this.character(this.g.assets.texture(b.tex), b.h, b.r, sheet ? 0xffffff : b.tint, b.color, sheet, e));
     this.bossEntity = e;
     this.feedback.ring(x, y, 360, b.color, 1.2, 20);
@@ -677,6 +681,8 @@ export class RunScene extends Scene implements CombatCtx {
     this.bless.waveStart();
     this.loot.waveStart();
     this.arena.setChapter(plan.region);
+    // Prochaine vague et prochain boss : cuits pendant celle-ci.
+    if (RIG_ON) prefetch(waveOrders(plan.wave + 1));
     const label = plan.wave > CAMPAIGN_WAVES ? `Vague ${plan.wave} · Infini` : `Vague ${plan.wave} / ${CAMPAIGN_WAVES}`;
     if (plan.boss) {
       const b = BOSS_DEFS[plan.boss];
@@ -867,7 +873,9 @@ export class RunScene extends Scene implements CombatCtx {
     if (rig) {
       // Échelle repartie de la feuille à chaque image : le grossissement d'élan ne se cumule pas.
       const k = rig.sheet.scale * grow;
-      body.scale.x = facing * k; body.scale.y = k;
+      // Écrasement à l'impact (squash & stretch) : le coup « porte » visuellement.
+      const sq = Math.max(0, Math.min(1, flash / 0.12));
+      body.scale.x = facing * k * (1 + 0.1 * sq); body.scale.y = k * (1 - 0.08 * sq);
       body.alpha = alpha;
       body.tint = flash > 0 ? 0xffb0a0 : tint;
       const aura = node.getChildByLabel('aura') as Sprite | null;
@@ -915,15 +923,10 @@ export class RunScene extends Scene implements CombatCtx {
   // ================================================================ Combattants v2 (squelette animé)
 
   /** Feuille de sprites d'un combattant, cuite une fois par run et par clé. */
-  private rigSheet(cacheKey: string, rigKey: string, height: number, style: 'A' | 'B', tint?: number): RigSheet | null {
-    if (!RIG_ON) return null;
-    const hit = this.sheets.get(cacheKey);
-    if (hit) return hit;
-    const def = rigDef(rigKey, tint);
-    if (!def) return null;
-    const sheet = bakeRig(def, height, style);
-    this.sheets.set(cacheKey, sheet);
-    return sheet;
+  private rigSheet(order: RigOrder | null): RigSheet | null {
+    if (!RIG_ON || !order) return null;
+    // Normalement déjà cuite en arrière-plan (prefetch) ; sinon cuisson immédiate (type imprévu).
+    return rigBaker.now(order.key, order.input);
   }
 
   private setRigFrame(e: number, r: RigState, anim: RigAnim, p: number): void {
@@ -957,7 +960,13 @@ export class RunScene extends Scene implements CombatCtx {
     const r = this.rigs.get(e);
     if (!r) return;
     r.t += dt;
-    if (f.flash > r.flash + 0.02) r.hurt = RIG_LEN.touche * 0.7;
+    if (f.flash > r.flash + 0.02) {
+      // Silhouette blanche (1re image de « touché ») : pas plus d'une fois tous les 0,3 s, sinon un
+      // ennemi frappé en continu reste blanc et une mêlée devient une tache aveuglante.
+      const full = RIG_LEN.touche * 0.7;
+      r.hurt = r.lastHurt !== undefined && r.t - r.lastHurt < 0.3 ? full * 0.72 : full;
+      if (r.hurt === full) r.lastHurt = r.t;
+    }
     r.flash = f.flash;
     const st = f.state as string;
     // Élan calé sur la fenêtre d'attaque télégraphiée, frappe quand elle se termine.

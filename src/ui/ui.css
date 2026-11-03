@@ -256,7 +256,7 @@
 .sc-logo small { display: block; font-size: 0.3em; letter-spacing: 0.5em; color: var(--mute); margin-top: 8px; font-weight: 600; }
 .sc-heroes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; width: min(860px, 94vw); margin: 22px auto 18px; }
 .sc-herocard { pointer-events: auto; cursor: pointer; position: relative; aspect-ratio: 3 / 4.2; border-radius: 10px; overflow: hidden; padding: 0;
-  border: 1px solid var(--line); background: color-mix(in srgb, var(--c) 14%, #07090f) center 20% / 118% auto no-repeat; text-align: left;
+  border: 1px solid var(--line); background: color-mix(in srgb, var(--c) 14%, #07090f) center 30% / cover no-repeat; text-align: left;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s; }
 .sc-herocard::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.92)); }
 .sc-herocard > div { position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 12px; z-index: 1; }
@@ -270,6 +270,23 @@
 .sc-daily { display: inline-flex; gap: 10px; align-items: center; padding: 8px 14px; margin-top: 12px; font-size: 0.88em; font-family: var(--body) !important; letter-spacing: 0 !important; font-weight: 500 !important; max-width: 92vw; }
 .sc-daily b { color: var(--gold); }
 @media (max-width: 700px) { .sc-heroes { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sc-herocard { aspect-ratio: 4 / 3.4; } }
+@media (max-width: 700px) { .sc-chapter { font-size: 0.66em; letter-spacing: 0.12em; margin-top: 12px; } }
+
+/* Menu principal : fond peint du chapitre atteint (tools/art), lente dérive et poussières */
+.sc-ch1 { --mote: #ffc98a; } .sc-ch2 { --mote: #ff8a3a; } .sc-ch3 { --mote: #e8f4ff; } .sc-ch4 { --mote: #c89bff; }
+.sc-screen.sc-menu { isolation: isolate; background: #05070d; }
+.sc-screen.sc-menu::before { background: radial-gradient(ellipse at 50% 42%, rgba(6, 8, 15, 0.1), rgba(6, 8, 15, 0.35) 55%, rgba(6, 8, 15, 0.8) 100%); }
+.sc-menu > .sc-bgart { position: fixed; inset: -3%; z-index: -1; background: #05070d center / cover no-repeat;
+  animation: sc-kenburns 50s ease-in-out infinite alternate; will-change: transform; }
+@keyframes sc-kenburns { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.06) translate(-1.2%, -0.8%); } }
+.sc-menu > .sc-motes { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.sc-motes i { position: absolute; bottom: -12px; width: 3px; height: 3px; border-radius: 50%; background: var(--mote);
+  box-shadow: 0 0 8px 2px var(--mote); opacity: 0; animation: sc-mote 14s linear infinite; }
+.sc-ch3 .sc-motes i { bottom: auto; top: -12px; width: 4px; height: 4px; animation-name: sc-snow; }
+@keyframes sc-mote { 0% { transform: translate(0, 0); opacity: 0; } 12% { opacity: 0.85; } 85% { opacity: 0.5; } 100% { transform: translate(60px, -108vh); opacity: 0; } }
+@keyframes sc-snow { 0% { transform: translate(0, 0); opacity: 0; } 12% { opacity: 0.8; } 85% { opacity: 0.6; } 100% { transform: translate(-50px, 108vh); opacity: 0; } }
+.sc-chapter { margin: 18px 0 16px; font: 600 0.78em var(--display); letter-spacing: 0.22em; text-transform: uppercase; color: var(--mote); opacity: 0.85;
+  text-shadow: 0 0 12px color-mix(in srgb, var(--mote) 50%, transparent); }
 
 /* Pause */
 .sc-pause { display: grid; grid-template-columns: minmax(240px, 300px) minmax(0, 420px); gap: 20px; width: min(780px, 94vw); padding: 24px; }

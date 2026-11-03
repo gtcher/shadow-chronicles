@@ -30,6 +30,7 @@ game/
 │       ├── prefabs.ts       spawnHero, spawnEnemy, spawnBolt, ENEMY_TYPES
 │       ├── textures.ts      textures procédurales + makeSeamless (sol raccordable)
 │       ├── Particles.ts     particules visuelles avec réserve d'objets
+│       ├── arena/ChapterArena.ts  décor de l'arène par chapitre (tuiles, décors, braseros, ambiance)
 │       └── scenes/DemoScene.ts
 └── tests/engine.test.ts     13 tests (boucle, ECS, collisions, caméra, rng, bus)
 ```

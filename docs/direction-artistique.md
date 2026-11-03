@@ -92,3 +92,21 @@ Boss livrés : Juge Pourpre, Capitaine Cendrefer (braise), Matriarche lunaire (g
 - **Tuiles et décors** sont générés par code (`tools/da/`), donc rejouables : changer une couleur dans `palettes.py` et relancer régénère tout le chapitre.
 
 Brief pour les futures illustrations : pose en pied, trois-quarts tournée vers la droite, fond transparent, 1024 px de haut, lumière haut-gauche, liseré dans la couleur signature, pas de texte incrusté.
+
+## 7. Fonds peints et décors par chapitre (v2)
+
+- **Menu principal** : `public/assets/art/menu-ch1..ch4.webp` (1920×1080), un panorama par chapitre
+  (citadelle d'Akar en contre-jour, lune voilée / incendie / nécropole et eau noire / éclipse).
+  Le menu affiche le chapitre de la meilleure vague atteinte ; `?menu=1..4` force un fond.
+  Lente dérive (CSS) et poussières à la couleur du chapitre, coupées par « Réduire les animations ».
+- **Cartes de sélection** : `public/assets/art/select-<héros>.webp` (640×900). Le héros v2 (piste A)
+  en pied devant une scène à sa couleur signature : Taro / Remparts, Mei / Éclipse magenta,
+  Sena / Nécropole, Ren / Cour dorée.
+- Les deux sont **peints par code** (`tools/art/paint.ts`) et rejouables :
+  `node tools/art/render.mjs` (ou `node tools/art/render.mjs menu-ch2 select-ren`).
+  Aperçu dans le navigateur : `npx vite` puis `/tools/art/art.html`.
+- **Runs** : `src/game/arena/ChapterArena.ts` habille l'arène avec les tuiles et décors du chapitre
+  de la vague (1-3, 4-7, 8-10, 11+) : sol cuit en 1024 px (dallages, zones usées, terre), calque,
+  piliers, stèles, cristaux, gravats, colonnade au nord, braseros animés qui éclairent, lumière
+  ambiante, brume et poussières (braises qui montent, neige, éclats du Néant). Changement de
+  chapitre en fondu enchaîné au début de la vague ; les collisions des décors restent les mêmes.

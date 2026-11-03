@@ -539,3 +539,221 @@ export function paintHeroCard(id, W = 640, H = 900) {
   g.fillStyle = fg; g.fillRect(0, H * 0.7, W, H * 0.3);
   return out;
 }
+
+// ------------------------------------------------------------------ Codex & Sanctuaire
+
+/** Arc brisé (ogive) : base (x0..x1, y), sommet à `top`. */
+function ogive(g, x0, x1, y, top) {
+  const w = x1 - x0, cx = (x0 + x1) / 2, sh = y - (top + w * 0.55);
+  g.moveTo(x0, y); g.lineTo(x0, y - sh);
+  g.quadraticCurveTo(x0, top + w * 0.12, cx, top);
+  g.quadraticCurveTo(x1, top + w * 0.12, x1, y - sh);
+  g.lineTo(x1, y); g.closePath();
+}
+
+/** Rayonnage de livres vu de face, éclairé d'un côté (lumière de la fenêtre). */
+function shelves(g, x, y, w, h, rows, r, lightSide, warm) {
+  // caisson
+  const wood = g.createLinearGradient(x, 0, x + w, 0);
+  wood.addColorStop(0, '#120c08'); wood.addColorStop(0.5, '#1c130c'); wood.addColorStop(1, '#0d0906');
+  g.fillStyle = wood; g.fillRect(x, y, w, h);
+  const rh = h / rows;
+  const tones = ['#4a1a1a', '#5a2a18', '#24324a', '#1f3a2c', '#3a2a4a', '#5a4422', '#2a1c14', '#62301e', '#1c2638'];
+  for (let i = 0; i < rows; i++) {
+    const by = y + i * rh, inner = by + rh * 0.12;
+    // fond d'étagère
+    g.fillStyle = '#07050a'; g.fillRect(x + w * 0.04, inner, w * 0.92, rh * 0.82);
+    let bx = x + w * 0.05;
+    while (bx < x + w * 0.94) {
+      const bw = r.range(0.018, 0.045) * w * 2.2, bh = rh * r.range(0.55, 0.8);
+      if (r() < 0.07) { bx += bw * 1.5; continue; }           // trou
+      const lean = r() < 0.08 ? r.range(-0.25, 0.25) : 0;
+      const col = mix(r.pick(tones), '#000000', r.range(0.15, 0.45));
+      g.save(); g.translate(bx, inner + rh * 0.82); g.rotate(lean);
+      g.fillStyle = col; g.fillRect(0, -bh, bw, bh);
+      // dorures du dos
+      g.fillStyle = rgba('#d9ab74', r.range(0.15, 0.45));
+      g.fillRect(bw * 0.15, -bh * 0.82, bw * 0.7, Math.max(1, bh * 0.025));
+      g.fillRect(bw * 0.15, -bh * 0.22, bw * 0.7, Math.max(1, bh * 0.025));
+      // liseré de lumière
+      g.fillStyle = rgba(warm, 0.18); g.fillRect(lightSide > 0 ? bw - 1.5 : 0, -bh, 1.5, bh);
+      g.restore();
+      bx += bw + r.range(0, 1.5);
+    }
+    // planche
+    g.fillStyle = '#2a1c12'; g.fillRect(x, inner + rh * 0.82, w, rh * 0.06);
+    g.fillStyle = rgba(warm, 0.22); g.fillRect(x, inner + rh * 0.82, w, 1.5);
+  }
+  // montants
+  g.fillStyle = '#1e140d'; g.fillRect(x, y, w * 0.04, h); g.fillRect(x + w * 0.96, y, w * 0.04, h);
+  g.fillStyle = rgba(warm, 0.25); g.fillRect(lightSide > 0 ? x + w * 0.04 - 1.5 : x + w * 0.96, y, 1.5, h);
+}
+
+/** Bougie avec flamme et halo. */
+function candle(g, x, base, h, r) {
+  const w = h * 0.22;
+  g.fillStyle = '#d8c9a8'; g.fillRect(x - w / 2, base - h, w, h);
+  g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(x, base - h, w / 2, h);
+  g.fillStyle = 'rgba(255,245,220,.7)'; g.beginPath(); g.ellipse(x - w * 0.1, base - h + 2, w * 0.3, h * 0.12, 0, 0, TAU); g.fill();
+  const fy = base - h - h * 0.28, fs = h * r.range(0.22, 0.3);
+  lightPool(g, x, fy, h * 5, '#ffb35c', 0.28);
+  g.save(); g.globalCompositeOperation = 'lighter';
+  const fg = g.createRadialGradient(x, fy, 0, x, fy, fs * 1.4);
+  fg.addColorStop(0, 'rgba(255,250,230,1)'); fg.addColorStop(0.4, 'rgba(255,190,90,.9)'); fg.addColorStop(1, 'rgba(255,120,30,0)');
+  g.fillStyle = fg; g.beginPath(); g.ellipse(x, fy, fs * 0.55, fs * 1.4, 0, 0, TAU); g.fill();
+  g.restore();
+}
+
+/** Archives du Sceau : salle des Archives où l'on consulte le Codex (fond de l'écran Codex). */
+export function paintArchive(W = 1920, H = 1080) {
+  const r = rng(4242);
+  const c = canvas(W, H), g = ctx2(c);
+  const S = W / 1920;
+  const P = { ...CHAPTERS.ch3, fog: '#5a6c8c', near: '#030409' };
+  const warm = '#ffb35c', cold = '#9fc4ff';
+  // mur du fond
+  const wall = g.createLinearGradient(0, 0, 0, H);
+  wall.addColorStop(0, '#05070d'); wall.addColorStop(0.6, '#0c111c'); wall.addColorStop(1, '#06080e');
+  g.fillStyle = wall; g.fillRect(0, 0, W, H);
+  // appareil de pierre
+  g.save(); g.globalAlpha = 0.5;
+  for (let row = 0, y = 0; y < H * 0.78; row++, y += 46 * S) {
+    for (let x = (row % 2) * -60 * S; x < W; x += 120 * S) {
+      g.strokeStyle = 'rgba(0,0,0,.55)'; g.lineWidth = 2; g.strokeRect(x, y, 120 * S, 46 * S);
+      g.fillStyle = rgba('#2a3448', r.range(0.04, 0.16)); g.fillRect(x + 2, y + 2, 120 * S - 4, 46 * S - 4);
+    }
+  }
+  g.restore();
+
+  // grande fenêtre en ogive, nuit de lune
+  const wx0 = W * 0.4, wx1 = W * 0.6, wy = H * 0.66, wtop = H * 0.06;
+  g.save(); g.beginPath(); ogive(g, wx0, wx1, wy, wtop); g.clip();
+  const moon = { x: W * 0.53, y: H * 0.26, r: W * 0.038 };
+  sky(g, W, H, wy, { ...P, skyTop: '#030713', skyMid: '#0b1a33', horizon: '#2a4468' }, r, moon);
+  clouds(g, W, H, wy, P, r, moon, 6, [0.2, 0.8]);
+  moonDisk(g, P, moon, r);
+  ridge(g, W, wy - H * 0.06, P, r, H * 0.08, '#0c1626', 2);
+  g.restore();
+  // remplage : meneaux + rosace
+  g.save();
+  g.strokeStyle = '#0a0d14'; g.lineCap = 'round';
+  g.lineWidth = 14 * S; g.beginPath(); ogive(g, wx0, wx1, wy, wtop); g.stroke();
+  g.lineWidth = 9 * S;
+  for (const t of [1 / 3, 2 / 3]) { g.beginPath(); g.moveTo(wx0 + (wx1 - wx0) * t, wy); g.lineTo(wx0 + (wx1 - wx0) * t, H * 0.3); g.stroke(); }
+  g.beginPath(); g.moveTo(wx0, H * 0.42); g.lineTo(wx1, H * 0.42); g.stroke();
+  const rx = (wx0 + wx1) / 2, ry = H * 0.2, rr = (wx1 - wx0) * 0.22;
+  g.beginPath(); g.arc(rx, ry, rr, 0, TAU); g.stroke();
+  g.lineWidth = 5 * S;
+  for (let i = 0; i < 8; i++) { const a = (i / 8) * TAU; g.beginPath(); g.moveTo(rx, ry); g.lineTo(rx + Math.cos(a) * rr, ry + Math.sin(a) * rr); g.stroke(); }
+  // liseré froid sur le remplage
+  g.strokeStyle = rgba(cold, 0.35); g.lineWidth = 1.5;
+  g.beginPath(); ogive(g, wx0 + 7 * S, wx1 - 7 * S, wy, wtop + 9 * S); g.stroke();
+  g.restore();
+  // ébrasement
+  g.fillStyle = '#080a10';
+  g.beginPath(); g.moveTo(wx0 - 40 * S, wy + 20 * S); g.lineTo(wx0, wy); g.lineTo(wx0, H * 0.3); g.lineTo(wx0 - 40 * S, H * 0.32); g.fill();
+  g.beginPath(); g.moveTo(wx1 + 40 * S, wy + 20 * S); g.lineTo(wx1, wy); g.lineTo(wx1, H * 0.3); g.lineTo(wx1 + 40 * S, H * 0.32); g.fill();
+  g.fillStyle = '#141a26'; g.fillRect(wx0 - 60 * S, wy, wx1 - wx0 + 120 * S, 22 * S);
+  g.fillStyle = rgba(cold, 0.3); g.fillRect(wx0 - 60 * S, wy, wx1 - wx0 + 120 * S, 2);
+
+  // sol de dalles
+  const hz = H * 0.7;
+  const tile = images['dalles-ch3'];
+  if (tile) floor(g, W, H, hz, { ...P, fog: '#1a2236', horizon: '#0c1220' }, tile, { camH: 130 * (H / 1080), focal: W * 0.8, scale: 1.2, dark: 0.55 });
+  else { g.fillStyle = '#080a10'; g.fillRect(0, hz, W, H - hz); }
+  g.fillStyle = '#0a0d15'; g.fillRect(0, hz - 6 * S, W, 8 * S);
+
+  // rayonnages de part et d'autre (deux plans)
+  shelves(g, W * 0.17, H * 0.12, W * 0.17, hz - H * 0.12, 7, r, 1, warm);
+  shelves(g, W * 0.66, H * 0.12, W * 0.17, hz - H * 0.12, 7, r, -1, warm);
+  g.fillStyle = 'rgba(3,4,8,.45)'; g.fillRect(W * 0.17, H * 0.12, W * 0.17, hz - H * 0.12); g.fillRect(W * 0.66, H * 0.12, W * 0.17, hz - H * 0.12);
+  shelves(g, -W * 0.02, H * 0.02, W * 0.17, H * 0.98, 9, r, 1, warm);
+  shelves(g, W * 0.85, H * 0.02, W * 0.17, H * 0.98, 9, r, -1, warm);
+
+  // rais de lune (additif)
+  g.save(); g.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 5; i++) {
+    const t = i / 4, x0 = wx0 + (wx1 - wx0) * (0.1 + t * 0.8);
+    const gr = g.createLinearGradient(0, H * 0.25, 0, H);
+    gr.addColorStop(0, rgba(cold, 0.09)); gr.addColorStop(1, rgba(cold, 0));
+    g.fillStyle = gr; g.beginPath();
+    g.moveTo(x0 - 18 * S, H * 0.25); g.lineTo(x0 + 18 * S, H * 0.25);
+    g.lineTo(x0 + 18 * S - W * 0.16 + t * W * 0.06, H); g.lineTo(x0 - 60 * S - W * 0.16 + t * W * 0.06, H); g.closePath(); g.fill();
+  }
+  lightPool(g, W * 0.44, H * 0.86, W * 0.22, cold, 0.16, 0.3);
+  g.restore();
+
+  // lutrin et grimoire ouvert, au centre
+  const lx = W * 0.5, lb = H * 0.9;
+  lightPool(g, lx, lb - H * 0.2, W * 0.2, warm, 0.22);
+  g.fillStyle = '#0d0907';
+  g.beginPath(); g.moveTo(lx - 26 * S, lb); g.lineTo(lx + 26 * S, lb); g.lineTo(lx + 12 * S, lb - H * 0.17); g.lineTo(lx - 12 * S, lb - H * 0.17); g.fill();
+  g.fillRect(lx - 70 * S, lb - 8 * S, 140 * S, 10 * S);
+  const ty = lb - H * 0.17;
+  g.beginPath(); g.moveTo(lx - 130 * S, ty + 6 * S); g.lineTo(lx + 130 * S, ty + 6 * S); g.lineTo(lx + 110 * S, ty - 34 * S); g.lineTo(lx - 110 * S, ty - 34 * S); g.fill();
+  // pages
+  for (const sgn of [-1, 1]) {
+    const pg = g.createLinearGradient(lx, 0, lx + sgn * 118 * S, 0);
+    pg.addColorStop(0, '#b89a6a'); pg.addColorStop(1, '#efdcb0');
+    g.fillStyle = pg; g.beginPath();
+    g.moveTo(lx, ty - 30 * S); g.quadraticCurveTo(lx + sgn * 60 * S, ty - 52 * S, lx + sgn * 118 * S, ty - 40 * S);
+    g.lineTo(lx + sgn * 124 * S, ty - 4 * S); g.quadraticCurveTo(lx + sgn * 60 * S, ty - 16 * S, lx, ty); g.closePath(); g.fill();
+    g.strokeStyle = 'rgba(90,60,30,.5)'; g.lineWidth = 1.2;
+    for (let k = 0; k < 6; k++) { const yy = ty - 34 * S + k * 5 * S; g.beginPath(); g.moveTo(lx + sgn * 14 * S, yy); g.lineTo(lx + sgn * 100 * S, yy - 4 * S); g.stroke(); }
+  }
+  // lueur dorée du grimoire + glyphes qui s'élèvent
+  lightPool(g, lx, ty - 24 * S, 220 * S, '#ffd27a', 0.55);
+  lightPool(g, lx, ty - 24 * S, 70 * S, '#fff3d0', 0.6);
+  g.save(); g.globalCompositeOperation = 'lighter'; g.font = `${22 * S}px Georgia, serif`; g.textAlign = 'center';
+  const glyphs = '✦✧☾⛨◈⚔ᚱᚨᚲᛟᛞᛉ';
+  for (let i = 0; i < 26; i++) {
+    const t = r(), yy = ty - 40 * S - t * H * 0.42, xx = lx + (r() - 0.5) * (60 + t * 380) * S;
+    g.fillStyle = rgba('#ffd27a', 0.75 * (1 - t) + 0.1); g.shadowColor = '#ffb35c'; g.shadowBlur = 14;
+    g.font = `${(14 + r() * 18) * S}px Georgia, serif`; g.fillText(glyphs[Math.floor(r() * glyphs.length)], xx, yy);
+  }
+  g.restore();
+
+  // candélabres et bougies
+  for (const [x, b, n] of [[W * 0.36, H * 0.71, 3], [W * 0.64, H * 0.71, 3], [W * 0.27, H * 0.98, 4], [W * 0.73, H * 0.99, 4]]) {
+    for (let i = 0; i < n; i++) candle(g, x + (i - (n - 1) / 2) * 22 * S, b - (i % 2) * 10 * S, r.range(26, 52) * S * (b / H), r);
+  }
+  for (let i = 0; i < 10; i++) { // bougies sur les étagères
+    const left = i % 2 === 0, x = left ? r.range(0.02, 0.13) * W : r.range(0.87, 0.98) * W;
+    candle(g, x, r.range(0.2, 0.85) * H, r.range(14, 26) * S, r);
+  }
+  // pages volantes
+  g.save();
+  for (let i = 0; i < 9; i++) {
+    const x = r.range(0.25, 0.75) * W, y = r.range(0.2, 0.62) * H, s = r.range(14, 30) * S;
+    g.save(); g.translate(x, y); g.rotate(r.range(-0.8, 0.8)); g.globalAlpha = r.range(0.35, 0.75);
+    g.fillStyle = '#d9c49a'; g.fillRect(-s / 2, -s * 0.65, s, s * 1.3);
+    g.fillStyle = rgba(warm, 0.35); g.fillRect(-s / 2, -s * 0.65, s, 2);
+    g.restore();
+  }
+  g.restore();
+  fogBand(g, W, H * 0.8, H * 0.08, '#3a4a6a', 0.16, r);
+  particles(g, W, H, { ...P, glow: warm }, r, 160, 'motes', [0.05, 0.05, 0.95, 0.95]);
+  grade(g, W, H, P, 0.82);
+  return c;
+}
+
+/** Sanctuaire d'Akar : cour au coucher de lune, autel des serments au centre. */
+export function paintSanctum(W = 1920, H = 1080) {
+  const c = paintScene('ch1', W, H, { seed: 77, moonX: 0.5, moonY: 0.17, moonR: 0.06, citadelX: 0.5, citadelW: 0.7, vignette: 0.8,
+    palette: { glow: '#ffbf6a', moonHalo: '#ffd9a0', horizon: '#3a3644', fog: '#7a6f72' } });
+  const g = ctx2(c), S = W / 1920, r = rng(1337);
+  // autel : stèle haute à runes dorées
+  const x = W * 0.5, b = H * 0.86, h = H * 0.36, w = 120 * S;
+  lightPool(g, x, b - h * 0.5, W * 0.28, '#ffbf6a', 0.3);
+  g.fillStyle = '#0b0d12';
+  g.beginPath(); g.moveTo(x - w * 1.6, b); g.lineTo(x + w * 1.6, b); g.lineTo(x + w * 1.3, b - 30 * S); g.lineTo(x - w * 1.3, b - 30 * S); g.fill();
+  g.beginPath(); g.moveTo(x - w / 2, b - 30 * S); g.lineTo(x + w / 2, b - 30 * S); g.lineTo(x + w * 0.38, b - h); g.lineTo(x, b - h - 50 * S); g.lineTo(x - w * 0.38, b - h); g.closePath(); g.fill();
+  g.strokeStyle = rgba('#ffd9a0', 0.4); g.lineWidth = 2; g.stroke();
+  g.save(); g.globalCompositeOperation = 'lighter'; g.textAlign = 'center'; g.shadowColor = '#ffb35c'; g.shadowBlur = 16;
+  const runes = 'ᚨᚲᚱᛟᛞᛉᚹᛃ';
+  for (let i = 0; i < 6; i++) { g.fillStyle = rgba('#ffd27a', 0.85 - i * 0.08); g.font = `${30 * S}px Georgia, serif`; g.fillText(runes[i], x, b - h + 40 * S + i * 44 * S); }
+  g.restore();
+  lightPool(g, x, b - h - 50 * S, 120 * S, '#fff0c8', 0.55);
+  particles(g, W, H, CHAPTERS.ch1, r, 60, 'embers', [0.38, 0.35, 0.62, 0.85]);
+  return c;
+}

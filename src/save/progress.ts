@@ -67,6 +67,17 @@ export function statValue(p: Profile, key: string): number {
   return Math.max(p.stats.best[key] ?? 0, p.stats.lifetime[key] ?? 0);
 }
 
+/** Progression vers une condition (pour les barres de l'interface) : valeur actuelle et cible. */
+export function requirementProgress(p: Profile, req: string | undefined): { have: number; need: number; ok: boolean } {
+  if (!req) return { have: 1, need: 1, ok: true };
+  const boss = /^bossKilled:(\d+)$/.exec(req);
+  if (boss) { const have = p.stats.best.bossWaveKilled ?? 0, need = Number(boss[1]); return { have: Math.min(have, need), need, ok: have >= need }; }
+  const m = /^(\w+)\s*>=\s*(\d+)$/.exec(req);
+  if (!m) return { have: 0, need: 1, ok: meetsRequirement(p, req) };
+  const have = statValue(p, m[1]), need = Number(m[2]);
+  return { have, need, ok: have >= need };
+}
+
 /** Conditions de sanctuary.json : « bestWave>=6 », « runs>=3 », « bossKilled:5 » (boss de la vague 5 vaincu). */
 export function meetsRequirement(p: Profile, req: string | undefined): boolean {
   if (!req) return true;

@@ -7,6 +7,7 @@ export interface PauseOptions {
   wave: number;
   onResume: () => void;
   onSettings: () => void;
+  onCodex?: () => void;
   onQuit: () => void;
 }
 
@@ -33,6 +34,7 @@ export function pauseScreen(o: PauseOptions): HTMLElement {
       h('div', { class: 'sc-stack' },
         h('button', { class: 'sc-btn sc-primary', onclick: o.onResume, 'data-autofocus': true }, 'Reprendre'),
         h('button', { class: 'sc-btn', onclick: o.onSettings }, 'Réglages'),
+        o.onCodex ? h('button', { class: 'sc-btn', onclick: o.onCodex }, '📜 Codex') : null,
         h('button', { class: 'sc-btn sc-ghost', onclick: o.onQuit }, 'Abandonner la run'),
         h('p', { style: { color: 'var(--mute)', fontSize: '0.8em', textAlign: 'center' } }, h('span', { class: 'sc-kbd' }, 'Échap'), ' pour reprendre')),
       build));

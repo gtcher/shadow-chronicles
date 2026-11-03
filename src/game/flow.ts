@@ -10,7 +10,7 @@ import { checkAchievements, nearAchievements, tierColor, type RunView } from './
 import { BASE_MODS, PACTS, applyDailyMods, applyPacts, buildDaily, dailyScore, pactPoints, seedStream, shareText, type DailyConfig, type PactRanks } from './modes';
 import { dailyIntroScreen, dailyResultScreen, pactsScreen } from './screens';
 import { applyVfxSettings, applyGameplaySettings } from './settingsLink';
-import { mountUI, connectSave, metaFromProfile, sanctuaryActions, type UiRoot } from '../ui';
+import { mountUI, connectSave, metaFromProfile, codexFromProfile, codexProgress, codexFresh, sanctuaryActions, type UiRoot } from '../ui';
 import { SaveManager, recordRunEnd, recordBest, recordDaily, masteryLevel, unlockAchievement, upgradeRank, addCurrency, grant, type Profile } from '../save';
 import sanctuaryJson from '../../data/sanctuary.json';
 
@@ -61,6 +61,7 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
   // Outils de test (robot, console) : accès à la sauvegarde et aux écrans.
   (window as unknown as { sc: unknown }).sc = { save, ui, title: () => title(), pacts: () => pacts(), daily: () => dailyIntro() };
   const url = (k: string) => game.assets.url(k);
+  if (save) ui.codexInfo = () => ({ ...codexFromProfile(save.profile), assetUrl: url });
   // Flashs et chiffres de dégâts suivent les réglages, même modifiés en pleine run.
   ui.settings.onChange((s) => { applyGameplaySettings(s); const sc = game.scenes.current; if (sc instanceof RunScene && sc.vfx) applyVfxSettings(sc.vfx, s); });
   let hero = opts.hero;
@@ -93,6 +94,8 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
       onPlay: (h) => void startRun(h, 1),
       onSanctuary: () => sanctuary(),
       onSettings: () => ui.openSettings(),
+      codex: save ? { pct: codexProgress(codexFromProfile(save.profile)).pct, fresh: codexFresh(codexFromProfile(save.profile)) } : undefined,
+      onCodex: save ? () => { ui.openCodex(); } : undefined,
     });
   };
 
@@ -118,8 +121,10 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
 
   const sanctuary = () => {
     if (!save) { title(); return; }
-    const refresh = () => sanctuary();
-    ui.showSanctuary({ profile: metaFromProfile(save.profile), assetUrl: url, ...sanctuaryActions(save, refresh), onLeave: () => title(), onPlay: () => void startRun(hero, 1) });
+    // Après un achat, l'écran se redessine sur place (même bâtiment, animation d'achat).
+    const profile = metaFromProfile(save.profile);
+    ui.showSanctuary({ profile, assetUrl: url, ...sanctuaryActions(save, (m) => { Object.assign(profile, m); }), onLeave: () => title(), onPlay: () => void startRun(hero, 1),
+      onCodex: () => ui.openCodex(), guideDone: ui.settings.get().sanctuaryGuideDone, onGuideDone: () => ui.settings.set('sanctuaryGuideDone', true) });
   };
 
   const view = (scene: RunScene, r: RunResult, pending: boolean): RunView => ({
@@ -131,7 +136,7 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
   const discover = (kind: 'seenBlessings' | 'seenDuos' | 'seenLegendaryPowers', id: string) => {
     if (!save || save.profile.unlocks[kind].includes(id)) return;
     save.update((p) => { if (!p.unlocks[kind].includes(id)) p.unlocks[kind].push(id); });
-    if (kind !== 'seenBlessings') ui.hud.toast('📜 Codex', kind === 'seenDuos' ? 'Nouveau Duo découvert' : 'Nouveau pouvoir légendaire', '#d9ab74');
+    if (kind !== 'seenBlessings' || id.startsWith('leg_')) ui.hud.toast('📜 Codex', kind === 'seenDuos' ? 'Nouveau Duo découvert' : kind === 'seenBlessings' ? 'Nouveau légendaire de patron' : 'Nouveau pouvoir légendaire', '#d9ab74');
   };
 
   /** Débloque les succès remplis (toast + événement). */
@@ -254,6 +259,7 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
         game.events.emit('blessing:pick', { rarity: 'epic', id: d.id, duo: true });
       }
       for (const l of res.legendaries) {
+        discover('seenBlessings', l.id);
         scene.stats.add('legendaryBlessingsTaken');
         ui.hud.toast(`✪ Légendaire : ${l.name}`, l.desc, pc(l.patron));
         game.events.emit('blessing:pick', { rarity: 'heroic', id: l.id, legendary: true });

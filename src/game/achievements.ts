@@ -12,7 +12,8 @@ export interface AchievementDef {
   id: string; cat: string; tier: string; icon: string; name: string; desc: string; hidden?: boolean;
   cond: { stat: string; op: '>=' | '<=' | '>' | '<' | '=='; value: number; scope: 'run' | 'wave' | 'lifetime'; where?: { hero?: string; mode?: string; patron?: string } };
 }
-const TOTAL_BLESSINGS = (blessingsJson as unknown as { blessings: unknown[] }).blessings.length;
+const BLESSING_IDS = new Set((blessingsJson as unknown as { blessings: Array<{ id: string }> }).blessings.map((b) => b.id));
+const TOTAL_BLESSINGS = BLESSING_IDS.size;
 const DATA = achievementsJson as unknown as { achievements: AchievementDef[]; tiers: Record<string, { color: string }> };
 export const ACHIEVEMENT_DEFS = DATA.achievements;
 export const tierColor = (tier: string) => DATA.tiers[tier]?.color ?? '#d9ab74';
@@ -47,7 +48,7 @@ export function achievementValue(p: Profile, a: AchievementDef, r: RunView): num
   // Codex (profil > unlocks.seen*), tenu à jour par flow.ts à chaque découverte.
   if (stat === 'duosDiscovered') return p.unlocks.seenDuos.length;
   if (stat === 'legendaryPowersDiscovered') return p.unlocks.seenLegendaryPowers.length;
-  if (stat === 'blessingsDiscoveredPct') return Math.floor((100 * p.unlocks.seenBlessings.length) / Math.max(1, TOTAL_BLESSINGS));
+  if (stat === 'blessingsDiscoveredPct') return Math.floor((100 * p.unlocks.seenBlessings.filter((id) => BLESSING_IDS.has(id)).length) / Math.max(1, TOTAL_BLESSINGS));
   if (stat === 'maxHeroMastery') return Math.max(0, ...Object.values(p.mastery).map((m) => masteryLevel(m.xp)));
   const pend = r.pending ? (stat === 'bossKilled' ? r.bossWaves.length : r.counters[stat] ?? 0) : 0;
   return Math.max((p.stats.lifetime[stat] ?? 0) + pend, p.stats.best[stat] ?? 0);

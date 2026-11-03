@@ -6,9 +6,11 @@
  *  - Sanctuaire : achats via `buyUpgrade` / `unlockBuilding` (fonctions pures de progress.ts).
  *  - Export / import fichier et reprise d'expédition.
  */
-import { buyUpgrade, unlockBuilding, statValue, ImportError, type SaveManager, type Profile, type ImportPreview } from '../save';
+import { buyUpgrade, unlockBuilding, statValue, requirementProgress, upgradeRank, ImportError, type SaveManager, type Profile, type ImportPreview } from '../save';
 import type { UiRoot } from './UiRoot';
 import type { MetaProfile } from './screens/Sanctuary';
+import type { CodexData } from './screens/Codex';
+import { SANCTUARY } from './data';
 
 export interface SaveTools {
   exportFile: () => Promise<void>;
@@ -20,7 +22,20 @@ export interface SaveTools {
 export function metaFromProfile(p: Profile): MetaProfile {
   const ranks: Record<string, number> = {};
   for (const [b, ups] of Object.entries(p.sanctuary)) for (const [u, r] of Object.entries(ups)) ranks[`${b}.${u}`] = r;
-  return { wallet: { ...p.currencies }, ranks, unlocked: [...p.buildingsUnlocked], stats: { bestWave: statValue(p, 'bestWave'), runs: statValue(p, 'runs') } };
+  const reqs: MetaProfile['reqs'] = {};
+  for (const b of SANCTUARY.buildings) for (const r of [b.requires, ...b.upgrades.map((u) => u.requires)]) if (r) reqs[r] = requirementProgress(p, r);
+  return { wallet: { ...p.currencies }, ranks, unlocked: [...p.buildingsUnlocked], stats: { bestWave: statValue(p, 'bestWave'), runs: statValue(p, 'runs') }, reqs };
+}
+
+/** Données du Codex : découvertes du profil, patrons ouverts à l'Autel, savoir des Archives. */
+export function codexFromProfile(p: Profile): Omit<CodexData, 'assetUrl'> {
+  const autel = SANCTUARY.buildings.find((b) => b.id === 'autel') as (typeof SANCTUARY.buildings)[number] & { startingPatrons?: string[] };
+  const patrons = [...(autel?.startingPatrons ?? [])];
+  for (const u of autel?.upgrades ?? []) if (u.unlocksPatron && upgradeRank(p, 'autel', u.id) > 0) patrons.push(u.unlocksPatron);
+  return {
+    seenBlessings: [...p.unlocks.seenBlessings], seenDuos: [...p.unlocks.seenDuos], seenPowers: [...p.unlocks.seenLegendaryPowers],
+    patronsOpen: patrons, scholar: upgradeRank(p, 'archives', 'codex') > 0,
+  };
 }
 
 export function connectSave(ui: UiRoot, save: SaveManager): void {

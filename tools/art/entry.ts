@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { loadImages, paintScene, paintHeroCard } from './paint';
+import { loadImages, paintScene, paintHeroCard, paintArchive, paintSanctum } from './paint';
 
 /** Appelé par render.mjs : peint tout et renvoie { nom: dataURL WebP }. */
 async function paintAll(only?: string[], quality = 0.84) {
@@ -13,6 +13,8 @@ async function paintAll(only?: string[], quality = 0.84) {
   const want = (k) => !only || only.includes(k);
   for (const ch of ['ch1', 'ch2', 'ch3', 'ch4']) if (want(`menu-${ch}`)) out[`menu-${ch}`] = paintScene(ch, 1920, 1080).toDataURL('image/webp', quality);
   for (const id of ['taro', 'mei', 'sena', 'ren']) if (want(`select-${id}`)) out[`select-${id}`] = paintHeroCard(id).toDataURL('image/webp', quality);
+  if (want('codex')) out.codex = paintArchive().toDataURL('image/webp', quality);
+  if (want('sanctuary')) out.sanctuary = paintSanctum().toDataURL('image/webp', quality);
   return out;
 }
 (window as any).paintAll = paintAll;

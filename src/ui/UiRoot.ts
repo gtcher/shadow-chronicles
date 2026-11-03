@@ -11,6 +11,7 @@ import { blessingOfferScreen, type OfferOptions, type OfferChoice } from './scre
 import { sanctuaryScreen, type SanctuaryOptions } from './screens/Sanctuary';
 import { runEndScreen, type RunEndOptions } from './screens/RunEnd';
 import { settingsScreen } from './screens/SettingsScreen';
+import { codexScreen, type CodexData, type CodexTab } from './screens/Codex';
 import type { SaveTools } from './saveBridge';
 
 type Dev = 'keyboard' | 'mouse' | 'gamepad' | 'touch';
@@ -35,6 +36,8 @@ export class UiRoot {
   /** Fournit l'état affiché par le menu pause (le gameplay le renseigne). */
   pauseInfo: () => Omit<PauseOptions, 'onResume' | 'onSettings' | 'onQuit'> = () => ({ hero: 'taro', owned: [], wave: 1 });
   onQuitRun: () => void = () => {};
+  /** Découvertes affichées par le Codex (le jeu le renseigne depuis la sauvegarde). */
+  codexInfo?: () => CodexData;
   /** Outils de sauvegarde (export / import), renseignés par connectSave(). */
   saveTools?: SaveTools;
   /** Une run est en cours : la pause est autorisée. */
@@ -126,6 +129,11 @@ export class UiRoot {
   showTitle(o: TitleOptions): void { this.inRun = false; this.show(titleScreen(o)); }
   showSanctuary(o: SanctuaryOptions): void { this.inRun = false; this.show(sanctuaryScreen(o)); }
   showRunEnd(o: RunEndOptions): void { this.inRun = false; this.show(runEndScreen(o)); }
+  /** Codex des Brumes, par-dessus l'écran courant (titre, Sanctuaire ou pause). */
+  openCodex(tab?: CodexTab): void {
+    if (!this.codexInfo) return;
+    this.push(codexScreen({ ...this.codexInfo(), tab, onBack: () => this.pop() }));
+  }
   openSettings(): void { this.push(settingsScreen(this.settings, () => this.pop(), this.saveTools)); }
 
   /** Offre de bénédictions : met en pause et résout avec la carte choisie. */
@@ -145,6 +153,7 @@ export class UiRoot {
     if (!this.inRun) return;
     if (this.screens.length) { this.back(); return; }
     this.push(pauseScreen({ ...this.pauseInfo(), onResume: () => this.pop(), onSettings: () => this.openSettings(),
+      onCodex: this.codexInfo ? () => this.openCodex() : undefined,
       onQuit: () => { this.closeAll(); this.onQuitRun(); } }));
   }
 
@@ -154,7 +163,7 @@ export class UiRoot {
     if (!top) { this.togglePause(); return; }
     // Les écrans de décision (offre, fin de run, titre) ne se ferment pas par Échap.
     const label = top.el.getAttribute('aria-label') ?? '';
-    if (label === 'Pause' || label === 'Réglages') this.pop();
+    if (label === 'Pause' || label === 'Réglages' || label === 'Codex des Brumes') this.pop();
   }
 
   private syncPause(): void {

@@ -9,4 +9,5 @@ export type { MetaProfile, SanctuaryOptions } from './screens/Sanctuary';
 export type { RunEndOptions } from './screens/RunEnd';
 export type { TitleOptions } from './screens/Title';
 export * from './data';
-export { connectSave, metaFromProfile, sanctuaryActions, type SaveTools } from './saveBridge';
+export { connectSave, metaFromProfile, codexFromProfile, sanctuaryActions, type SaveTools } from './saveBridge';
+export { codexProgress, codexFresh, type CodexData } from './screens/Codex';

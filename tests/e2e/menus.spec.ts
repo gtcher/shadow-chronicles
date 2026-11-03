@@ -122,6 +122,45 @@ test('titre → Sanctuaire (achat) → retour, défi du jour → retour, choix d
   expect(errors).toEqual([]);
 });
 
+test('Codex : depuis le titre (onglets, Échap) et le Sanctuaire ; guide du Sanctuaire au premier passage', async ({ page }) => {
+  const errors = await open(page);
+  type Sc = { save: { update: (f: (p: any) => void) => void }; ui: { settings: { set: (k: string, v: unknown) => void; get: () => Record<string, unknown> } }; title: () => void };
+  await page.evaluate(() => {
+    const sc = (window as unknown as { sc: Sc }).sc;
+    sc.save.update((p) => { p.unlocks.seenBlessings = ['vei_frappe_marteau']; p.unlocks.seenDuos = ['duo_givre_foudre']; p.unlocks.seenLegendaryPowers = ['crimson']; });
+    sc.title();
+  });
+  await title(page).getByRole('button', { name: /Codex/ }).click();
+  const codex = page.getByRole('dialog', { name: 'Codex des Brumes' });
+  await expect(codex).toBeVisible();
+  await expect(codex.locator('.sc-cx-card:not(.sc-unseen)')).toContainText(['Marteau du Guet']);
+  await codex.getByRole('tab', { name: /Duos/ }).click();
+  await expect(codex.locator('.sc-cx-duo:not(.sc-unseen)')).toHaveCount(1);
+  await codex.getByRole('tab', { name: /Reliques/ }).click();
+  await expect(codex.locator('.sc-cx-relic:not(.sc-unseen)')).toContainText(['Lame des Trois Serments']);
+  await codex.getByRole('tab', { name: /Savoir/ }).click();
+  await expect(codex).toContainText('Raretés');
+  await page.keyboard.press('Escape');
+  await expect(codex).toHaveCount(0);
+  await expect(title(page)).toBeVisible();
+
+  // Guide de la première visite du Sanctuaire, puis Codex depuis le Sanctuaire.
+  await page.evaluate(() => (window as unknown as { sc: Sc }).sc.ui.settings.set('sanctuaryGuideDone', false));
+  await title(page).getByRole('button', { name: /Sanctuaire/ }).click();
+  const guide = page.getByRole('group', { name: 'Guide du Sanctuaire' });
+  await expect(guide).toBeVisible();
+  for (let i = 0; i < 5; i++) await guide.getByRole('button', { name: 'Suivant' }).click();
+  await guide.getByRole('button', { name: 'Compris !' }).click();
+  await expect(guide).toBeHidden();
+  expect(await page.evaluate(() => (window as unknown as { sc: Sc }).sc.ui.settings.get().sanctuaryGuideDone)).toBe(true);
+  const sanct = page.getByRole('dialog', { name: "Sanctuaire d'Akar" });
+  await sanct.getByRole('button', { name: /Codex/ }).click();
+  await expect(codex).toBeVisible();
+  await codex.getByRole('button', { name: '← Retour' }).click();
+  await expect(sanct).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
 test('run : fin de vague → offre de bénédictions → vague 2, puis abandon → titre', async ({ page }) => {
   const errors = await open(page, '?hero=taro&seed=11');
   await waitRun(page);

@@ -32,6 +32,14 @@ Touches affichées : Clic / 1 / 2 / 3 / Esp au clavier, RT / X / Y / RB / LT à 
   Chaque carte affiche patron, rareté (couleur + ◆ pour le daltonisme), emplacement, tags, Duo débloqué, remplacement, résonance.
 - `ui.showSanctuary({ profile: metaFromProfile(save.profile), ...sanctuaryActions(save, refresh) })`.
 - `ui.showRunEnd({...})` : gains d'abord, maîtrise, prochaine amélioration, 3 succès presque atteints.
+- `ui.openCodex(tab?)` : **Codex des Brumes** (onglets Serments, Duos, Reliques, Savoir), empilé par-dessus le titre,
+  le Sanctuaire ou la pause ; Échap le ferme. Données : `ui.codexInfo = () => ({ ...codexFromProfile(save.profile), assetUrl })`.
+  Les entrées non découvertes restent en silhouette ; l'amélioration « Codex des Brumes » des Archives dévoile leur effet.
+  Pastille « nouveau » du menu : `codexFresh()` (ids déjà consultés dans localStorage `sc-codex-vu`).
+- Sanctuaire : bandeau « Objectif » (`sanctuaryGoals`), conditions avec barres (`MetaProfile.reqs`, calculé par
+  `requirementProgress` de src/save), guide de 6 étapes à la première visite (`settings.sanctuaryGuideDone`, bouton « ? »).
+- Fonds peints : `codex` (salle des Archives) et `sanctuary`, générés par `node tools/art/render.mjs codex sanctuary`.
+- Sceaux des patrons en SVG : `src/ui/sigils.ts`.
 - `ui.togglePause()` (contenu via `ui.pauseInfo = () => ({ hero, owned, wave })`), `ui.openSettings()`.
 
 ## Mobile

@@ -135,3 +135,33 @@ export function pactsScreen(o: PactsOptions): HTMLElement {
   refresh();
   return root;
 }
+
+export interface MissionsScreenOptions {
+  missions: Array<{ icon: string; text: string; progress: number; target: number; done: boolean }>;
+  chest: boolean;
+  chestsOpened: number;
+  reward: string;
+  chestReward: string;
+  reset: string;
+  onPlay: () => void;
+  onBack: () => void;
+}
+
+/** Missions du jour : 3 objectifs qui avancent sur toutes les runs, le coffre quand les 3 sont remplies. */
+export function missionsScreen(o: MissionsScreenOptions): HTMLElement {
+  const done = o.missions.filter((m) => m.done).length;
+  return h('section', { class: 'sc-screen', role: 'dialog', 'aria-label': 'Missions du jour' },
+    h('div', { class: 'sc-end sc-panel', style: { maxWidth: '560px' } },
+      sub(`Nouvelles missions dans ${o.reset}`),
+      h('h2', { class: 'sc-title', style: { fontSize: '1.9em' } }, '🎯 Missions du jour'),
+      mute(`Elles avancent sur toutes tes runs d'aujourd'hui. Chacune rapporte ${o.reward}.`),
+      h('div', { class: 'sc-near sc-missions', style: { margin: '16px 0' } },
+        ...o.missions.map((m) => h('div', { class: m.done ? 'sc-mdone' : '' }, h('span', {}, m.done ? '✓' : m.icon), h('span', {}, m.text),
+          h('small', {}, m.done ? 'fait' : `${m.progress} / ${m.target}`), h('div', { class: 'sc-track' }, h('i', { style: { width: `${(m.progress / m.target) * 100}%` } }))))),
+      h('div', { class: `sc-next sc-chest${o.chest ? ' sc-chest-open' : done >= 3 ? '' : ' sc-chest-locked'}` }, h('i', {}, o.chest ? '🎁' : '🔒'),
+        h('div', {}, h('b', {}, o.chest ? 'Coffre du jour ouvert' : `Coffre du jour · ${done} / 3`),
+          h('div', { style: { color: 'var(--mute)', fontSize: '0.9em' } }, o.chest ? `Reviens demain pour un nouveau coffre (${o.chestsOpened} ouverts)` : `Remplis les 3 missions : ${o.chestReward}`))),
+      h('div', { class: 'sc-row' },
+        h('button', { class: 'sc-btn sc-primary', onclick: o.onPlay, 'data-autofocus': true }, '⚔ Partir en run'),
+        h('button', { class: 'sc-btn sc-ghost', onclick: o.onBack }, 'Retour'))));
+}

@@ -50,7 +50,7 @@ export function sanctuaryGoals(p: MetaProfile): Array<{ building: string; icon: 
     const pr = progress(b.requires, p);
     const [[c, v]] = Object.entries(b.unlockCost ?? { eclats: 0 });
     if (!pr.ok) out.push({ building: b.id, icon: b.icon, title: b.name, text: requirementText(b.requires), have: pr.have, need: pr.need, ready: false });
-    else out.push({ building: b.id, icon: b.icon, title: b.name, text: `Prêt à restaurer : ${fmt(v)} ${cur(c).icon} ${cur(c).name}`, have: Math.min(p.wallet[c] ?? 0, v), need: v, ready: (p.wallet[c] ?? 0) >= v });
+    else out.push({ building: b.id, icon: b.icon, title: b.name, text: (p.wallet[c] ?? 0) >= v ? `Touche ici pour la restaurer (${fmt(v)} ${cur(c).icon})` : `Conditions remplies · restauration : ${fmt(v)} ${cur(c).icon} ${cur(c).name}`, have: Math.min(p.wallet[c] ?? 0, v), need: v, ready: (p.wallet[c] ?? 0) >= v });
   }
   for (const b of SANCTUARY.buildings) {
     if (!isOpen(b, p)) continue;
@@ -101,14 +101,14 @@ export function sanctuaryScreen(o: SanctuaryOptions): HTMLElement {
     goal.replaceChildren(h('span', { class: 'sc-goal-k' }, 'Objectif'), ...goals.map((g) =>
       h('button', { class: `sc-goal-item${g.ready ? ' sc-ready' : ''}`, onclick: () => select(g.building), 'aria-label': `${g.title} : ${g.text}${g.ready ? '' : `, ${g.have} sur ${g.need}`}` },
         h('i', {}, g.icon), h('span', {}, h('b', {}, g.title), h('small', {}, g.text)),
-        g.ready ? h('em', {}, 'Prêt') : h('em', {}, `${fmt(g.have)}/${fmt(g.need)}`), track(g.have, g.need))));
+        g.ready ? h('em', {}, 'Restaurer →') : h('em', {}, `${fmt(g.have)}/${fmt(g.need)}`), track(g.have, g.need))));
 
     list.replaceChildren(...SANCTUARY.buildings.map((b) => {
       const open = isOpen(b, p);
       const pr = progress(b.requires, p);
       return h('button', { class: `sc-bld${open ? '' : ' sc-locked'}`, role: 'tab', 'aria-pressed': String(b.id === current), 'aria-selected': String(b.id === current),
         onclick: () => select(b.id) },
-      h('span', { class: 'sc-ico' }, b.icon), h('div', {}, h('h4', {}, b.name), h('p', {}, open ? b.desc : pr.ok ? 'Prêt à restaurer' : `${requirementText(b.requires)} · ${pr.have}/${pr.need}`),
+      h('span', { class: 'sc-ico' }, b.icon), h('div', {}, h('h4', {}, b.name), h('p', {}, open ? b.desc : pr.ok ? 'À restaurer : touche-moi' : `${requirementText(b.requires)} · ${pr.have}/${pr.need}`),
         open ? null : track(pr.ok ? 1 : pr.have, pr.ok ? 1 : pr.need)),
       open && affordableIn(b) ? h('span', { class: 'sc-dot', title: 'Amélioration disponible' }) : null);
     }));

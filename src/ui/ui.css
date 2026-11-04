@@ -273,6 +273,14 @@
 .sc-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 .sc-daily { display: inline-flex; gap: 10px; align-items: center; padding: 8px 14px; margin-top: 12px; font-size: 0.88em; font-family: var(--body) !important; letter-spacing: 0 !important; font-weight: 500 !important; max-width: 92vw; }
 .sc-daily b { color: var(--gold); }
+.sc-missions-btn { margin-left: 8px; }
+.sc-offer-tip { margin: 6px auto 0; padding: 6px 12px; max-width: 520px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent); background: rgba(226, 191, 122, 0.08); font-size: 0.9em; }
+.sc-missions-btn.sc-pending > span:first-child { animation: sc-pulse-dot 2.4s infinite; }
+@keyframes sc-pulse-dot { 50% { transform: scale(1.25); } }
+@media (prefers-reduced-motion: reduce) { .sc-missions-btn.sc-pending > span:first-child { animation: none; } }
+.sc-teaser[disabled] { opacity: 0.6; cursor: help; }
+@media (max-width: 520px) and (orientation: portrait) { .sc-teaser { display: none; } }
+.sc-chest-locked { opacity: 0.8; border-style: dashed; }
 @media (max-width: 700px) { .sc-heroes { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sc-herocard { aspect-ratio: 4 / 3.4; } }
 @media (max-width: 700px) { .sc-chapter { font-size: 0.66em; letter-spacing: 0.12em; margin-top: 12px; } }
 
@@ -421,13 +429,26 @@
 .sc-next { display: flex; align-items: center; gap: 12px; text-align: left; padding: 12px; border-radius: 8px; border: 1px solid var(--gold); background: rgba(226, 191, 122, 0.08); margin-bottom: 14px; }
 .sc-next i { font-style: normal; font-size: 1.6em; color: var(--gold); }
 .sc-near { text-align: left; display: grid; gap: 8px; margin-bottom: 18px; }
-.sc-near div { display: grid; grid-template-columns: 26px 1fr auto; gap: 8px; align-items: center; font-size: 0.88em; }
+.sc-near > div:not(.sc-sub) { display: grid; grid-template-columns: 26px 1fr auto; gap: 8px; align-items: center; font-size: 0.88em; }
 .sc-near .sc-track { grid-column: 2 / -1; height: 5px; background: rgba(255, 255, 255, 0.08); border-radius: 3px; overflow: hidden; }
 .sc-near .sc-track i { display: block; height: 100%; background: var(--gold); transform-origin: left; animation: sc-grow 1s 0.4s backwards ease-out; }
 @keyframes sc-grow { from { transform: scaleX(0); } }
 .sc-xp { margin: 0 0 16px; text-align: left; font-size: 0.85em; color: var(--mute); }
 .sc-xp .sc-track { height: 8px; background: rgba(255, 255, 255, 0.08); border-radius: 4px; overflow: hidden; margin-top: 4px; }
 .sc-xp .sc-track i { display: block; height: 100%; background: linear-gradient(90deg, #6a4cff, var(--soul)); width: 0; transition: width 1.2s 0.2s; }
+
+/* Fin de run : cause de la chute, détail des Éclats, missions, build (retours des 10 testeurs). */
+.sc-cause { display: flex; gap: 10px; align-items: center; text-align: left; padding: 10px 12px; margin: 0 0 12px; border-radius: 8px; background: rgba(255, 90, 90, 0.08); border: 1px solid rgba(255, 120, 110, 0.35); }
+.sc-cause > span { font-size: 1.5em; color: #ff8a7a; }
+.sc-cause b { display: block; color: #ffd0c8; }
+.sc-cause small { color: var(--mute); }
+.sc-breakdown { margin: -8px 0 14px; font-size: 0.82em; color: var(--mute); }
+.sc-missions .sc-mdone > span:first-child { color: #8fe3a0; }
+.sc-missions .sc-mdone .sc-track i { background: #8fe3a0; }
+.sc-missions .sc-mnew small { color: #8fe3a0; font-weight: 700; }
+.sc-build { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 0 0 16px; }
+.sc-build span { font-size: 0.75em; padding: 3px 8px; border-radius: 999px; border: 1px solid currentColor; background: rgba(255, 255, 255, 0.03); }
+.sc-build .sc-chip-item { font-weight: 700; border-width: 2px; }
 
 /* ── Réglages ───────────────────────────────────────────────── */
 .sc-settings { width: min(620px, 94vw); padding: 22px; max-height: 92vh; overflow: auto; }

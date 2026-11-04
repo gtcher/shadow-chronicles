@@ -146,13 +146,13 @@ export class Tutorial {
   private offerTip(): void {
     if (this.offerTipShown) return;
     this.offerTipShown = true;
-    const tip = h('div', { class: 'sc-coach-tip sc-panel', style: { left: '50%', bottom: 'calc(12px + env(safe-area-inset-bottom, 0px))', transform: 'translateX(-50%)' } },
+    // Dans l'en-tête de l'offre (à la place de la phrase d'ambiance) : ne recouvre ni les cartes ni « Relancer ».
+    const tip = h('p', { class: 'sc-offer-tip' },
       '✦ Les ', h('b', {}, 'tags'), ' montrent les synergies. Un liseré doré = un ', h('b', {}, 'Duo'), ' se débloque.');
-    tip.style.zIndex = '30';
     const screens = document.querySelectorAll('#sc-ui .sc-screen');
-    (screens[screens.length - 1] ?? document.getElementById('sc-ui'))?.append(tip);
-    tip.style.position = 'fixed';
-    setTimeout(() => tip.remove(), 7000);
+    const head = screens[screens.length - 1]?.querySelector('.sc-offer header p');
+    if (!head) return;
+    head.replaceWith(tip);
   }
 
   private clear(all = true): void {

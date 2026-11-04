@@ -132,6 +132,12 @@ export function sanitizeProfile(raw: unknown): Profile {
     seenBlessings: strList(un.seenBlessings), seenDuos: strList(un.seenDuos), seenLegendaryPowers: strList(un.seenLegendaryPowers),
   };
 
+  if (isObj(o.missions) && typeof o.missions.day === 'string' && isDay(o.missions.day)) {
+    const m = o.missions, progress: Record<string, number> = {};
+    if (isObj(m.progress)) for (const [k, v] of Object.entries(m.progress).slice(0, 12)) progress[k.slice(0, 40)] = int(v, 0, 0, 1e9);
+    p.missions = { day: m.day as string, progress, done: strList(m.done, 12), chest: bool(m.chest, false), chestsOpened: int(m.chestsOpened, 0, 0, 1e6) };
+  }
+
   // Objets : format défini par le butin ; on garde seulement des objets JSON simples, 4 au plus.
   p.heirlooms = Array.isArray(o.heirlooms) ? o.heirlooms.filter(isObj).slice(0, 4).map((x) => structuredClone(x)) : [];
 

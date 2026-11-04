@@ -7,13 +7,14 @@ import type { RunScene, RunResult, RunOptions } from './scenes/RunScene';
 const loadRun = () => import('./scenes/RunScene');
 import { HERO_DEFS } from './combat/data';
 import { BLESSING_DATA, DEFAULT_RUN_CONFIG, type OfferChoice, type RunConfig } from './combat/blessings';
-import { LOOT, type Item } from './combat/loot';
+import { LOOT, ITEM_RARITIES, type Item } from './combat/loot';
+import { applyRunToMissions, dailyMissions, timeToReset, CHEST_REWARD, MISSION_REWARD, type MissionResult } from './missions';
 import { checkAchievements, nearAchievements, tierColor, type RunView } from './achievements';
 import { BASE_MODS, PACTS, applyDailyMods, applyPacts, buildDaily, dailyScore, pactPoints, seedStream, shareText, type DailyConfig, type PactRanks } from './modes';
-import { dailyIntroScreen, dailyResultScreen, pactsScreen } from './screens';
+import { dailyIntroScreen, dailyResultScreen, pactsScreen, missionsScreen } from './screens';
 import { applyVfxSettings, applyGameplaySettings } from './settingsLink';
 import { mountUI, connectSave, metaFromProfile, codexFromProfile, codexProgress, codexFresh, sanctuaryActions, type UiRoot } from '../ui';
-import { SaveManager, recordRunEnd, recordBest, recordDaily, masteryProgress, unlockAchievement, upgradeRank, addCurrency, grant, type Profile } from '../save';
+import { SaveManager, requirementProgress, PACTS_REQUIRES, recordRunEnd, recordBest, recordDaily, masteryProgress, unlockAchievement, upgradeRank, addCurrency, grant, type Profile } from '../save';
 import sanctuaryJson from '../../data/sanctuary.json';
 
 type Upgrade = { id: string; stat?: string; perRank?: number; unlocksPatron?: string };
@@ -49,6 +50,16 @@ const savePacts = (r: PactRanks) => { try { localStorage.setItem(PACT_KEY, JSON.
 /** Une run : normale (avec pactes) ou défi quotidien. */
 interface RunKind { daily?: DailyConfig; practice?: boolean }
 
+const BLESSING_COLOR: Record<string, string> = { commun: '#dfe8ef', rare: '#77b5ff', epique: '#c88dff', heroique: '#ffca73' };
+
+/** Objet le plus rare porté en fin de run (écran de fin). */
+function bestItem(items: Item[]): { name: string; color: string; rarity: string } | undefined {
+  const it = [...items].sort((a, b) => ITEM_RARITIES.indexOf(b.rarity) - ITEM_RARITIES.indexOf(a.rarity))[0];
+  if (!it) return undefined;
+  const R = LOOT.rarities[it.rarity];
+  return { name: it.name, color: R.color, rarity: R.name };
+}
+
 const HERO_NAME: Record<string, string> = Object.fromEntries(Object.values(HERO_DEFS).map((d) => [d.id, d.name]));
 const AUDIO_RARITY: Record<string, string> = { commun: 'common', rare: 'rare', epique: 'epic', heroique: 'heroic' };
 
@@ -61,7 +72,7 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
   const ui = mountUI(game as unknown as Game);
   if (save) connectSave(ui, save);
   // Outils de test (robot, console) : accès à la sauvegarde et aux écrans.
-  (window as unknown as { sc: unknown }).sc = { save, ui, title: () => title(), pacts: () => pacts(), daily: () => dailyIntro() };
+  (window as unknown as { sc: unknown }).sc = { save, ui, title: () => title(), pacts: () => pacts(), daily: () => dailyIntro(), missions: () => missionsView() };
   const url = (k: string) => game.assets.url(k);
   if (save) ui.codexInfo = () => ({ ...codexFromProfile(save.profile), assetUrl: url });
   // Flashs et chiffres de dégâts suivent les réglages, même modifiés en pleine run.
@@ -91,14 +102,27 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
       assetUrl: url, hero, mastery: mastery(), chapter,
       daily: { label: `${HERO_NAME[d.hero] ?? d.hero} · ${d.modifiers.map((m) => m.name).join(', ')}`, streak: save?.profile.daily.streak ?? 0 },
       onDaily: () => dailyIntro(),
+      missions: save ? (() => { const m = dailyMissions(save.profile); return { done: m.done, total: m.missions.length, chest: m.chest }; })() : undefined,
+      onMissions: save ? () => missionsView() : undefined,
       pacts: pactsOpen ? { points: pactPoints(loadPacts()) } : undefined,
       onPacts: pactsOpen ? () => pacts() : undefined,
+      pactsTeaser: save && !pactsOpen ? (() => { const r = requirementProgress(save.profile, PACTS_REQUIRES); return `${Math.min(r.have, r.need)}/${r.need} boss`; })() : undefined,
       onPlay: (h) => void startRun(h, 1),
       onSanctuary: () => sanctuary(),
       onSettings: () => ui.openSettings(),
       codex: save ? { pct: codexProgress(codexFromProfile(save.profile)).pct, fresh: codexFresh(codexFromProfile(save.profile)) } : undefined,
       onCodex: save ? () => { ui.openCodex(); } : undefined,
     });
+  };
+
+  const missionsView = () => {
+    if (!save) { title(); return; }
+    const m = dailyMissions(save.profile);
+    ui.show(missionsScreen({
+      missions: m.missions, chest: m.chest, chestsOpened: save.profile.missions?.chestsOpened ?? 0,
+      reward: `+${MISSION_REWARD.eclats} ✦`, chestReward: `+${CHEST_REWARD.eclats} ✦ +${CHEST_REWARD.poussiere} ✧`, reset: timeToReset(),
+      onPlay: () => void startRun(hero, 1), onBack: () => title(),
+    }));
   };
 
   const dailyIntro = () => {
@@ -160,9 +184,12 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
     let gains = { eclats: r.wave * 2 }, from = 0, to = 0, level = 1, xpFrom = 0, xpTo = 0;
     let best = r.wave;
     let near: ReturnType<typeof nearAchievements> = [];
+    let missions = null as MissionResult | null;
+    const breakdown: Array<[string, number]> = [];
     if (save) {
       // Record d'avant cette run (sinon « nouveau record » ne s'affiche jamais).
       best = Math.max(0, ...Object.values(save.profile.stats.bestWaveByMode as Record<string, number>));
+      let pactBonus = 0;
       const rew = save.update((p) => {
         const out = recordRunEnd(p, {
           hero: r.hero, mode: scene.mode, wave: r.wave, wavesCleared: r.wavesCleared, bossWaves: r.bossWaves, won: r.won, daily: false, pactPoints: pts,
@@ -171,7 +198,7 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
         // Pactes de la Brume : bonus d'éclats et paliers (boss de la vague 10 vaincu avec ce total).
         if (pts > 0) {
           const bonus = Math.round(out.currencies.eclats * pts * PACTS.rewardPerPoint.eclatsPct / 100);
-          addCurrency(p, 'eclats', bonus); out.currencies.eclats += bonus;
+          addCurrency(p, 'eclats', bonus); out.currencies.eclats += bonus; pactBonus = bonus;
           if (r.bossWaves.includes(10)) for (const m of PACTS.milestones) {
             if (pts >= m.points && !p.pacts.milestonesClaimed.includes(m.points)) {
               p.pacts.milestonesClaimed.push(m.points);
@@ -182,6 +209,14 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
         }
         if (Number.isFinite(r.fastestBossKill)) recordBest(p, 'fastestBossKill', Math.round(r.fastestBossKill), true);
         p.pity.legendary = r.legendaryPity;
+        // Détail des Éclats (les testeurs ne savaient pas d'où ils venaient).
+        const record = out.newBestWave ? 5 : 0;
+        breakdown.push([`Vague ${r.wave}`, out.currencies.eclats - record - pactBonus]);
+        if (record) breakdown.push(['Record', record]);
+        if (pactBonus) breakdown.push(['Pactes', pactBonus]);
+        // Missions du jour.
+        missions = applyRunToMissions(p, { hero: r.hero, wave: r.wave, wavesCleared: r.wavesCleared, bosses: r.bossWaves.length, counters: r.counters });
+        if (missions.eclats) { out.currencies.eclats += missions.eclats; breakdown.push(['Missions', missions.eclats]); }
         return out;
       });
       unlock(scene, false);
@@ -195,6 +230,14 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
       // Barre de maîtrise : vraie progression dans le niveau (si un palier est franchi, elle repart de 0).
       mastery: { hero: HERO_NAME[r.hero] ?? r.hero, level, from: from === to ? masteryProgress(xpFrom).progress : 0, to: masteryProgress(xpTo).progress, gained: xpTo - xpFrom },
       near,
+      killedBy: r.killedBy, damageBy: r.damageBy,
+      breakdown,
+      build: {
+        blessings: r.blessings.map((b) => ({ name: b.name, color: BLESSING_COLOR[b.rarity] ?? '#dfe8ef' })),
+        item: bestItem(r.items),
+      },
+      missions: missions ? { lines: missions.lines, chestOpened: missions.chestOpened, chestReward: `+${CHEST_REWARD.eclats} ✦ +${CHEST_REWARD.poussiere} ✧`, reset: timeToReset() } : undefined,
+      share: `Shadow Chronicles · ${HERO_NAME[r.hero] ?? r.hero} · ${r.won ? 'victoire !' : `vague ${r.wave}`} · ${r.kills} ombres vaincues en ${Math.floor(r.timeSec / 60)} min${r.wave > best ? ' · nouveau record ★' : ''}. Tu fais mieux ?`,
       onRetry: () => void startRun(r.hero, 1),
       onSanctuary: () => sanctuary(),
       onMenu: () => title(),
@@ -300,7 +343,7 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
     scene.showBuiltinHud = false;
     scene.onAnnounce = (t, s, c) => ui.hud.banner(t, s, c !== undefined ? hex(c) : undefined);
     scene.onEnd = (r) => end(scene, r, kind, pts);
-    let lastKills = 0;
+    let lastKills = 0, lastGold = -1;
     scene.onFrame = (sc) => {
       if (ui.inRun && ui.tutorial.running) {
         const inp = game.input;
@@ -315,6 +358,8 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
       const info = (s.boss ? `${s.boss.name} · phase ${s.boss.phase}/3 · ${Math.ceil((100 * s.boss.hp) / s.boss.maxHp)} %` : `${s.theme} · ${s.region} · potions ×${s.potions}`) + ` · ◉ ${s.gold}`;
       ui.hud.setWave(s.wave, s.phase === 'active' ? 1 - s.enemiesLeft / total : 1, info);
       while (lastKills < s.kills) { lastKills++; ui.hud.addKill(); }
+      // Compteur d'or du HUD (restait à 0 : relevé par les testeurs).
+      if (s.gold !== lastGold) { lastGold = s.gold; ui.hud.setGold(s.gold); }
     };
     // Tutoriel : chaque étape se valide dès que le joueur fait le geste demandé.
     const tuto = () => game.scenes.current === scene && ui.inRun;

@@ -241,3 +241,33 @@ test('Pactes de la Brume : ouverture, rangs, retour', async ({ page }) => {
   await expect(title(page).getByRole('button', { name: /Pactes · \d/ })).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test('missions du jour : bouton du titre, écran, progression en fin de run et cause de la chute', async ({ page }) => {
+  const errors = await open(page);
+  await expect(title(page)).toBeVisible();
+  const btn = page.locator('.sc-missions-btn');
+  await expect(btn).toContainText('0 / 3');
+  await btn.click();
+  const ms = page.getByRole('dialog', { name: 'Missions du jour' });
+  await expect(ms).toBeVisible();
+  await expect(ms.locator('.sc-missions > div')).toHaveCount(3);
+  await expect(ms).toContainText('Coffre du jour');
+  await ms.getByRole('button', { name: /Partir en run/ }).click();
+  await waitRun(page);
+  // Un coup d'un vrai ennemi puis la chute : l'écran de fin nomme le coupable et montre les missions.
+  await page.evaluate(() => {
+    const s = (window as unknown as W).game.scenes.current;
+    const w = s.world, foes = [...w.stores.entries()].find(([k]: [{ name?: string }]) => k.name === 'Foe')?.[1];
+    if (foes?.size) s.hurtHero(5, { owner: [...foes.keys()][0] });
+    s.debugKillHero();
+  });
+  await sim(page, 2.5);
+  const end = page.getByRole('dialog', { name: 'Fin de la run' });
+  await expect(end).toBeVisible();
+  await expect(end.locator('.sc-missions > div:not(.sc-sub)')).toHaveCount(3);
+  await expect(end.getByRole('button', { name: 'Partager le résultat' })).toBeVisible();
+  // Les barres « Presque… » et de missions ont une vraie largeur (bug : grille appliquée à la piste).
+  const w = await end.locator('.sc-missions .sc-track').first().evaluate((e) => e.getBoundingClientRect().width);
+  expect(w).toBeGreaterThan(200);
+  expect(errors).toEqual([]);
+});

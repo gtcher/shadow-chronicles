@@ -41,6 +41,9 @@ interface RigState { sheet: RigSheet; anim: RigAnim; t: number; hurt: number; at
 
 /** Instantané lisible par l'UI (HUD DOM, mobile) à chaque image. */
 /** Résumé de fin de run (pour l'écran de fin et la sauvegarde). */
+/** Altérations du héros, pour « Abattu par … » en fin de run. */
+const STATUS_FR: Record<string, string> = { burn: 'Brûlure', frost: 'Givre', void: 'Néant', slow: 'Entrave' };
+
 export interface RunResult {
   hero: HeroId; wave: number; wavesCleared: number; bossWaves: number[]; won: boolean; kills: number; timeSec: number; bestCombo: number; perfectDodges: number;
   /** Compteurs pour recordRunEnd (succès). */
@@ -53,6 +56,10 @@ export interface RunResult {
   legendaryPity: number;
   blessings: Array<{ id: string; name: string; patron: string; rarity: string }>;
   items: Item[];
+  /** Dernier coup reçu avant la chute (nom de l'ennemi ou du boss), null si victoire / abandon. */
+  killedBy: string | null;
+  /** Dégâts reçus par source, du plus grand au plus petit (écran de fin). */
+  damageBy: Array<{ name: string; damage: number }>;
 }
 
 /** Options de run venant de la méta-progression (Sanctuaire). */
@@ -332,6 +339,9 @@ export class RunScene extends Scene implements CombatCtx {
     this.world.add(e, CameraTarget, true);
     this.recomputeHero();
     attachView(this.world, this.g.renderer, e, this.character(this.g.assets.texture(`hero-${d.id}`), d.height, 22, 0xffffff, undefined, this.rigSheet(heroOrder(d.id)), e));
+    // Anneau au sol aux couleurs du héros : on le retrouve dans la mêlée (retour des testeurs : « je ne vois plus mon perso »).
+    const ring = new Graphics().ellipse(0, 0, 34, 13).stroke({ width: 3, color: d.color, alpha: 0.85 }).ellipse(0, 0, 40, 16).stroke({ width: 1.5, color: 0xffffff, alpha: 0.35 });
+    this.world.get(e, View)!.node.addChildAt(ring, 0);
     const t = this.world.get(e, Transform)!;
     this.g.camera.follow(t, this.world.get(e, Velocity)!);
     this.vfx.follow(t, this.world.get(e, View)!.node, d.color);
@@ -496,7 +506,8 @@ export class RunScene extends Scene implements CombatCtx {
     this.combo++; this.comboT = 2.6;
     if (this.combo > this.bestCombo) this.bestCombo = this.combo;
     if (this.combo >= 5 && this.combo % 5 === 0) {
-      this.feedback.number(t.x, t.y - 150, `Combo ×${this.combo}`, { color: 0xffb04a, size: 24 });
+      // Le compteur du HUD suit le combo : dans le monde, seulement les paliers (×25, ×50…) pour ne pas noyer l'action.
+      if (this.combo % 25 === 0) this.feedback.number(t.x, t.y - 150, `Combo ×${this.combo}`, { color: 0xffb04a, size: 26 });
       this.g.events.emit('combo', { count: this.combo, best: this.bestCombo });
     }
     const big = !!f.def.elite || f.def.h > 120;
@@ -538,6 +549,10 @@ export class RunScene extends Scene implements CombatCtx {
     this.g.events.emit('boss:killed', { wave: this.wave, id: b.def.id, entity: e, x: t.x, y: t.y, time: this.time });
   }
 
+  /** Source du dernier coup reçu et cumul des dégâts par source (fin de run). */
+  private lastHurtBy: string | null = null;
+  private damageBy: Record<string, number> = {};
+
   hurtHero(dmg: number, o: HeroHitOpts = {}): boolean {
     const w = this.world;
     const h = w.get(this.player, Hero)!, hp = w.get(this.player, Health)!, t = w.get(this.player, Transform)!, v = w.get(this.player, Velocity)!;
@@ -561,6 +576,13 @@ export class RunScene extends Scene implements CombatCtx {
     // Coup mortel : une bénédiction peut l'annuler (une fois par vague).
     if (taken >= hp.hp && (this.bless.onLethal() || this.loot.onLethal())) taken = Math.max(0, hp.hp - 1);
     hp.hp = Math.max(0, hp.hp - taken);
+    if (taken > 0 && dmg < 1e6) {
+      // Qui frappe ? (hors coup de test debugKillHero) (écran de fin : « Abattu par … », dégâts par source)
+      const f = o.owner !== undefined ? w.get(o.owner, Foe) : undefined;
+      const src = f ? (f.boss?.def.name ?? f.def.name) : o.status ? (STATUS_FR[o.status] ?? 'Altération') : 'Piège du décor';
+      this.lastHurtBy = src;
+      this.damageBy[src] = (this.damageBy[src] ?? 0) + taken;
+    }
     this.stats.addWave('damageTaken', taken);
     this.stats.add('damageTaken', taken);
     this.waveDamage += taken;
@@ -627,7 +649,9 @@ export class RunScene extends Scene implements CombatCtx {
       kills: this.kills, timeSec: Math.round(this.time), bestCombo: this.bestCombo, perfectDodges: this.perfectTotal,
       counters: this.runCounters(), fastestBossKill: this.stats.fastestBossKill, dust: this.loot.dust, legendaryPity: this.loot.legendaryPity,
       blessings: this.bless.owned.map((o) => ({ id: o.blessing.id, name: o.blessing.name, patron: o.blessing.patron, rarity: o.rarity })),
-      items: Object.values(this.loot.equipped).filter((x): x is Item => !!x) };
+      items: Object.values(this.loot.equipped).filter((x): x is Item => !!x),
+      killedBy: this.over && !this.won ? this.lastHurtBy : null,
+      damageBy: Object.entries(this.damageBy).map(([name, damage]) => ({ name, damage: Math.round(damage) })).sort((a, b) => b.damage - a.damage) };
   }
 
   /** Compteurs versés à la sauvegarde (achievements.json > cond.stat). */

@@ -42,3 +42,27 @@ test('mobile : bouton pause, réglages défilables (volume compris), fermer et r
   await expect.poll(() => page.evaluate(() => (window as unknown as W).game.paused)).toBe(false);
   expect(errors).toEqual([]);
 });
+
+test('mobile en paysage : menu complet sans défiler, héros de front, caméra dézoomée et rotation', async ({ page }) => {
+  await page.setViewportSize({ width: 915, height: 412 });
+  const errors = await open(page, '?seed=4');
+  const menu = page.getByRole('dialog', { name: 'Menu principal' });
+  await expect(menu).toBeVisible();
+  // Les 4 héros tiennent sur une ligne et « Partir en run » est visible sans défiler.
+  const tops = await menu.locator('.sc-herocard').evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().top)));
+  expect(Math.max(...tops) - Math.min(...tops)).toBeLessThan(20); // la carte choisie est juste un peu soulevée
+  const go = menu.getByRole('button', { name: /Partir en run|Nouvelle run/ });
+  const box = (await go.boundingBox())!;
+  expect(box.y + box.height).toBeLessThanOrEqual(412);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(1);
+  await go.tap();
+  await waitRun(page);
+  // Téléphone en paysage : on voit autant de terrain en hauteur qu'en portrait.
+  expect(await page.evaluate(() => (window as unknown as W).game.camera.targetZoom)).toBeLessThan(0.75);
+  // Retour en portrait en pleine run : le canvas suit.
+  await page.setViewportSize({ width: 412, height: 915 });
+  await sim(page, 0.2);
+  await page.evaluate(() => (window as unknown as W).game.frame(1, 1 / 60));
+  expect(await page.evaluate(() => (window as unknown as W).game.renderer.height)).toBeCloseTo(915, -1);
+  expect(errors).toEqual([]);
+});

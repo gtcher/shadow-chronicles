@@ -231,7 +231,7 @@ export class RunScene extends Scene implements CombatCtx {
     }
     this.spawnHero();
     camera.bounds = ARENA;
-    camera.zoom = camera.targetZoom = this.zoom(window.innerWidth < 700 ? 0.68 : 0.92);
+    camera.zoom = camera.targetZoom = this.baseZoom();
 
     this.world
       .addSystem({ name: 'hero', priority: SystemPriority.Input, update: (_w, dt) => updateHero(this, dt) })
@@ -251,7 +251,8 @@ export class RunScene extends Scene implements CombatCtx {
       .addSystem(new MovementSystem())
       .addSystem(this.physics);
 
-    const resize = (w: number, h: number) => this.layoutHud(w, h);
+    // Rotation de l'écran (portrait ↔ paysage) : le HUD Pixi et le zoom suivent.
+    const resize = (w: number, h: number) => { this.layoutHud(w, h); camera.targetZoom = this.baseZoom(); };
     resize(renderer.width, renderer.height);
     this.offResize = renderer.onResize(resize);
     this.g.events.emit('run:start', { hero: this.heroId, wave: this.startWave });
@@ -406,7 +407,7 @@ export class RunScene extends Scene implements CombatCtx {
     this.feedback.ring(x, y, 360, b.color, 1.2, 20);
     this.particles.emit(x, y - 60, { color: b.color, count: 80, speed: 420, size: 1, life: 1.1 });
     this.g.camera.shake(0.7);
-    this.g.camera.targetZoom = this.zoom(window.innerWidth < 700 ? 0.6 : 0.8);
+    this.g.camera.targetZoom = this.baseZoom();
     this.announce(`${b.icon} ${b.name}`, b.subtitle, b.color);
     this.bossSpawnT = this.time;
     this.g.events.emit('boss:spawn', { wave: this.wave, id, name: b.name, entity: e, subtitle: b.subtitle, maxHp: hp });
@@ -529,7 +530,7 @@ export class RunScene extends Scene implements CombatCtx {
     this.particles.emit(t.x, t.y - 80, { color: 0xffffff, count: 40, speed: 300, size: 0.7, life: 1.0 });
     this.g.camera.shake(1);
     this.g.hitStop(0.6, 0.15);
-    this.g.camera.targetZoom = this.zoom(window.innerWidth < 700 ? 0.68 : 0.92);
+    this.g.camera.targetZoom = this.baseZoom();
     const h = this.world.get(this.player, Hero)!, hp = this.world.get(this.player, Health)!;
     h.potions++;
     hp.hp = Math.min(hp.max, hp.hp + hp.max * 0.3);
@@ -737,6 +738,16 @@ export class RunScene extends Scene implements CombatCtx {
   }
 
   private zoom(base: number): number { return base * this.mods.zoom; }
+  /**
+   * Zoom de base selon le plus petit côté de l'écran, pas sa largeur : un téléphone en paysage
+   * (≈ 390 px de haut) doit dézoomer autant qu'en portrait, sinon on ne voit pas venir les ennemis
+   * par le haut et le bas. Plus large pendant un boss.
+   */
+  private baseZoom(): number {
+    const small = Math.min(window.innerWidth, window.innerHeight) < 600;
+    const boss = this.bossEntity !== 0;
+    return this.zoom(small ? (boss ? 0.6 : 0.68) : (boss ? 0.8 : 0.92));
+  }
 
   private spawnPack(ids: EnemyId[]): void {
     const pt = this.world.get(this.player, Transform)!;

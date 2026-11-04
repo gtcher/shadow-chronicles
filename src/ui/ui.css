@@ -248,6 +248,9 @@
 .sc-screen.sc-bg::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse at 50% 35%, rgba(6, 8, 15, 0.15), rgba(6, 8, 15, 0.9) 75%); pointer-events: none; }
 .sc-screen > * { position: relative; }
 @keyframes sc-fade { from { opacity: 0; } }
+/* Fondu enchaîné (UiRoot.show/push) : l'écran sortant reste dessous, inerte, le temps du fondu. */
+.sc-screen.sc-settled { animation: none; }
+.sc-screen.sc-leaving { pointer-events: none; }
 .sc-stack { display: flex; flex-direction: column; gap: 10px; align-items: stretch; min-width: min(300px, 86vw); }
 .sc-center { text-align: center; }
 

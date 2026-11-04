@@ -272,21 +272,13 @@ function ren(g) {
 
 // ================================================================== TARO
 
+/** Espadon de Taro : garde devant le ventre, lame vers le haut-droite. */
+const GUARD = [292, 508], SWORD_ANG = Math.atan2(-385, 268);
+
 function taro(g) {
   const sk = '#efc6a4', armor = '#2a2a33', red = '#c4202e', metal = '#5f5c6c', hair = '#221a20', rim = '#ff7a5c';
   // cape déchirée
   capeShape(g, [[226, 392], [372, 388], [330, 520], [260, 700], [220, 905, 1], [150, 860, 1], [110, 905, 1], [60, 820, 1], [10, 870, 1], [40, 700], [120, 520]], '#6e121b', red, rim);
-  // espadon posé sur l'épaule : lame derrière la tête, garde devant la poitrine
-  g.save(); g.translate(318, 474); g.rotate(-2.42);
-  const BL = 470;
-  paint(g, [[30, -26, 1], [BL, -22], [BL + 54, 0, 1], [BL, 22], [30, 26, 1]], '#c9ccd8', { d: 10, lw: 3.6, rim: '#ffd0c0', rimW: 4, glow: rgba('#ff3a2a', 0.55), glowBlur: 28,
-    after: (g) => { g.fillStyle = 'rgba(80,80,100,.55)'; g.fillRect(30, 0, BL + 60, 30); g.fillStyle = 'rgba(255,60,50,.85)'; g.fillRect(40, -6, BL - 40, 5); } });
-  line(g, [[34, 0], [BL + 40, 0]], 2, 'rgba(10,10,20,.6)');
-  paint(g, [[10, -62, 1], [36, -56], [36, 56], [10, 62, 1], [20, 0]], metal, { d: 6, lw: 3.2 }); // garde
-  paint(g, [[18, -12], [-80, -10], [-80, 10], [18, 12]], '#3a1a1e', { d: 5, lw: 3 }); // fusée
-  for (let i = 0; i < 5; i++) line(g, [[-70 + i * 18, -10], [-62 + i * 18, 10]], 2.4, '#7a2a30');
-  g.save(); g.shadowColor = '#ff3a2a'; g.shadowBlur = 16; paint(g, [[-80, -16], [-104, 0], [-80, 16], [-92, 0]], red, { d: 4, lw: 2.6 }); g.restore();
-  g.restore();
   // jambes
   paint(g, limb([[270, 650, 74], [252, 780, 62], [244, 910, 58]]), armor, { d: 14, rim, rimW: 4 });
   paint(g, limb([[344, 650, 74], [372, 780, 62], [390, 910, 58]]), armor, { d: 14, rim, rimW: 4 });
@@ -327,12 +319,26 @@ function taro(g) {
   line(g, [[196, 396], [262, 388]], 3, red);
   paint(g, [[350, 418, 1], [396, 434], [430, 430, 1], [420, 452], [390, 456]], mix(metal, '#000', .2), { d: 8, lw: 3.2, rim, rimW: 4 });
   paint(g, [[336, 372, 1], [376, 356], [414, 374], [428, 424, 1], [394, 428], [348, 410]], metal, { d: 14, lw: 3.4, rim, rimW: 5 });
-  // bras : les deux mains sur la fusée devant la poitrine
-  paint(g, limb([[396, 410, 50], [414, 480, 44], [372, 528, 38]]), armor, { d: 12, rim, rimW: 5 });
-  paint(g, limb([[234, 420, 54], [222, 500, 46], [290, 494, 40]]), armor, { d: 12, rim, rimW: 4 });
-  paint(g, limb([[236, 480, 50], [222, 504, 48], [284, 496, 44]]), metal, { d: 8, lw: 3, rim, rimW: 3 }); // canon d'avant-bras
-  fist(g, 300, 490, 20, -0.7, sk, { glove: '#3a3640', rim });
-  fist(g, 364, 526, 20, -0.7, sk, { glove: '#3a3640', rim });
+  // bras : les deux mains serrées sur la fusée (main haute sous la garde, main basse près du pommeau)
+  const hi = [GUARD[0] + Math.cos(SWORD_ANG) * (-22), GUARD[1] + Math.sin(SWORD_ANG) * (-22)], lo = [GUARD[0] + Math.cos(SWORD_ANG) * (-64), GUARD[1] + Math.sin(SWORD_ANG) * (-64)];
+  // bras loin (derrière la lame)
+  paint(g, limb([[394, 412, 50], [392, 500, 44], [hi[0] + 14, hi[1] + 2, 38]]), armor, { d: 12, rim, rimW: 5 });
+  paint(g, limb([[390, 470, 50], [388, 500, 48], [hi[0] + 22, hi[1] + 2, 44]]), metal, { d: 8, lw: 3, rim, rimW: 3 }); // canon d'avant-bras
+  // espadon tenu à deux mains devant lui, lame levée en diagonale (loin du visage)
+  g.save(); g.translate(GUARD[0], GUARD[1]); g.rotate(SWORD_ANG);
+  const BL = 420;
+  paint(g, [[30, -26, 1], [BL, -22], [BL + 54, 0, 1], [BL, 22], [30, 26, 1]], '#c9ccd8', { d: 10, lw: 3.6, rim: '#ffd0c0', rimW: 4, glow: rgba('#ff3a2a', 0.55), glowBlur: 28,
+    after: (g) => { g.fillStyle = 'rgba(80,80,100,.55)'; g.fillRect(30, 0, BL + 60, 30); g.fillStyle = 'rgba(255,60,50,.85)'; g.fillRect(40, -6, BL - 40, 5); } });
+  line(g, [[34, 0], [BL + 40, 0]], 2, 'rgba(10,10,20,.6)');
+  paint(g, [[10, -62, 1], [36, -56], [36, 56], [10, 62, 1], [20, 0]], metal, { d: 6, lw: 3.2 }); // garde
+  paint(g, [[18, -12], [-80, -10], [-80, 10], [18, 12]], '#3a1a1e', { d: 5, lw: 3 }); // fusée
+  for (let i = 0; i < 5; i++) line(g, [[-70 + i * 18, -10], [-62 + i * 18, 10]], 2.4, '#7a2a30');
+  g.save(); g.shadowColor = '#ff3a2a'; g.shadowBlur = 16; paint(g, [[-80, -16], [-104, 0], [-80, 16], [-92, 0]], red, { d: 4, lw: 2.6 }); g.restore();
+  g.restore();
+  paint(g, limb([[232, 420, 54], [196, 516, 46], [lo[0] - 12, lo[1] + 2, 40]]), armor, { d: 12, rim, rimW: 4 });
+  paint(g, limb([[200, 494, 50], [198, 520, 48], [lo[0] - 18, lo[1] + 2, 44]]), metal, { d: 8, lw: 3, rim, rimW: 3 });
+  fist(g, hi[0], hi[1], 21, SWORD_ANG + Math.PI / 2, sk, { glove: '#3a3640', rim });
+  fist(g, lo[0], lo[1], 21, SWORD_ANG + Math.PI / 2, sk, { glove: '#3a3640', rim });
 }
 
 // ================================================================== MEI

@@ -5,7 +5,7 @@ export interface TitleOptions {
   assetUrl: (key: string) => string | undefined;
   hero: HeroId;
   /** Progression de maîtrise 0..1 par héros (agent Sauvegarde). */
-  mastery?: Partial<Record<HeroId, { level: number; progress: number }>>;
+  mastery?: Partial<Record<HeroId, { level: number; progress: number; xpInLevel?: number; xpForNext?: number | null }>>;
   daily?: { label: string; streak: number };
   /** Missions du jour : remplies / 3, coffre ouvert. */
   missions?: { done: number; total: number; chest: boolean };
@@ -47,7 +47,10 @@ export function titleScreen(o: TitleOptions): HTMLElement {
       onclick: () => { if (hero === id) o.onPlay(hero); hero = id; cards.forEach((c, i) => c.setAttribute('aria-pressed', String(HERO_IDS[i] === id))); },
       ondblclick: () => o.onPlay(id) },
     h('div', {}, h('h4', {}, info.name), h('p', {}, info.role),
-      h('div', { class: 'sc-mast', title: `Maîtrise ${m?.level ?? 1}` }, h('i', { style: { width: `${(m?.progress ?? 0) * 100}%` } }))));
+      // Maîtrise du héros : niveau + XP vers le palier suivant (gagnée à chaque run, même perdue).
+      h('div', { class: 'sc-mastrow', title: m?.xpForNext ? `Maîtrise niveau ${m.level} : ${m.xpInLevel ?? 0} / ${m.xpForNext} XP avant le niveau ${m.level + 1}` : `Maîtrise niveau ${m?.level ?? 1}` },
+        h('span', {}, `Maîtrise ${m?.level ?? 1}`),
+        h('div', { class: 'sc-mast' }, h('i', { style: { width: `${(m?.progress ?? 0) * 100}%` } })))));
     return card;
   });
   const ch = Math.max(0, Math.min(3, o.chapter ?? 0));

@@ -152,9 +152,19 @@ export function masteryLevel(xp: number): number {
   return level;
 }
 
+/** Avancement dans le niveau de maîtrise : 0 au début du niveau, 1 au palier suivant (1 au niveau max). */
+export function masteryProgress(xp: number): { level: number; progress: number; xpInLevel: number; xpForNext: number | null } {
+  const levels = SANCTUARY.heroMastery.levels;
+  const level = masteryLevel(xp);
+  const cur = levels.find((l) => l.level === level)!, next = levels.find((l) => l.level === level + 1);
+  if (!next) return { level, progress: 1, xpInLevel: xp - cur.xp, xpForNext: null };
+  return { level, progress: Math.max(0, Math.min(1, (xp - cur.xp) / (next.xp - cur.xp))), xpInLevel: xp - cur.xp, xpForNext: next.xp - cur.xp };
+}
+
 /** Ajoute de l'XP de maîtrise et renvoie les paliers franchis (récompenses à afficher). */
-export function addMasteryXp(p: Profile, hero: HeroId, xp: number): { from: number; to: number; rewards: unknown[] } {
+export function addMasteryXp(p: Profile, hero: HeroId, xp: number): { from: number; to: number; xpFrom: number; xpTo: number; rewards: unknown[] } {
   const m = p.mastery[hero];
+  const xpFrom = m.xp;
   const from = masteryLevel(m.xp);
   m.xp += Math.max(0, Math.floor(xp));
   const to = masteryLevel(m.xp);
@@ -166,7 +176,7 @@ export function addMasteryXp(p: Profile, hero: HeroId, xp: number): { from: numb
     if (r.type === 'cosmetic' && r.id) grant(p, { cosmetic: r.id });
   }
   recordBest(p, 'maxHeroMastery', to);
-  return { from, to, rewards };
+  return { from, to, xpFrom, xpTo: m.xp, rewards };
 }
 
 // ─── succès ─────────────────────────────────────────────────────────────────
@@ -207,7 +217,7 @@ export interface RunSummary {
 export interface RunRewards {
   currencies: Record<CurrencyId, number>;
   newBestWave: boolean;
-  mastery: { from: number; to: number; rewards: unknown[] };
+  mastery: { from: number; to: number; xpFrom: number; xpTo: number; rewards: unknown[] };
 }
 
 /** Clôture une run : prime de fin, records, cumul des compteurs, maîtrise. Le défi quotidien ne paie pas ici (voir recordDaily). */

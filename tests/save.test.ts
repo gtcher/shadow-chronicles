@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   SaveManager, MemoryStore, migrate, parseSaveFile, buildSaveFile, ImportError, FutureVersionError,
-  buyUpgrade, unlockBuilding, recordRunEnd, recordDaily, unlockAchievement, masteryLevel,
+  buyUpgrade, unlockBuilding, recordRunEnd, recordDaily, unlockAchievement, masteryLevel, masteryProgress,
   applyBindings, diffBindings, LEGACY_KEYS, CURRENT_VERSION, type KVStore,
 } from '../src/save';
 
@@ -252,5 +252,21 @@ describe('méta-progression', () => {
     const diff = diffBindings(b);
     expect(Object.keys(diff)).toEqual(['dash']);
     expect(applyBindings(diff).dash.keys).toEqual(['KeyK']);
+  });
+});
+
+describe('barre de maîtrise des cartes de héros', () => {
+  it('avance dans le niveau puis repart de 0 au palier suivant', () => {
+    expect(masteryProgress(0)).toMatchObject({ level: 1, progress: 0, xpForNext: 60 });
+    expect(masteryProgress(30).progress).toBeCloseTo(0.5);
+    expect(masteryProgress(60)).toMatchObject({ level: 2, progress: 0 });
+    expect(masteryProgress(110).progress).toBeCloseTo(0.5);
+    expect(masteryProgress(1e9)).toMatchObject({ progress: 1, xpForNext: null });
+  });
+  it('une run fait bouger la barre (XP avant / après)', () => {
+    const p = migrate('profile', { version: 2 });
+    const out = recordRunEnd(p, { hero: 'mei', mode: 'survie', wave: 3, wavesCleared: 2, bossWaves: [], won: false, daily: false, pactPoints: 0, playTimeSec: 60, earned: {}, counters: {} });
+    expect(out.mastery.xpTo).toBeGreaterThan(out.mastery.xpFrom);
+    expect(masteryProgress(out.mastery.xpTo).progress).toBeGreaterThan(0);
   });
 });

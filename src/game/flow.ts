@@ -13,7 +13,7 @@ import { BASE_MODS, PACTS, applyDailyMods, applyPacts, buildDaily, dailyScore, p
 import { dailyIntroScreen, dailyResultScreen, pactsScreen } from './screens';
 import { applyVfxSettings, applyGameplaySettings } from './settingsLink';
 import { mountUI, connectSave, metaFromProfile, codexFromProfile, codexProgress, codexFresh, sanctuaryActions, type UiRoot } from '../ui';
-import { SaveManager, recordRunEnd, recordBest, recordDaily, masteryLevel, unlockAchievement, upgradeRank, addCurrency, grant, type Profile } from '../save';
+import { SaveManager, recordRunEnd, recordBest, recordDaily, masteryProgress, unlockAchievement, upgradeRank, addCurrency, grant, type Profile } from '../save';
 import sanctuaryJson from '../../data/sanctuary.json';
 
 type Upgrade = { id: string; stat?: string; perRank?: number; unlocksPatron?: string };
@@ -75,7 +75,7 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
     const out: Partial<Record<HeroId, { level: number; progress: number }>> = {};
     for (const id of ['taro', 'mei', 'sena', 'ren'] as HeroId[]) {
       const m = (save.profile.mastery as Record<string, { xp: number }>)[id];
-      if (m) out[id] = { level: masteryLevel(m.xp), progress: 0 };
+      if (m) out[id] = masteryProgress(m.xp);
     }
     return out;
   };
@@ -157,7 +157,7 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
     for (const off of offRun) off();
     offRun = [];
     if (kind.daily) { endDaily(scene, r, kind); return; }
-    let gains = { eclats: r.wave * 2 }, from = 0, to = 0, level = 1;
+    let gains = { eclats: r.wave * 2 }, from = 0, to = 0, level = 1, xpFrom = 0, xpTo = 0;
     let best = r.wave;
     let near: ReturnType<typeof nearAchievements> = [];
     if (save) {
@@ -187,12 +187,13 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
       unlock(scene, false);
       near = nearAchievements(save.profile, view(scene, r, false));
       gains = { eclats: rew.currencies.eclats };
-      from = rew.mastery.from; to = rew.mastery.to; level = to;
+      from = rew.mastery.from; to = rew.mastery.to; level = to; xpFrom = rew.mastery.xpFrom; xpTo = rew.mastery.xpTo;
     }
     ui.hud.el.hidden = true;
     ui.showRunEnd({
       victory: r.won, wave: r.wave, bestWave: best, kills: r.kills, timeSec: r.timeSec, gains,
-      mastery: { hero: r.hero, level, from: from === to ? 0.4 : 0, to: from === to ? 0.6 : 1 },
+      // Barre de maîtrise : vraie progression dans le niveau (si un palier est franchi, elle repart de 0).
+      mastery: { hero: HERO_NAME[r.hero] ?? r.hero, level, from: from === to ? masteryProgress(xpFrom).progress : 0, to: masteryProgress(xpTo).progress, gained: xpTo - xpFrom },
       near,
       onRetry: () => void startRun(r.hero, 1),
       onSanctuary: () => sanctuary(),

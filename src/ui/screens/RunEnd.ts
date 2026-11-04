@@ -7,7 +7,7 @@ export interface RunEndOptions {
   kills: number;
   timeSec: number;
   gains: { eclats: number; poussiere?: number; sceaux?: number };
-  mastery: { hero: string; level: number; from: number; to: number };   // progression 0..1 du niveau
+  mastery: { hero: string; level: number; from: number; to: number; gained?: number };   // progression 0..1 du niveau, XP gagnée
   next?: { icon: string; name: string; cost: number; currencyIcon: string; affordable: boolean };
   near: Array<{ icon: string; name: string; progress: number; label: string }>;
   onRetry: () => void;
@@ -32,7 +32,7 @@ export function runEndScreen(o: RunEndOptions): HTMLElement {
       h('h2', { class: 'sc-title', style: { fontSize: '2em' } }, o.victory ? 'Le Juge est tombé' : 'Ce que tu rapportes'),
       newBest ? h('p', { style: { color: 'var(--gold-hi)', margin: '6px 0 0', fontWeight: '700' } }, `★ Nouveau record : vague ${o.wave} (+5 ✦)`) : null,
       h('div', { class: 'sc-gains' }, ...gains.map((g) => h('div', { class: 'sc-gain', '--c': g.c }, (vals[vals.length] = h('strong', {}, '0')), h('span', {}, g.label)))),
-      h('div', { class: 'sc-xp' }, `Maîtrise de ${o.mastery.hero} · niveau ${o.mastery.level}`, h('div', { class: 'sc-track' }, xpBar)),
+      h('div', { class: 'sc-xp' }, `Maîtrise de ${o.mastery.hero} · niveau ${o.mastery.level}`, o.mastery.gained ? h('b', { style: { color: 'var(--gold-hi)', marginLeft: '8px' } }, `+${o.mastery.gained} XP`) : null, h('div', { class: 'sc-track' }, xpBar)),
       o.next ? h('div', { class: 'sc-next' }, h('i', {}, o.next.icon),
         h('div', {}, h('b', {}, o.next.affordable ? 'Amélioration disponible !' : 'Prochaine amélioration'), h('div', { style: { color: 'var(--mute)', fontSize: '0.9em' } }, `${o.next.name} · ${o.next.cost} ${o.next.currencyIcon}`))) : null,
       o.near.length ? h('div', { class: 'sc-near' }, h('div', { class: 'sc-sub', style: { display: 'block' } }, 'Presque…'),

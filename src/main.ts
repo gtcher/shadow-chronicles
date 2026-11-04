@@ -58,6 +58,10 @@ async function boot(): Promise<void> {
     (window as unknown as { bot: unknown }).bot = Bot.attach(game, skill, RunScene.seed ?? 1);
   }
   game.start();
+  // Fonds peints des sous-menus : chargés et décodés pendant que le joueur est sur l'écran titre,
+  // pour qu'ils soient déjà là au premier fondu (sinon l'écran apparaissait un instant sans fond).
+  const warm = () => { for (const k of ['sanctuary', 'codex']) { try { const im = new Image(); im.src = game.assets.url(k); void im.decode().catch(() => {}); } catch { /* manifest ancien */ } } };
+  if ('requestIdleCallback' in window) requestIdleCallback(warm, { timeout: 3000 }); else setTimeout(warm, 1500);
   // Audio : se débloque au premier clic / touche (règle des navigateurs). Console : window.audio
   const audio = GameAudio.attach(game, { hero });
   (window as unknown as { audio: unknown }).audio = audio;

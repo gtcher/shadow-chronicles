@@ -27,6 +27,11 @@ type Dev = 'keyboard' | 'mouse' | 'gamepad' | 'touch';
  * L'UI gère la pause (Échap / P / Start) : elle met `game.pauseOnAction = false`.
  * Les écrans se superposent (pile) ; ouvrir un écran met le jeu en pause et estompe le HUD.
  */
+/** Durée du fondu d'entrée des écrans (ui.css, animation sc-fade). */
+const SCREEN_FADE_MS = 280;
+/** Une fois le fondu joué, l'écran ne le rejoue plus quand il réapparaît (retour depuis un sous-écran). */
+function settle(el: HTMLElement): void { setTimeout(() => el.classList.add('sc-settled'), SCREEN_FADE_MS); }
+
 export class UiRoot {
   readonly root: HTMLElement;
   readonly hud = new Hud();
@@ -101,10 +106,16 @@ export class UiRoot {
   // ── Écrans ────────────────────────────────────────────────────
   get screenOpen(): boolean { return this.screens.length > 0; }
 
-  /** Empile un écran. `pauses` : met le jeu en pause tant qu'il est ouvert. */
+  /**
+   * Empile un écran. `pauses` : met le jeu en pause tant qu'il est ouvert.
+   * L'écran du dessous reste affiché le temps du fondu d'entrée (sinon on voyait le jeu derrière),
+   * puis il est masqué.
+   */
   push(el: HTMLElement, pauses = true): void {
-    this.screens.at(-1)?.el.setAttribute('hidden', '');
+    const prev = this.screens.at(-1)?.el;
     this.root.append(el);
+    settle(el);
+    if (prev) setTimeout(() => { if (this.screens.at(-1)?.el !== prev) prev.setAttribute('hidden', ''); }, SCREEN_FADE_MS);
     const release = focusTrap(el);
     this.screens.push({ el, release, pauses });
     this.syncPause();
@@ -112,19 +123,37 @@ export class UiRoot {
     requestAnimationFrame(() => (el.querySelector<HTMLElement>('[data-autofocus]') ?? el.querySelector<HTMLElement>('button'))?.focus({ preventScroll: true }));
   }
 
-  /** Ferme l'écran du dessus. */
+  /** Ferme l'écran du dessus (celui du dessous, déjà « posé », réapparaît sans refaire son fondu). */
   pop(): void {
     const s = this.screens.pop();
     if (!s) return;
-    s.release(); (s.el as HTMLElement & { cleanup?: () => void }).cleanup?.(); s.el.remove();
+    this.drop(s);
+    s.el.remove();
     this.screens.at(-1)?.el.removeAttribute('hidden');
     this.syncPause();
   }
 
   closeAll(): void { while (this.screens.length) this.pop(); }
 
-  /** Remplace tous les écrans par un seul. */
-  show(el: HTMLElement, pauses = true): void { this.closeAll(); this.push(el, pauses); }
+  /**
+   * Remplace tous les écrans par un seul : fondu enchaîné, l'ancien écran reste visible
+   * (inerte) sous le nouveau pendant son apparition, puis il est retiré.
+   */
+  show(el: HTMLElement, pauses = true): void {
+    const old = this.screens.splice(0);
+    for (const s of old) this.drop(s);
+    const top = old.at(-1)?.el;
+    for (const s of old) if (s.el !== top) s.el.remove();
+    if (top) {
+      top.classList.add('sc-leaving'); top.setAttribute('aria-hidden', 'true'); top.inert = true;
+      setTimeout(() => top.remove(), SCREEN_FADE_MS);
+    }
+    this.push(el, pauses);
+  }
+
+  private drop(s: { el: HTMLElement; release: () => void }): void {
+    s.release(); (s.el as HTMLElement & { cleanup?: () => void }).cleanup?.();
+  }
 
   showTitle(o: TitleOptions): void { this.inRun = false; this.show(titleScreen(o)); }
   showSanctuary(o: SanctuaryOptions): void { this.inRun = false; this.show(sanctuaryScreen(o)); }

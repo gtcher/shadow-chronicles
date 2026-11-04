@@ -10,7 +10,8 @@
  * Règles DA respectées : nuit éclairée par quelques sources fortes, lumière haut-gauche
  * (la lune peut être à droite : c'est alors un contre-jour), sol sombre, une couleur = une info.
  */
-import { CAST, RIG, renderSprite, mix } from '../../src/game/rig/draw';
+import { CAST, mix } from '../../src/game/rig/draw';
+import { HEROES } from './heroes';
 
 const TAU = Math.PI * 2;
 
@@ -516,20 +517,15 @@ export function paintHeroCard(id, W = 640, H = 900) {
   // halo de contre-jour à la couleur signature, derrière le héros
   lightPool(g, W * 0.5, H * 0.42, W * 0.55, c.sig, 0.45);
   lightPool(g, W * 0.5, H * 0.42, W * 0.25, c.rim, 0.35);
-  // le héros en pied
-  RIG.now = 370 + hs.p * 1000;
-  const s = (H * 0.56) / 96;
-  const spr = renderSprite('card', c, hs.anim, hs.p, 'A', s, 1);
-  const feetX = W * (hs.fx ?? 0.5), feetY = H * 0.86;
-  // ombre au sol
-  g.save(); g.translate(feetX, feetY); g.scale(1, 0.22);
-  const sg = g.createRadialGradient(0, 0, 0, 0, 0, W * 0.3); sg.addColorStop(0, 'rgba(0,0,0,.75)'); sg.addColorStop(1, 'rgba(0,0,0,0)');
-  g.fillStyle = sg; g.beginPath(); g.arc(0, 0, W * 0.3, 0, TAU); g.fill(); g.restore();
-  lightPool(g, feetX, feetY, W * 0.32, c.sig, 0.35, 0.2);
-  // aura de liseré
-  g.save(); g.shadowColor = c.rim; g.shadowBlur = 40; g.globalAlpha = 0.9;
-  g.drawImage(spr.cv, feetX - spr.ox, feetY - spr.oy); g.restore();
-  g.drawImage(spr.cv, feetX - spr.ox, feetY - spr.oy);
+  // le héros, illustré à la taille de la carte (tools/art/heroes.ts) ; ombre au sol sous ses pieds
+  g.save(); g.translate(W * 0.5, H * 0.97); g.scale(1, 0.18);
+  const sg = g.createRadialGradient(0, 0, 0, 0, 0, W * 0.4); sg.addColorStop(0, 'rgba(0,0,0,.8)'); sg.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = sg; g.beginPath(); g.arc(0, 0, W * 0.4, 0, TAU); g.fill(); g.restore();
+  const fig = canvas(W, H), fg0 = ctx2(fig);
+  fg0.scale(W / 640, H / 900); HEROES[id](fg0);
+  // halo de contre-jour à la couleur du liseré, puis la figure
+  g.save(); g.shadowColor = c.rim; g.shadowBlur = 36; g.globalAlpha = 0.85; g.drawImage(fig, 0, 0); g.restore();
+  g.drawImage(fig, 0, 0);
   // particules de premier plan à la couleur du héros
   const r = rng(id.charCodeAt(0) * 31);
   particles(g, W, H, { ...P, glow: c.sig }, r, 60, P.particles === 'snow' ? 'snow' : P.particles === 'void' ? 'void' : 'embers', [0, 0.2, 1, 1]);

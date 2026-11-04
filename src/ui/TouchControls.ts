@@ -32,6 +32,7 @@ export class TouchControls {
     this.zone.addEventListener('pointercancel', (e) => this.up(e));
     this.setLeftHanded(false);
     addEventListener('resize', () => this.rest());
+    addEventListener('orientationchange', () => setTimeout(() => this.rest(), 400));
   }
 
   setLeftHanded(on: boolean): void {

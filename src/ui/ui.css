@@ -699,3 +699,42 @@
 .sc-guide-act { grid-column: 1 / -1; display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
 .sc-guide-act .sc-btn { min-height: 44px; padding: 8px 16px; }
 .sc-guide-act .sc-ghost { margin-right: auto; }
+
+/* ── Paysage sur téléphone (iPhone, Android : ≤ 540 px de haut) ──────────────
+   Les menus sont pensés pour un écran haut : en paysage on réduit tout d'un bloc (zoom)
+   et on garde les mises en page « larges » (4 héros de front, pause sur deux colonnes…)
+   même si l'écran fait moins de 700 px de large. Les largeurs en vw sont divisées par le
+   zoom pour occuper toujours la même part de l'écran. Le HUD de combat garde sa taille. */
+@media (orientation: landscape) and (max-height: 540px) {
+  #sc-ui { --lz: 0.8; }
+  .sc-screen { place-items: safe center;
+    padding: calc(8px + var(--safe-t)) calc(12px + var(--safe-r)) calc(8px + var(--safe-b)) calc(12px + var(--safe-l)); }
+  .sc-screen > :not(.sc-bgart):not(.sc-motes), .sc-guide-card { zoom: var(--lz); }
+
+  /* Titre : logo plus bas de plafond, cartes de héros plus larges que hautes, boutons visibles. */
+  .sc-logo { font-size: 2.6em; }
+  .sc-logo small { margin-top: 4px; }
+  .sc-chapter { margin: 8px 0 6px; }
+  .sc-heroes { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; width: min(860px, calc(94vw / var(--lz))); margin: 10px auto 10px; }
+  .sc-herocard { aspect-ratio: 4 / 3.3; }
+  .sc-herocard p { display: none; }
+  .sc-stack { min-width: min(300px, calc(86vw / var(--lz))); }
+  .sc-daily { max-width: calc(92vw / var(--lz)); margin-top: 6px; }
+
+  /* Pause, fin de run, réglages, offre : deux colonnes et moins de marges. */
+  .sc-pause { grid-template-columns: minmax(220px, 280px) minmax(0, 420px); width: min(780px, calc(94vw / var(--lz))); padding: 16px 20px; gap: 10px 20px; }
+  .sc-end { width: min(640px, calc(94vw / var(--lz))); padding: 16px 20px; }
+  .sc-settings { width: min(620px, calc(94vw / var(--lz))); max-height: calc(100dvh / var(--lz) - 24px); padding: 16px 20px; }
+  .sc-offer { width: min(1060px, calc(96vw / var(--lz))); }
+  .sc-cards { grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 12px; margin: 10px 0 8px; }
+  .sc-card { display: block; min-height: 0; }
+  .sc-card .sc-sigil { width: 60px; height: 60px; margin: 8px auto 4px; }
+  .sc-guide-card { width: min(560px, calc(94vw / var(--lz))); }
+
+  /* Sanctuaire : liste des bâtiments à gauche, améliorations à droite. */
+  .sc-sanct-body { grid-template-columns: minmax(200px, 260px) 1fr; }
+  .sc-buildings { grid-template-columns: 1fr; }
+}
+@media (orientation: landscape) and (max-height: 430px) {
+  #sc-ui { --lz: 0.72; }
+}

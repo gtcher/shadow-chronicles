@@ -36,6 +36,11 @@ export class Renderer {
     host.appendChild(this.app.canvas);
     this.app.canvas.style.display = 'block';
     this.app.canvas.style.touchAction = 'none';
+    // Rotation portrait ↔ paysage : sur iOS et certains Android, l'évènement resize arrive parfois
+    // avant que la page ait sa nouvelle taille. On remesure un peu après pour ne pas garder un canvas déformé.
+    const late = () => { for (const ms of [120, 400]) setTimeout(() => this.app.resize(), ms); };
+    addEventListener('orientationchange', late);
+    window.visualViewport?.addEventListener('resize', late);
 
     for (const name of WORLD_LAYERS) this.world.addChild((this.layers[name] = new Container({ label: name })));
     for (const name of SCREEN_LAYERS) this.screen.addChild((this.layers[name] = new Container({ label: name })));

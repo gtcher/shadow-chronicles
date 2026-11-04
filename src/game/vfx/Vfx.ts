@@ -113,7 +113,7 @@ export class Vfx {
       for (const s of [this.vignette, this.lowHp, this.hurtFlash, this.whiteFlash]) { s.width = w; s.height = h; }
     };
     resize(renderer.width, renderer.height);
-    renderer.onResize(resize);
+    this.offs.push(renderer.onResize(resize)); // sinon une rotation d’écran après la scène touche des sprites détruits
 
     this.offs.push(renderer.onBeforeRender(() => { this.lighting.render(); this.bloom.render(); }));
 

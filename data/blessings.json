@@ -29,6 +29,7 @@
     "duoOfferChanceWhenEligible": 0.35,
     "legendaryOfferChanceWhenEligible": 0.5,
     "pityRareAfterCommonOffers": 3,
+    "rarityPerWavePct": 7,
     "heroAffinityWeightBonus": 1.6,
     "routeOverrides": {
       "archive": { "choices": 4 },

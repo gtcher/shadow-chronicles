@@ -19,7 +19,10 @@ const SANCTUARY = sanctuaryData as unknown as {
   buildings: BuildingDef[];
   deathPayout: { eclatsPerWaveReached: number; bonusIfNewBestWave: number };
   heroMastery: { xpPerWave: number; xpPerBoss: number; xpWinBonus: number; levels: { level: number; xp: number; reward: unknown }[] };
+  pacts?: { requires?: string };
 };
+/** Condition d'ouverture des Pactes de la Brume (sanctuary.json > pacts.requires). */
+export const PACTS_REQUIRES = SANCTUARY.pacts?.requires ?? 'bossKilled:4';
 const ACH = achievementsData as unknown as { tiers: Record<string, Reward>; achievements: AchievementDef[] };
 const DAILY = (dailyData as unknown as {
   rewards: {
@@ -232,7 +235,7 @@ export function recordRunEnd(p: Profile, s: RunSummary): RunRewards {
   p.stats.playTimeSec += Math.max(0, s.playTimeSec);
 
   if (s.pactPoints > 0 && s.bossWaves.length) p.pacts.bestPoints = Math.max(p.pacts.bestPoints, s.pactPoints);
-  if (!p.pacts.unlocked && meetsRequirement(p, 'bossKilled:10')) p.pacts.unlocked = true;
+  if (!p.pacts.unlocked && meetsRequirement(p, PACTS_REQUIRES)) p.pacts.unlocked = true;
 
   const hm = SANCTUARY.heroMastery;
   const m = p.mastery[s.hero];

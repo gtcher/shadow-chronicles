@@ -7,6 +7,9 @@ export interface TitleOptions {
   /** Progression de maîtrise 0..1 par héros (agent Sauvegarde). */
   mastery?: Partial<Record<HeroId, { level: number; progress: number }>>;
   daily?: { label: string; streak: number };
+  /** Missions du jour : remplies / 3, coffre ouvert. */
+  missions?: { done: number; total: number; chest: boolean };
+  onMissions?: () => void;
   /** Expédition sauvegardée à reprendre. */
   resume?: { label: string; onResume: () => void; onDiscard: () => void };
   onPlay: (hero: HeroId) => void;
@@ -14,6 +17,8 @@ export interface TitleOptions {
   /** Pactes de la Brume (après le boss de la vague 10) : points engagés. */
   pacts?: { points: number };
   onPacts?: () => void;
+  /** Pactes pas encore ouverts : ce qu'il reste à faire (bouton grisé, pour donner un cap). */
+  pactsTeaser?: string;
   onSanctuary: () => void;
   onSettings: () => void;
   /** Codex des Brumes : % découvert et découvertes pas encore consultées. */
@@ -63,7 +68,11 @@ export function titleScreen(o: TitleOptions): HTMLElement {
         o.onCodex ? h('button', { class: 'sc-btn sc-codex-btn', onclick: (e: Event) => { (e.currentTarget as HTMLElement).querySelector('.sc-badge')?.remove(); o.onCodex!(); }, title: o.codex ? `Codex des Brumes · ${o.codex.pct} % découvert` : 'Codex des Brumes' },
           '📜 Codex', o.codex?.fresh ? h('span', { class: 'sc-badge', 'aria-label': `${o.codex.fresh} nouvelles découvertes` }, String(Math.min(99, o.codex.fresh))) : null) : null,
         o.pacts && o.onPacts ? h('button', { class: 'sc-btn', onclick: o.onPacts, title: 'Pactes de la Brume' }, `☁ Pactes${o.pacts.points ? ` · ${o.pacts.points}` : ''}`) : null,
+        !o.pacts && o.pactsTeaser ? h('button', { class: 'sc-btn sc-ghost sc-teaser', disabled: true, title: `Pactes de la Brume : difficulté au choix, récompenses multipliées. ${o.pactsTeaser}` }, `☁ Pactes 🔒 ${o.pactsTeaser}`) : null,
         h('button', { class: 'sc-btn sc-ghost', onclick: o.onSettings, 'aria-label': 'Réglages' }, '⚙ Réglages')),
       o.daily ? h('button', { class: 'sc-daily sc-panel sc-btn sc-ghost', onclick: o.onDaily },
-        h('span', {}, '☀'), h('span', {}, 'Défi du jour : ', h('b', {}, o.daily.label)), h('span', {}, `Série ${o.daily.streak} 🔥`)) : null));
+        h('span', {}, '☀'), h('span', {}, 'Défi du jour : ', h('b', {}, o.daily.label)), h('span', {}, `Série ${o.daily.streak} 🔥`)) : null,
+      o.missions && o.onMissions ? h('button', { class: `sc-daily sc-panel sc-btn sc-ghost sc-missions-btn${o.missions.chest ? '' : ' sc-pending'}`, onclick: o.onMissions },
+        h('span', {}, '🎯'), h('span', {}, 'Missions du jour : ', h('b', {}, `${o.missions.done} / ${o.missions.total}`)),
+        h('span', {}, o.missions.chest ? '🎁 coffre ouvert' : '🎁 coffre à gagner')) : null));
 }

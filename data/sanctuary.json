@@ -74,8 +74,8 @@
 
   "pacts": {
     "name": "Pactes de la Brume",
-    "desc": "Système de difficulté volontaire (« chaleur ») débloqué après avoir vaincu le boss de la vague 10. Chaque pacte ajoute des points de Brume ; récompenses multipliées et Sceaux pour chaque nouveau palier battu.",
-    "requires": "bossKilled:10",
+    "desc": "Système de difficulté volontaire (« chaleur ») débloqué après 4 boss vaincus (toutes runs confondues). Chaque pacte ajoute des points de Brume ; récompenses multipliées et Sceaux pour chaque nouveau palier battu.",
+    "requires": "bossKilled:4",
     "rewardPerPoint": { "eclatsPct": 6, "lootRarityLuckPct": 3 },
     "milestones": [ { "points": 5, "reward": { "sceaux": 1, "title": "Voyageur des Brumes" } },
                     { "points": 10, "reward": { "sceaux": 2, "cosmetic": "aura_brume" } },

@@ -79,6 +79,9 @@ export interface Profile {
     seenLegendaryPowers: string[];
   };
 
+  /** Missions du jour (src/game/missions.ts) : progression du jour en cours, remise à zéro chaque jour (UTC). */
+  missions?: { day: string; progress: Record<string, number>; done: string[]; chest: boolean; chestsOpened: number };
+
   /** Coffre-Souvenir (Forge) : objets gardés d'une run à l'autre. Format libre défini par le butin. */
   heirlooms: unknown[];
 

@@ -25,7 +25,7 @@ export interface OfferChoice { blessing: BlessingDef; rarity: Rarity; upgradeFro
 
 interface Data {
   rarities: Record<Rarity, { name: string; weight: number; minWave: number }>;
-  offerRules: { choices: number; rerollBase: number; maxSamePatronInOffer: number; guaranteeNewPatronBeforeWave: number; upgradeOfferChance: number; pityRareAfterCommonOffers: number; heroAffinityWeightBonus: number };
+  offerRules: { choices: number; rerollBase: number; maxSamePatronInOffer: number; guaranteeNewPatronBeforeWave: number; upgradeOfferChance: number; pityRareAfterCommonOffers: number; heroAffinityWeightBonus: number; rarityPerWavePct?: number };
   patrons: Record<string, { name: string; icon: string; color: string; heroAffinity: string[]; forbidden?: boolean; resonance: Array<{ count: number; desc: string }> }>;
   blessings: BlessingDef[];
   duos: DuoDef[];
@@ -544,7 +544,9 @@ export class BlessingEngine {
     const rarityRoll = (forceRare: boolean): Rarity => {
       const allowed = RARITIES.filter((r) => BLESSING_DATA.rarities[r].minWave <= wave && (!forceRare || r !== 'commun'));
       if (!allowed.length) return 'rare';
-      const w = allowed.map((r) => BLESSING_DATA.rarities[r].weight * (r === 'commun' ? 1 : 1 + this.cfg.rarityLuckPct / 100));
+      // Les raretés hautes deviennent plus fréquentes au fil des vagues (retours des testeurs : « trop de communs »).
+      const waveBoost = 1 + ((R.rarityPerWavePct ?? 0) * Math.max(0, wave - 1)) / 100;
+      const w = allowed.map((r) => BLESSING_DATA.rarities[r].weight * (r === 'commun' ? 1 : (1 + this.cfg.rarityLuckPct / 100) * waveBoost));
       return rng.weighted(allowed, w);
     };
     const forceRareSlot = this.offersWithoutRare >= R.pityRareAfterCommonOffers ? rng.int(0, n - 1) : -1;

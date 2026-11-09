@@ -21,6 +21,8 @@ export interface TitleOptions {
   pactsTeaser?: string;
   /** Premier lancement : proposer le confort visuel (flashs, secousses, effets). */
   comfortPrompt?: { onChoose: (on: boolean) => void };
+  /** Mode Découverte (débutants) : interrupteur sous les héros. */
+  discovery?: { on: boolean; toggle: (on: boolean) => void };
   onSanctuary: () => void;
   onSettings: () => void;
   /** Codex des Brumes : % découvert et découvertes pas encore consultées. */
@@ -72,6 +74,9 @@ export function titleScreen(o: TitleOptions): HTMLElement {
         h('div', { style: { flex: '1' } }, h('b', {}, 'Expédition en cours'), h('div', { style: { color: 'var(--mute)', fontSize: '0.9em' } }, o.resume.label)),
         h('button', { class: 'sc-btn sc-primary', onclick: o.resume.onResume, 'data-autofocus': true }, 'Reprendre'),
         h('button', { class: 'sc-btn sc-ghost', onclick: o.resume.onDiscard, 'aria-label': 'Abandonner l\'expédition' }, '✕')) : null,
+      o.discovery ? h('label', { class: 'sc-discovery', title: 'Ennemis plus doux, 2 fioles de plus, soin entre les vagues. Les Pactes sont désactivés.' },
+        h('input', { type: 'checkbox', class: 'sc-switch', checked: o.discovery.on, onchange: (e: Event) => o.discovery!.toggle((e.target as HTMLInputElement).checked) }),
+        h('span', {}, '🌱 Mode Découverte', h('small', {}, ' · pour apprendre en douceur'))) : null,
       h('div', { class: 'sc-row' },
         h('button', { class: `sc-btn${o.resume ? '' : ' sc-primary'}`, style: { minWidth: '220px', fontSize: '1.15em' }, onclick: () => o.onPlay(hero) }, o.resume ? '⚔  Nouvelle run' : '⚔  Partir en run'),
         h('button', { class: 'sc-btn', onclick: o.onSanctuary }, '♜ Sanctuaire'),

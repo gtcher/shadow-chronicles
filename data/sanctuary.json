@@ -22,13 +22,13 @@
   "buildings": [
     {
       "id": "veillee", "name": "La Veillée", "icon": "♥", "currency": "eclats", "unlockedAtStart": true,
-      "desc": "Améliorations permanentes et modestes de toutes les statistiques.",
+      "desc": "Améliorations permanentes de toutes les statistiques (jusqu'à +20 % de vie, d'attaque et de défense).",
       "upgrades": [
-        { "id": "endurance", "name": "Vigueur du Sanctuaire", "icon": "♥", "stat": "maxHpPct",   "perRank": 2,    "maxRank": 5, "cost": [8, 16, 28, 44, 64] },
-        { "id": "offense",   "name": "Tranchant Hérité",      "icon": "⚔", "stat": "atkPct",     "perRank": 2,    "maxRank": 5, "cost": [8, 16, 28, 44, 64] },
-        { "id": "guard",     "name": "Pierre des Veilleurs",  "icon": "◈", "stat": "defPct",     "perRank": 2,    "maxRank": 5, "cost": [8, 16, 28, 44, 64] },
-        { "id": "focus",     "name": "Œil de la Brume",       "icon": "✧", "stat": "crit",       "perRank": 0.01, "maxRank": 5, "cost": [12, 22, 36, 54, 78] },
-        { "id": "wisdom",    "name": "Source Lunaire",        "icon": "☾", "stat": "maxManaPct", "perRank": 3,    "maxRank": 5, "cost": [10, 18, 30, 46, 66] },
+        { "id": "endurance", "name": "Vigueur du Sanctuaire", "icon": "♥", "stat": "maxHpPct",   "perRank": 4,    "maxRank": 5, "cost": [8, 16, 28, 44, 64] },
+        { "id": "offense",   "name": "Tranchant Hérité",      "icon": "⚔", "stat": "atkPct",     "perRank": 4,    "maxRank": 5, "cost": [8, 16, 28, 44, 64] },
+        { "id": "guard",     "name": "Pierre des Veilleurs",  "icon": "◈", "stat": "defPct",     "perRank": 4,    "maxRank": 5, "cost": [8, 16, 28, 44, 64] },
+        { "id": "focus",     "name": "Œil de la Brume",       "icon": "✧", "stat": "crit",       "perRank": 0.015, "maxRank": 5, "cost": [12, 22, 36, 54, 78] },
+        { "id": "wisdom",    "name": "Source Lunaire",        "icon": "☾", "stat": "maxManaPct", "perRank": 5,    "maxRank": 5, "cost": [10, 18, 30, 46, 66] },
         { "id": "potions",   "name": "Fioles du Sanctuaire",  "icon": "⚗", "stat": "potionCharges", "perRank": 1, "maxRank": 2, "cost": [40, 90] },
         { "id": "fortune",   "name": "Bourse d'Akar",         "icon": "◉", "stat": "goldFindPct","perRank": 5,    "maxRank": 4, "cost": [14, 26, 42, 62] }
       ]

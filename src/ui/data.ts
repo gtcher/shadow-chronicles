@@ -95,7 +95,7 @@ export function duoUnlockedBy(owned: Blessing[], candidate: Blessing): Duo | und
 
 const STAT_LABEL: Record<string, (v: number) => string> = {
   maxHpPct: (v) => `+${v} % PV max`, atkPct: (v) => `+${v} % attaque`, defPct: (v) => `+${v} % défense`,
-  crit: (v) => `+${Math.round(v * 100)} % critique`, maxManaPct: (v) => `+${v} % mana max`,
+  crit: (v) => `+${(v * 100).toLocaleString('fr-FR', { maximumFractionDigits: 1 })} % critique`, maxManaPct: (v) => `+${v} % mana max`,
   potionCharges: (v) => `+${v} fiole de soin`, goldFindPct: (v) => `+${v} % or trouvé`,
 };
 export function upgradeText(u: Upgrade): string {

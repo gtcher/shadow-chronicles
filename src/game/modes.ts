@@ -42,6 +42,16 @@ export const BASE_MODS: RunMods = {
   waveHealPct: 0.15, rerollCostMul: 1, maxWaves: 0, ilvlBonus: 0, labels: [],
 };
 
+/**
+ * Mode Découverte (testeurs débutants : « je veux apprendre sans mourir en 2 minutes ») :
+ * ennemis plus doux, 2 fioles de plus, gros soin de fin de vague. Pas de Pactes en même temps.
+ */
+export const DISCOVERY = { foeDmg: 0.6, foeHp: 0.8, bossHp: 0.8, potions: 2, waveHealPct: 0.35 } as const;
+export function applyDiscovery(m: RunMods): RunMods {
+  return { ...m, foeDmg: m.foeDmg * DISCOVERY.foeDmg, foeHp: m.foeHp * DISCOVERY.foeHp, bossHp: m.bossHp * DISCOVERY.bossHp,
+    potions: m.potions + DISCOVERY.potions, waveHealPct: Math.max(m.waveHealPct, DISCOVERY.waveHealPct), labels: [...m.labels, 'Découverte'] };
+}
+
 export type GameMode = 'survie' | 'cauchemar';
 
 /** Mode Cauchemar : ennemis +40 % PV, +25 % ATQ ; objets +4 niveaux, ancestrales possibles. */

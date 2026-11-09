@@ -1,5 +1,6 @@
 import { h } from '../dom';
 import { BLESSINGS, HERO_INFO, type Blessing, type HeroId, type Rarity } from '../data';
+import { gearList, type GearView } from './Gear';
 
 export interface PauseOptions {
   hero: HeroId;
@@ -11,6 +12,8 @@ export interface PauseOptions {
   onQuit: () => void;
   /** Bascule rapide du confort visuel. */
   comfort?: { on: boolean; toggle: () => void };
+  /** Objets portés (écran d'équipement). */
+  gear?: GearView[];
 }
 
 /** Pause : reprendre / réglages / abandonner + rappel du build et des résonances. */
@@ -29,7 +32,8 @@ export function pauseScreen(o: PauseOptions): HTMLElement {
       const p = BLESSINGS.patrons[pid];
       return h('div', { '--c': p.color, title: p.resonance.map((r) => `${r.count} : ${r.desc}`).join('\n') },
         p.icon, ...[2, 4, 6].map((t) => h('span', { class: `sc-pip${n >= t ? ' sc-on' : ''}` })));
-    })));
+    })),
+    o.gear ? gearList(o.gear) : null);
   return h('section', { class: 'sc-screen', role: 'dialog', 'aria-label': 'Pause' },
     h('div', { class: 'sc-pause sc-panel' },
       h('h2', { class: 'sc-title' }, 'Pause'),

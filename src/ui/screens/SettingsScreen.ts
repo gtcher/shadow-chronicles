@@ -8,11 +8,11 @@ export function settingsScreen(store: SettingsStore, onClose: () => void, save?:
   const s = store.get();
   const sw = <K extends keyof Settings>(key: K, label: string, hint?: string) =>
     h('label', { class: 'sc-field' }, h('span', {}, label, hint ? h('small', {}, hint) : null),
-      h('input', { type: 'checkbox', class: 'sc-switch', checked: Boolean(s[key]), onchange: (e: Event) => store.set(key, (e.target as HTMLInputElement).checked as Settings[K]) }));
+      h('input', { type: 'checkbox', class: 'sc-switch', 'data-key': key, checked: Boolean(s[key]), onchange: (e: Event) => store.set(key, (e.target as HTMLInputElement).checked as Settings[K]) }));
   const range = <K extends keyof Settings>(key: K, label: string, min: number, max: number, step: number, show: (v: number) => string) => {
     const out = h('small', {}, show(s[key] as number));
     return h('label', { class: 'sc-field' }, h('span', {}, label, out),
-      h('input', { type: 'range', min, max, step, value: s[key] as number,
+      h('input', { type: 'range', 'data-key': key, min, max, step, value: s[key] as number,
         oninput: (e: Event) => { const v = Number((e.target as HTMLInputElement).value); out.textContent = show(v); store.set(key, v as Settings[K]); } }));
   };
   const pct = (v: number) => `${Math.round(v * 100)} %`;
@@ -28,6 +28,15 @@ export function settingsScreen(store: SettingsStore, onClose: () => void, save?:
               .map(([v, l]) => h('option', { value: v, selected: s.colorBlind === v }, l)))),
         sw('damageNumbers', 'Chiffres de dégâts')),
       h('fieldset', {}, h('legend', {}, 'Confort visuel'),
+        h('label', { class: 'sc-field' }, h('span', {}, 'Mode confort', h('small', {}, 'Coupe les flashs, calme secousses, lueurs et textes flottants')),
+          h('input', { type: 'checkbox', class: 'sc-switch', checked: s.comfort, onchange: (e: Event) => {
+            store.setComfort((e.target as HTMLInputElement).checked);
+            // Flashs et secousses ont changé avec le mode : on met leurs contrôles à jour sur place.
+            const root = (e.target as HTMLElement).closest('.sc-settings'), now = store.get();
+            const fl = root?.querySelector<HTMLInputElement>('[data-key="flashes"]'); if (fl) fl.checked = now.flashes;
+            const sh = root?.querySelector<HTMLInputElement>('[data-key="shake"]');
+            if (sh) { sh.value = String(now.shake); const out = sh.previousElementSibling?.querySelector('small'); if (out) out.textContent = pct(now.shake); }
+          } })),
         sw('reduceMotion', 'Réduire les animations', 'Interface plus calme'),
         range('shake', 'Secousses de caméra', 0, 1, 0.1, pct),
         sw('flashes', 'Flashs plein écran', 'Dégâts, éclairs, légendaires')),

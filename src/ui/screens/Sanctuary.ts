@@ -64,15 +64,17 @@ export function sanctuaryGoals(p: MetaProfile): Array<{ building: string; icon: 
   return out;
 }
 
+/** Nom court et usage des monnaies, affichés sous le montant (3 monnaies jamais expliquées, selon les testeurs). */
+const CURRENCY_SHORT: Record<string, string> = { eclats: 'Éclats', poussiere: 'Poussière', sceaux: 'Sceaux' };
+const CURRENCY_USE: Record<string, string> = { eclats: 'Veillée, Autel, restaurations', poussiere: 'Forge (objets)', sceaux: 'grands déblocages' };
+
 interface GuideStep { target: string | null; title: string; text: string }
 
+// Guide raccourci à 3 étapes (les testeurs trouvaient les 6 pages trop longues et couvrantes).
 const GUIDE: GuideStep[] = [
-  { target: null, title: "Bienvenue au Sanctuaire d'Akar", text: 'Entre deux runs, tu reviens ici. Ce que tu as rapporté te rend plus fort pour toujours : même une défaite rapporte quelque chose.' },
-  { target: '.sc-wallet', title: 'Tes trois monnaies', text: '✦ Éclats : vagues franchies, contrats et boss. ✧ Poussière d’étoile : démantèle les objets que tu ne portes pas. ♛ Sceaux du Juge, plus rares : boss des Pactes, séries de défis du jour, succès.' },
-  { target: '.sc-buildings', title: 'Quatre bâtiments', text: 'La Veillée et l’Autel sont ouverts dès le départ. La Forge et les Archives sont en ruine : remplis leur condition pendant tes runs, puis restaure-les avec des éclats.' },
-  { target: '.sc-goal', title: 'Ton prochain objectif', text: 'Ce bandeau montre toujours le prochain déblocage et où tu en es. Touche-le pour aller au bon bâtiment.' },
-  { target: '.sc-upgrades', title: 'Améliorer', text: 'Chaque amélioration a plusieurs rangs. Un point doré sur un bâtiment veut dire qu’un achat est possible. À l’Autel, de nouveaux patrons (Orage, Brume) ajoutent des bénédictions aux offres.' },
-  { target: '[data-codex]', title: 'Le Codex', text: 'Bénédictions, Duos et reliques que tu as trouvés sont rangés dans le Codex, avec ce qu’il te reste à découvrir.' },
+  { target: '.sc-wallet', title: "Bienvenue au Sanctuaire d'Akar", text: 'Ce que tu rapportes te rend plus fort pour toujours, même après une défaite. ✦ Éclats : améliorations. ✧ Poussière : la Forge. ♛ Sceaux, plus rares : les grands déblocages.' },
+  { target: '.sc-goal', title: 'Ton prochain objectif', text: 'Ce bandeau montre toujours le prochain déblocage. Touche-le pour aller au bon bâtiment. La Forge et les Archives se restaurent quand leur condition est remplie.' },
+  { target: '.sc-upgrades', title: 'Améliorer', text: 'Un point doré sur un bâtiment = un achat possible. Commence par la Veillée : plus de vie et d’attaque dès la prochaine run.' },
 ];
 
 /** Hub du Sanctuaire d'Akar : 4 bâtiments (les verrouillés sont visibles avec leur condition). */
@@ -94,7 +96,7 @@ export function sanctuaryScreen(o: SanctuaryOptions): HTMLElement {
 
   const render = () => {
     wallet.replaceChildren(...['eclats', 'poussiere', 'sceaux'].map((c) =>
-      h('div', { class: 'sc-chip', title: cur(c).name }, h('span', { '--c': cur(c).color }, cur(c).icon), h('b', {}, fmt(p.wallet[c] ?? 0)))));
+      h('div', { class: 'sc-chip', title: `${cur(c).name} : ${CURRENCY_USE[c] ?? ''}` }, h('span', { '--c': cur(c).color }, cur(c).icon), h('b', {}, fmt(p.wallet[c] ?? 0)), h('small', { class: 'sc-cur-name' }, CURRENCY_SHORT[c] ?? ''))));
 
     const goals = sanctuaryGoals(p).slice(0, 2);
     goal.toggleAttribute('hidden', !goals.length);

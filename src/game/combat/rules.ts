@@ -31,7 +31,10 @@ export function enemyScaling(wave: number): { hp: number; dmg: number } {
   const loop = loopForWave(wave);
   // Équilibrage (robot, 2026-11-03) : l'équipement et les bénédictions font croître le héros
   // bien plus vite que +12 %/vague ; la courbe des PV est donc quadratique douce.
-  return { hp: (1 + 0.16 * w + 0.004 * w * w) * (1 + 0.5 * loop), dmg: (1 + 0.12 * w + 0.009 * w * w) * (1 + 0.25 * loop) };
+  // Lot 2 (testeurs, 2026-11-09) : vagues 6-11 trop calmes pour un joueur moyen → les dégâts montent
+  // de 15 % entre la vague 5 et la vague 10 (les vagues d'apprentissage 1-5 ne changent pas).
+  const mid = 1 + 0.15 * Math.min(1, Math.max(0, (Math.min(wave, CAMPAIGN_WAVES) - 5) / 5));
+  return { hp: (1 + 0.16 * w + 0.004 * w * w) * (1 + 0.5 * loop), dmg: (1 + 0.12 * w + 0.009 * w * w) * mid * (1 + 0.25 * loop) };
 }
 
 /**

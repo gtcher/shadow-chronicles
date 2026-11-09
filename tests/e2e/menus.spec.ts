@@ -149,7 +149,7 @@ test('Codex : depuis le titre (onglets, Échap) et le Sanctuaire ; guide du Sanc
   await title(page).getByRole('button', { name: /Sanctuaire/ }).click();
   const guide = page.getByRole('group', { name: 'Guide du Sanctuaire' });
   await expect(guide).toBeVisible();
-  for (let i = 0; i < 5; i++) await guide.getByRole('button', { name: 'Suivant' }).click();
+  for (let i = 0; i < 2; i++) await guide.getByRole('button', { name: 'Suivant' }).click();
   await guide.getByRole('button', { name: 'Compris !' }).click();
   await expect(guide).toBeHidden();
   expect(await page.evaluate(() => (window as unknown as { sc: Sc }).sc.ui.settings.get().sanctuaryGuideDone)).toBe(true);
@@ -269,5 +269,35 @@ test('missions du jour : bouton du titre, écran, progression en fin de run et c
   // Les barres « Presque… » et de missions ont une vraie largeur (bug : grille appliquée à la piste).
   const w = await end.locator('.sc-missions .sc-track').first().evaluate((e) => e.getBoundingClientRect().width);
   expect(w).toBeGreaterThan(200);
+  expect(errors).toEqual([]);
+});
+
+test('confort visuel : proposé au premier lancement, puis réglable en pause', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(String(e)));
+  // Profil neuf au premier chargement seulement (le rechargement doit garder le choix).
+  await page.addInitScript(() => { if (!localStorage.getItem('sc-settings-v1')) localStorage.setItem('sc-settings-v1', JSON.stringify({ tutorialDone: true, sanctuaryGuideDone: true })); });
+  await page.goto('/');
+  await expect(page.locator('#loading')).toHaveCount(0, { timeout: 60_000 });
+  const ask = page.getByRole('group', { name: 'Confort visuel' });
+  await expect(ask).toBeVisible();
+  await ask.getByRole('button', { name: 'Activer' }).click();
+  await expect(ask).toBeHidden();
+  const s = await page.evaluate(() => JSON.parse(localStorage.getItem('sc-settings-v1')!));
+  expect(s).toMatchObject({ comfort: true, comfortAsked: true, flashes: false });
+  expect(s.shake).toBeLessThanOrEqual(0.3);
+  await title(page).getByRole('button', { name: /Partir en run/ }).click();
+  await waitRun(page);
+  expect(await page.evaluate(() => (window as unknown as W).game.scenes.current.feedback.quiet)).toBe(true);
+  await page.keyboard.press('Escape');
+  const toggle = page.getByRole('button', { name: /Confort visuel : activé/ });
+  await toggle.click();
+  await expect(page.getByRole('button', { name: /Confort visuel : désactivé/ })).toBeVisible();
+  expect(await page.evaluate(() => (window as unknown as W).game.scenes.current.feedback.quiet)).toBe(false);
+  // Plus proposé au lancement suivant.
+  await page.reload();
+  await expect(page.locator('#loading')).toHaveCount(0, { timeout: 60_000 });
+  await expect(title(page)).toBeVisible();
+  await expect(page.getByRole('group', { name: 'Confort visuel' })).toHaveCount(0);
   expect(errors).toEqual([]);
 });

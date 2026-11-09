@@ -58,6 +58,8 @@ export interface RunResult {
   items: Item[];
   /** Dernier coup reçu avant la chute (nom de l'ennemi ou du boss), null si victoire / abandon. */
   killedBy: string | null;
+  /** Conseil contre ce qui a porté le dernier coup (data.ts > hint). */
+  killedHint: string | null;
   /** Dégâts reçus par source, du plus grand au plus petit (écran de fin). */
   damageBy: Array<{ name: string; damage: number }>;
 }
@@ -551,6 +553,7 @@ export class RunScene extends Scene implements CombatCtx {
 
   /** Source du dernier coup reçu et cumul des dégâts par source (fin de run). */
   private lastHurtBy: string | null = null;
+  private lastHurtHint: string | null = null;
   private damageBy: Record<string, number> = {};
 
   hurtHero(dmg: number, o: HeroHitOpts = {}): boolean {
@@ -581,6 +584,7 @@ export class RunScene extends Scene implements CombatCtx {
       const f = o.owner !== undefined ? w.get(o.owner, Foe) : undefined;
       const src = f ? (f.boss?.def.name ?? f.def.name) : o.status ? (STATUS_FR[o.status] ?? 'Altération') : 'Piège du décor';
       this.lastHurtBy = src;
+      this.lastHurtHint = f && !f.boss ? f.def.hint ?? null : f?.boss ? 'Les boss annoncent chaque attaque : observe le cercle qui se remplit, puis esquive au dernier moment.' : null;
       this.damageBy[src] = (this.damageBy[src] ?? 0) + taken;
     }
     this.stats.addWave('damageTaken', taken);
@@ -651,6 +655,7 @@ export class RunScene extends Scene implements CombatCtx {
       blessings: this.bless.owned.map((o) => ({ id: o.blessing.id, name: o.blessing.name, patron: o.blessing.patron, rarity: o.rarity })),
       items: Object.values(this.loot.equipped).filter((x): x is Item => !!x),
       killedBy: this.over && !this.won ? this.lastHurtBy : null,
+      killedHint: this.over && !this.won ? this.lastHurtHint : null,
       damageBy: Object.entries(this.damageBy).map(([name, damage]) => ({ name, damage: Math.round(damage) })).sort((a, b) => b.damage - a.damage) };
   }
 

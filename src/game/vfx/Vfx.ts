@@ -42,6 +42,8 @@ export interface VfxSettings {
   /** Flashs plein écran (désactivables : photosensibilité). */
   flashes: boolean;
   damageNumbers: boolean;
+  /** Confort visuel : bloom, particules et brume allégés (réglage joueur). */
+  comfort?: boolean;
 }
 
 type Tracked = { x: number; y: number; prevX?: number; prevY?: number };
@@ -147,7 +149,7 @@ export class Vfx {
     this.bloom.configure(p.bloomScale, p.bloomBlur);
     this.fog.setLayers(p.fogLayers);
     this.particles.max = p.maxParticles;
-    this.particles.density = p.particleDensity;
+    this.particles.density = p.particleDensity * (this.settings?.comfort ? 0.5 : 1);
     this.numbers.max = p.maxDamageNumbers;
     this.maxDecals = p.maxDecals;
     this.onQualityChange?.(level);
@@ -173,6 +175,8 @@ export class Vfx {
   applySettings(): void {
     this.game.camera.shakeScale = this.settings.shake;
     this.numbers.enabled = this.settings.damageNumbers;
+    this.bloomBase = this.settings.comfort ? 0.22 : 0.62;
+    if (this.enabled) this.applyLevel(this.level);
   }
 
   /** Lumière et traînées suivent cette entité (le héros). */

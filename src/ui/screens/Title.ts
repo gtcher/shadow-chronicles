@@ -6,7 +6,7 @@ export interface TitleOptions {
   hero: HeroId;
   /** Progression de maîtrise 0..1 par héros (agent Sauvegarde). */
   mastery?: Partial<Record<HeroId, { level: number; progress: number; xpInLevel?: number; xpForNext?: number | null }>>;
-  daily?: { label: string; streak: number };
+  daily?: { label: string; streak: number; next?: string };
   /** Missions du jour : remplies / 3, coffre ouvert. */
   missions?: { done: number; total: number; chest: boolean };
   onMissions?: () => void;
@@ -19,6 +19,8 @@ export interface TitleOptions {
   onPacts?: () => void;
   /** Pactes pas encore ouverts : ce qu'il reste à faire (bouton grisé, pour donner un cap). */
   pactsTeaser?: string;
+  /** Premier lancement : proposer le confort visuel (flashs, secousses, effets). */
+  comfortPrompt?: { onChoose: (on: boolean) => void };
   onSanctuary: () => void;
   onSettings: () => void;
   /** Codex des Brumes : % découvert et découvertes pas encore consultées. */
@@ -54,6 +56,11 @@ export function titleScreen(o: TitleOptions): HTMLElement {
     return card;
   });
   const ch = Math.max(0, Math.min(3, o.chapter ?? 0));
+  const comfort = o.comfortPrompt ? h('div', { class: 'sc-comfort-ask sc-panel', role: 'group', 'aria-label': 'Confort visuel' },
+    h('span', { class: 'sc-ico', 'aria-hidden': 'true' }, '◐'),
+    h('div', {}, h('b', {}, 'Confort visuel ?'), h('small', {}, 'Moins de flashs, de secousses et d\'effets à l\'écran. Modifiable à tout moment (Réglages, Pause).')),
+    h('button', { class: 'sc-btn', onclick: () => { comfort?.remove(); o.comfortPrompt!.onChoose(true); } }, 'Activer'),
+    h('button', { class: 'sc-btn sc-ghost', onclick: () => { comfort?.remove(); o.comfortPrompt!.onChoose(false); } }, 'Garder les effets')) : null;
   return h('section', { class: `sc-screen sc-bg sc-menu sc-ch${ch + 1}`, role: 'dialog', 'aria-label': 'Menu principal' },
     h('div', { class: 'sc-bgart', 'aria-hidden': 'true', style: { backgroundImage: `url(${art(o, `menu-ch${ch + 1}`, 'ruined-citadel')})` } }),
     h('div', { class: 'sc-motes', 'aria-hidden': 'true' }, ...Array.from({ length: 18 }, (_, i) => h('i', { style: { left: `${(i * 53) % 100}%`, animationDelay: `${-(i * 1.7) % 14}s`, animationDuration: `${10 + (i * 7) % 9}s` } }))),
@@ -74,8 +81,9 @@ export function titleScreen(o: TitleOptions): HTMLElement {
         !o.pacts && o.pactsTeaser ? h('button', { class: 'sc-btn sc-ghost sc-teaser', disabled: true, title: `Pactes de la Brume : difficulté au choix, récompenses multipliées. ${o.pactsTeaser}` }, `☁ Pactes 🔒 ${o.pactsTeaser}`) : null,
         h('button', { class: 'sc-btn sc-ghost', onclick: o.onSettings, 'aria-label': 'Réglages' }, '⚙ Réglages')),
       o.daily ? h('button', { class: 'sc-daily sc-panel sc-btn sc-ghost', onclick: o.onDaily },
-        h('span', {}, '☀'), h('span', {}, 'Défi du jour : ', h('b', {}, o.daily.label)), h('span', {}, `Série ${o.daily.streak} 🔥`)) : null,
+        h('span', {}, '☀'), h('span', {}, 'Défi du jour : ', h('b', {}, o.daily.label)), h('span', {}, `Série ${o.daily.streak} 🔥`, o.daily.next ? h('small', { class: 'sc-streak-next' }, ` · ${o.daily.next}`) : null)) : null,
       o.missions && o.onMissions ? h('button', { class: `sc-daily sc-panel sc-btn sc-ghost sc-missions-btn${o.missions.chest ? '' : ' sc-pending'}`, onclick: o.onMissions },
         h('span', {}, '🎯'), h('span', {}, 'Missions du jour : ', h('b', {}, `${o.missions.done} / ${o.missions.total}`)),
-        h('span', {}, o.missions.chest ? '🎁 coffre ouvert' : '🎁 coffre à gagner')) : null));
+        h('span', {}, o.missions.chest ? '🎁 coffre ouvert' : '🎁 coffre à gagner')) : null,
+      comfort));
 }

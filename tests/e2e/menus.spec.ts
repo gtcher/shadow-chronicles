@@ -301,3 +301,36 @@ test('confort visuel : proposé au premier lancement, puis réglable en pause', 
   await expect(page.getByRole('group', { name: 'Confort visuel' })).toHaveCount(0);
   expect(errors).toEqual([]);
 });
+
+test('mode Découverte + équipement : ennemis adoucis, objets visibles en pause et en fin de run', async ({ page }) => {
+  const errors = await open(page);
+  const sw = title(page).getByRole('checkbox', { name: /Mode Découverte/ });
+  await expect(sw).toBeVisible();
+  await sw.check();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('sc-settings-v1')!).discovery)).toBe(true);
+  await title(page).getByRole('button', { name: /Partir en run/ }).click();
+  await waitRun(page);
+  const mods = await page.evaluate(() => { const m = (window as unknown as W).game.scenes.current.mods; return { foeDmg: m.foeDmg, foeHp: m.foeHp, labels: m.labels }; });
+  expect(mods.foeDmg).toBeLessThan(1);
+  expect(mods.foeHp).toBeLessThan(1);
+  expect(mods.labels).toContain('Découverte');
+  // Un objet porté (posé à la main) doit apparaître dans la pause avec sa rareté et ses stats.
+  await page.evaluate(() => {
+    const s = (window as unknown as W).game.scenes.current;
+    s.loot.equipped.weapon = { uid: 1, slot: 'weapon', rarity: 'epic', ilvl: 3, name: 'Lame du Test', stats: { atk: 9 }, affixes: [{ id: 'crit', name: 'de Précision', stat: 'crit', value: 0.03 }] };
+  });
+  await page.keyboard.press('Escape');
+  const pause = page.getByRole('dialog', { name: 'Pause' });
+  const gear = pause.locator('.sc-gear');
+  await expect(gear).toContainText('Lame du Test');
+  await expect(gear).toContainText('Épique');
+  await expect(gear).toContainText('+9 attaque');
+  await expect(gear).toContainText('+3 % critique');
+  await pause.getByRole('button', { name: 'Reprendre' }).click();
+  await page.evaluate(() => (window as unknown as W).game.scenes.current.debugKillHero());
+  const end = page.locator('details.sc-gear-end');
+  await expect(end).toBeVisible({ timeout: 30_000 });
+  await end.locator('summary').click();
+  await expect(end).toContainText('Lame du Test');
+  expect(errors).toEqual([]);
+});

@@ -7,13 +7,13 @@ import type { RunScene, RunResult, RunOptions } from './scenes/RunScene';
 const loadRun = () => import('./scenes/RunScene');
 import { HERO_DEFS } from './combat/data';
 import { BLESSING_DATA, DEFAULT_RUN_CONFIG, type OfferChoice, type RunConfig } from './combat/blessings';
-import { LOOT, ITEM_RARITIES, type Item } from './combat/loot';
+import { LOOT, ITEM_RARITIES, SLOTS, type Item } from './combat/loot';
 import { applyRunToMissions, dailyMissions, timeToReset, CHEST_REWARD, MISSION_REWARD, type MissionResult } from './missions';
 import { checkAchievements, nearAchievements, tierColor, type RunView } from './achievements';
-import { BASE_MODS, PACTS, applyDailyMods, applyPacts, buildDaily, dailyScore, pactPoints, seedStream, shareText, type DailyConfig, type PactRanks } from './modes';
+import { BASE_MODS, PACTS, applyDailyMods, applyDiscovery, applyPacts, buildDaily, dailyScore, pactPoints, seedStream, shareText, type DailyConfig, type PactRanks } from './modes';
 import { dailyIntroScreen, dailyResultScreen, pactsScreen, missionsScreen } from './screens';
 import { applyVfxSettings, applyGameplaySettings } from './settingsLink';
-import { mountUI, connectSave, metaFromProfile, codexFromProfile, codexProgress, codexFresh, sanctuaryActions, type UiRoot } from '../ui';
+import { gearLines, type GearView, mountUI, connectSave, metaFromProfile, codexFromProfile, codexProgress, codexFresh, sanctuaryActions, type UiRoot } from '../ui';
 import { SaveManager, requirementProgress, PACTS_REQUIRES, recordRunEnd, recordBest, recordDaily, masteryProgress, unlockAchievement, upgradeRank, addCurrency, grant, type Profile } from '../save';
 import sanctuaryJson from '../../data/sanctuary.json';
 import dailyJson from '../../data/daily.json';
@@ -74,6 +74,15 @@ function bestItem(items: Item[]): { name: string; color: string; rarity: string 
   return { name: it.name, color: R.color, rarity: R.name };
 }
 
+/** Objets portés → vue de l'écran d'équipement (ordre des emplacements). */
+function gearView(items: Array<Item | undefined>): GearView[] {
+  return items.filter((it): it is Item => !!it).sort((a, b) => SLOTS.indexOf(a.slot) - SLOTS.indexOf(b.slot)).map((it) => {
+    const R = LOOT.rarities[it.rarity], S = LOOT.slots[it.slot];
+    return { icon: S.icon, slot: S.label, name: it.name, rarity: `${R.name} · niv. ${it.ilvl}`, color: R.color,
+      lines: gearLines(it.stats, it.affixes), power: it.power ? { name: it.power.name, desc: it.power.short || it.power.desc } : undefined };
+  });
+}
+
 const HERO_NAME: Record<string, string> = Object.fromEntries(Object.values(HERO_DEFS).map((d) => [d.id, d.name]));
 const AUDIO_RARITY: Record<string, string> = { commun: 'common', rare: 'rare', epique: 'epic', heroique: 'heroic' };
 
@@ -119,6 +128,7 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
       missions: save ? (() => { const m = dailyMissions(save.profile); return { done: m.done, total: m.missions.length, chest: m.chest }; })() : undefined,
       onMissions: save ? () => missionsView() : undefined,
       comfortPrompt: ui.settings.get().comfortAsked ? undefined : { onChoose: (on) => ui.settings.setComfort(on) },
+      discovery: { on: ui.settings.get().discovery, toggle: (on) => ui.settings.set('discovery', on) },
       pacts: pactsOpen ? { points: pactPoints(loadPacts()) } : undefined,
       onPacts: pactsOpen ? () => pacts() : undefined,
       pactsTeaser: save && !pactsOpen ? (() => { const r = requirementProgress(save.profile, PACTS_REQUIRES); return `${Math.min(r.have, r.need)}/${r.need} boss`; })() : undefined,
@@ -246,11 +256,14 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
       mastery: { hero: HERO_NAME[r.hero] ?? r.hero, level, from: from === to ? masteryProgress(xpFrom).progress : 0, to: masteryProgress(xpTo).progress, gained: xpTo - xpFrom },
       near,
       killedBy: r.killedBy, killedHint: r.killedHint, damageBy: r.damageBy,
+      suggest: !r.won && r.wave <= 4 && !ui.settings.get().discovery && (save?.profile.stats.lifetime.runs ?? 0) <= 8
+        ? { text: 'Le début est rude ? Le mode Découverte rend les ennemis plus doux le temps d\'apprendre.', label: 'Activer', onAccept: () => ui.settings.set('discovery', true) } : undefined,
       breakdown,
       build: {
         blessings: r.blessings.map((b) => ({ name: b.name, color: BLESSING_COLOR[b.rarity] ?? '#dfe8ef' })),
         item: bestItem(r.items),
       },
+      gear: gearView(r.items),
       missions: missions ? { lines: missions.lines, chestOpened: missions.chestOpened, chestReward: `+${CHEST_REWARD.eclats} ✦ +${CHEST_REWARD.poussiere} ✧`, reset: timeToReset() } : undefined,
       share: `Shadow Chronicles · ${HERO_NAME[r.hero] ?? r.hero} · ${r.won ? 'victoire !' : `vague ${r.wave}`} · ${r.kills} ombres vaincues en ${Math.floor(r.timeSec / 60)} min${r.wave > best ? ' · nouveau record ★' : ''}. Tu fais mieux ?`,
       onRetry: () => void startRun(r.hero, 1),
@@ -345,8 +358,10 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
       o = { run: { ...DEFAULT_RUN_CONFIG }, loot: { hero: h }, mods, seed: d.seedString, mode: d.mode };
     } else {
       o = runOptionsFromProfile(save?.profile ?? null, h);
-      const ranks = save?.profile.pacts.unlocked ? loadPacts() : {};
+      const discovery = ui.settings.get().discovery;
+      const ranks = save?.profile.pacts.unlocked && !discovery ? loadPacts() : {};
       pts = pactPoints(ranks);
+      if (discovery) o.mods = applyDiscovery(BASE_MODS);
       if (pts > 0) {
         o.mods = applyPacts(BASE_MODS, ranks);
         o.pactPoints = pts;
@@ -414,10 +429,11 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
       ui.hud.setBlessings(scene.bless.owned.map((x) => x.blessing));
       ui.hud.banner('☀ Défi du jour', scene.mods.labels.join(' · '), '#ffd27a');
     } else if (pts > 0) ui.hud.banner(`☁ Pacte de la Brume · ${pts}`, scene.mods.labels.join(' · '), '#b9a4ff');
+    else if (!kind.daily && ui.settings.get().discovery) ui.hud.banner('🌱 Mode Découverte', 'Ennemis plus doux · 2 fioles de plus · soin entre les vagues', '#9fe8a8');
     ui.inRun = true;
     ui.onQuitRun = () => { ui.inRun = false; title(); };
     type Pause = ReturnType<UiRoot['pauseInfo']>;
-    ui.pauseInfo = () => ({ hero: h, owned: scene.bless.owned as unknown as Pause['owned'], wave: scene.wave });
+    ui.pauseInfo = () => ({ hero: h, owned: scene.bless.owned as unknown as Pause['owned'], wave: scene.wave, gear: gearView(Object.values(scene.loot.equipped)) });
     if (!ui.settings.get().tutorialDone) ui.tutorial.start(game.input.lastDevice);
     else ui.tutorial.stop();
   };

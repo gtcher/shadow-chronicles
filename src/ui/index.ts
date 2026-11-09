@@ -7,6 +7,7 @@ export { SettingsStore, DEFAULT_SETTINGS, STORAGE_KEY, type Settings } from './s
 export type { OfferChoice, OfferOptions } from './screens/BlessingOffer';
 export type { MetaProfile, SanctuaryOptions } from './screens/Sanctuary';
 export type { RunEndOptions } from './screens/RunEnd';
+export { gearLines, type GearView } from './screens/Gear';
 export type { TitleOptions } from './screens/Title';
 export * from './data';
 export { connectSave, metaFromProfile, codexFromProfile, sanctuaryActions, type SaveTools } from './saveBridge';

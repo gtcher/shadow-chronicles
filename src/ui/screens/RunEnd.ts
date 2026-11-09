@@ -1,4 +1,5 @@
 import { h, countUp } from '../dom';
+import { gearList, type GearView } from './Gear';
 
 export interface RunEndOptions {
   victory: boolean;
@@ -23,9 +24,13 @@ export interface RunEndOptions {
   /** D'où viennent les Éclats : [libellé, montant]. */
   breakdown?: Array<[string, number]>;
   /** Build de la run : bénédictions (couleur de rareté) et meilleur objet. */
+  /** Objets portés en fin de run (liste dépliable). */
+  gear?: GearView[];
   build?: { blessings: Array<{ name: string; color: string }>; item?: { name: string; color: string; rarity: string } };
   /** Missions du jour : avancée apportée par cette run. */
   missions?: { lines: Array<{ icon: string; text: string; from: number; to: number; target: number; justDone: boolean; done: boolean }>; chestOpened: boolean; chestReward: string; reset: string };
+  /** Proposition après une chute rapide (ex. mode Découverte). */
+  suggest?: { text: string; label: string; onAccept: () => void };
   /** Texte à partager (bouton « Partager »). */
   share?: string;
 }
@@ -60,6 +65,8 @@ export function runEndScreen(o: RunEndOptions): HTMLElement {
       o.killedBy ? h('div', { class: 'sc-cause' }, h('span', {}, '☠'), h('div', {}, h('b', {}, `Abattu par ${o.killedBy}`),
         o.damageBy?.length ? h('small', {}, 'Dégâts reçus : ', o.damageBy.slice(0, 3).map((d) => `${d.name} ${d.damage}`).join(' · ')) : null,
         o.killedHint ? h('small', { class: 'sc-hint' }, `💡 ${o.killedHint}`) : null)) : null,
+      o.suggest ? h('div', { class: 'sc-next sc-suggest' }, h('i', {}, '🌱'), h('div', { style: { flex: '1' } }, o.suggest.text),
+        h('button', { class: 'sc-btn', onclick: (e: Event) => { o.suggest!.onAccept(); (e.currentTarget as HTMLButtonElement).replaceWith(h('b', {}, '✓ Activé')); } }, o.suggest.label)) : null,
       o.breakdown && o.breakdown.length > 1 ? h('p', { class: 'sc-breakdown' }, o.breakdown.map(([l, v]) => `${l} +${v} ✦`).join(' · ')) : null,
       o.missions ? h('div', { class: 'sc-missions sc-near' }, h('div', { class: 'sc-sub', style: { display: 'block' } },
         o.missions.chestOpened ? `🎁 Coffre du jour ouvert : ${o.missions.chestReward}` : `Missions du jour · nouvelles dans ${o.missions.reset}`),
@@ -69,6 +76,7 @@ export function runEndScreen(o: RunEndOptions): HTMLElement {
       o.build && (o.build.blessings.length || o.build.item) ? h('div', { class: 'sc-build' },
         o.build.item ? h('span', { class: 'sc-chip-item', style: { color: o.build.item.color } }, `◆ ${o.build.item.name}`) : null,
         ...o.build.blessings.slice(0, 10).map((b) => h('span', { style: { borderColor: b.color, color: b.color } }, b.name))) : null,
+      o.gear?.length ? h('details', { class: 'sc-gear-end' }, h('summary', {}, `◆ Équipement porté (${o.gear.length})`), gearList(o.gear, '')) : null,
       o.next ? h('div', { class: 'sc-next' }, h('i', {}, o.next.icon),
         h('div', {}, h('b', {}, o.next.affordable ? 'Amélioration disponible !' : 'Prochaine amélioration'), h('div', { style: { color: 'var(--mute)', fontSize: '0.9em' } }, `${o.next.name} · ${o.next.cost} ${o.next.currencyIcon}`))) : null,
       o.near.length ? h('div', { class: 'sc-near' }, h('div', { class: 'sc-sub', style: { display: 'block' } }, 'Presque…'),

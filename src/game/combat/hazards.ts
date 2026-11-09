@@ -108,7 +108,12 @@ export class HazardField {
         const p = Math.min(1, h.t / Math.max(0.01, h.delay));
         const pulse = 0.75 + 0.25 * Math.sin(time * 18);
         const edge = h.side === 'foe' ? 0.85 * pulse : 0.6;
-        this.shape(g, z, 1).fill({ color: col, alpha: h.side === 'foe' ? 0.12 : 0.08 }).stroke({ color: col, width: 3, alpha: edge });
+        if (h.side === 'foe') {
+          // Contour lisible sans la couleur (daltonisme, fond orangé) : liseré sombre large + filet blanc.
+          this.shape(g, z, 1).stroke({ color: 0x05040a, width: 8, alpha: 0.55 * pulse });
+          this.shape(g, z, 1).fill({ color: col, alpha: 0.12 }).stroke({ color: col, width: 3, alpha: edge });
+          this.shape(g, z, 1).stroke({ color: 0xffffff, width: 1.5, alpha: 0.7 * pulse });
+        } else this.shape(g, z, 1).fill({ color: col, alpha: 0.08 }).stroke({ color: col, width: 3, alpha: edge });
         // Remplissage qui grandit : le joueur voit exactement quand ça frappe.
         if (h.proximity) this.shape(g, z, 0.35 + 0.1 * Math.sin(time * 6)).fill({ color: col, alpha: 0.25 });
         else this.shape(g, z, p).fill({ color: col, alpha: 0.18 + 0.22 * p });

@@ -9,6 +9,8 @@ export interface PauseOptions {
   onSettings: () => void;
   onCodex?: () => void;
   onQuit: () => void;
+  /** Bascule rapide du confort visuel. */
+  comfort?: { on: boolean; toggle: () => void };
 }
 
 /** Pause : reprendre / réglages / abandonner + rappel du build et des résonances. */
@@ -35,6 +37,7 @@ export function pauseScreen(o: PauseOptions): HTMLElement {
         h('button', { class: 'sc-btn sc-primary', onclick: o.onResume, 'data-autofocus': true }, 'Reprendre'),
         h('button', { class: 'sc-btn', onclick: o.onSettings }, 'Réglages'),
         o.onCodex ? h('button', { class: 'sc-btn', onclick: o.onCodex }, '📜 Codex') : null,
+        o.comfort ? h('button', { class: 'sc-btn sc-ghost', 'aria-pressed': String(o.comfort.on), onclick: (e: Event) => { o.comfort!.toggle(); const b = e.currentTarget as HTMLElement; const on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(on)); b.textContent = `◐ Confort visuel : ${on ? 'activé' : 'désactivé'}`; } }, `◐ Confort visuel : ${o.comfort.on ? 'activé' : 'désactivé'}`) : null,
         h('button', { class: 'sc-btn sc-ghost', onclick: o.onQuit }, 'Abandonner la run'),
         h('p', { style: { color: 'var(--mute)', fontSize: '0.8em', textAlign: 'center' } }, h('span', { class: 'sc-kbd' }, 'Échap'), ' pour reprendre')),
       build));

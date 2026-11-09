@@ -16,6 +16,7 @@ import { applyVfxSettings, applyGameplaySettings } from './settingsLink';
 import { mountUI, connectSave, metaFromProfile, codexFromProfile, codexProgress, codexFresh, sanctuaryActions, type UiRoot } from '../ui';
 import { SaveManager, requirementProgress, PACTS_REQUIRES, recordRunEnd, recordBest, recordDaily, masteryProgress, unlockAchievement, upgradeRank, addCurrency, grant, type Profile } from '../save';
 import sanctuaryJson from '../../data/sanctuary.json';
+import dailyJson from '../../data/daily.json';
 
 type Upgrade = { id: string; stat?: string; perRank?: number; unlocksPatron?: string };
 const SANCTUARY = sanctuaryJson as unknown as { buildings: Array<{ id: string; startingPatrons?: string[]; upgrades: Upgrade[] }> };
@@ -52,6 +53,19 @@ interface RunKind { daily?: DailyConfig; practice?: boolean }
 
 const BLESSING_COLOR: Record<string, string> = { commun: '#dfe8ef', rare: '#77b5ff', epique: '#c88dff', heroique: '#ffca73' };
 
+/** Prochain palier de série du défi du jour (daily.json), ex. « 3 jours : +15 ✦ ». */
+function nextStreakReward(streak: number): string | undefined {
+  const ms = (dailyJson as unknown as { rewards: { streak: { milestones: Array<{ days: number; reward: Record<string, unknown> }> } } }).rewards.streak.milestones;
+  const m = ms.find((x) => x.days > streak);
+  if (!m) return undefined;
+  const r = m.reward, parts: string[] = [];
+  if (r.eclats) parts.push(`+${r.eclats} ✦`);
+  if (r.sceaux) parts.push(`+${r.sceaux} ♛`);
+  if (r.cosmetic) parts.push('cosmétique');
+  if (r.title) parts.push('titre');
+  return `${m.days} jours : ${parts.join(' ')}`;
+}
+
 /** Objet le plus rare porté en fin de run (écran de fin). */
 function bestItem(items: Item[]): { name: string; color: string; rarity: string } | undefined {
   const it = [...items].sort((a, b) => ITEM_RARITIES.indexOf(b.rarity) - ITEM_RARITIES.indexOf(a.rarity))[0];
@@ -76,7 +90,7 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
   const url = (k: string) => game.assets.url(k);
   if (save) ui.codexInfo = () => ({ ...codexFromProfile(save.profile), assetUrl: url });
   // Flashs et chiffres de dégâts suivent les réglages, même modifiés en pleine run.
-  ui.settings.onChange((s) => { applyGameplaySettings(s); const sc = game.scenes.current; const vfx = (sc as Partial<RunScene> | null)?.vfx; if (vfx) applyVfxSettings(vfx, s); });
+  ui.settings.onChange((s) => { applyGameplaySettings(s); const sc = game.scenes.current; const run = sc as Partial<RunScene> | null; if (run?.vfx) applyVfxSettings(run.vfx, s); if (run?.feedback) run.feedback.quiet = s.comfort; });
   let hero = opts.hero;
   const hex = (c: number) => `#${c.toString(16).padStart(6, '0')}`;
   let offRun: Array<() => void> = [];
@@ -100,10 +114,11 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
     const chapter = forced >= 1 && forced <= 4 ? forced - 1 : best > 0 ? regionForWave(best) : 0;
     ui.showTitle({
       assetUrl: url, hero, mastery: mastery(), chapter,
-      daily: { label: `${HERO_NAME[d.hero] ?? d.hero} · ${d.modifiers.map((m) => m.name).join(', ')}`, streak: save?.profile.daily.streak ?? 0 },
+      daily: { label: `${HERO_NAME[d.hero] ?? d.hero} · ${d.modifiers.map((m) => m.name).join(', ')}`, streak: save?.profile.daily.streak ?? 0, next: nextStreakReward(save?.profile.daily.streak ?? 0) },
       onDaily: () => dailyIntro(),
       missions: save ? (() => { const m = dailyMissions(save.profile); return { done: m.done, total: m.missions.length, chest: m.chest }; })() : undefined,
       onMissions: save ? () => missionsView() : undefined,
+      comfortPrompt: ui.settings.get().comfortAsked ? undefined : { onChoose: (on) => ui.settings.setComfort(on) },
       pacts: pactsOpen ? { points: pactPoints(loadPacts()) } : undefined,
       onPacts: pactsOpen ? () => pacts() : undefined,
       pactsTeaser: save && !pactsOpen ? (() => { const r = requirementProgress(save.profile, PACTS_REQUIRES); return `${Math.min(r.have, r.need)}/${r.need} boss`; })() : undefined,
@@ -230,7 +245,7 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
       // Barre de maîtrise : vraie progression dans le niveau (si un palier est franchi, elle repart de 0).
       mastery: { hero: HERO_NAME[r.hero] ?? r.hero, level, from: from === to ? masteryProgress(xpFrom).progress : 0, to: masteryProgress(xpTo).progress, gained: xpTo - xpFrom },
       near,
-      killedBy: r.killedBy, damageBy: r.damageBy,
+      killedBy: r.killedBy, killedHint: r.killedHint, damageBy: r.damageBy,
       breakdown,
       build: {
         blessings: r.blessings.map((b) => ({ name: b.name, color: BLESSING_COLOR[b.rarity] ?? '#dfe8ef' })),
@@ -377,6 +392,7 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
     }));
     await game.scenes.switch(scene);
     applyVfxSettings(scene.vfx, ui.settings.get());
+    scene.feedback.quiet = ui.settings.get().comfort;
     // Le butin existe une fois la scène entrée.
     scene.loot.onItem = (it: Item, equipped: boolean, dust: number) => {
       const R = LOOT.rarities[it.rarity];

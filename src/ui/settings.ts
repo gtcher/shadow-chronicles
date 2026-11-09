@@ -28,6 +28,10 @@ export interface Settings {
   tutorialDone: boolean;
   /** Guide du Sanctuaire vu (première visite). */
   sanctuaryGuideDone: boolean;
+  /** Confort visuel : moins de flashs, de secousses, de lueurs et de textes flottants (retours des testeurs). */
+  comfort: boolean;
+  /** Le choix « Confort visuel » a été proposé au premier lancement. */
+  comfortAsked: boolean;
 }
 
 export const STORAGE_KEY = 'sc-settings-v1';
@@ -39,6 +43,7 @@ export const DEFAULT_SETTINGS: Settings = {
   textScale: 1, highContrast: prefersContrast, colorBlind: 'none', reduceMotion: prefersReduced,
   shake: prefersReduced ? 0.3 : 1, flashes: !prefersReduced, damageNumbers: true, vibration: true,
   touchScale: 1, leftHanded: false, autoAim: true, masterVolume: 0.8, musicVolume: 0.7, sfxVolume: 0.8, ambienceVolume: 0.5, muted: false, tutorialDone: false, sanctuaryGuideDone: false,
+  comfort: prefersReduced, comfortAsked: false,
 };
 
 type Listener = (s: Readonly<Settings>, changed: keyof Settings | null) => void;
@@ -55,6 +60,14 @@ export class SettingsStore {
 
   get(): Readonly<Settings> { return this.s; }
 
+  /** Active / coupe le confort visuel et règle d'un coup flashs et secousses. */
+  setComfort(on: boolean): void {
+    this.set('comfortAsked', true);
+    this.set('comfort', on);
+    this.set('flashes', !on);
+    this.set('shake', on ? Math.min(this.s.shake, 0.3) : 1);
+  }
+
   set<K extends keyof Settings>(key: K, value: Settings[K]): void {
     if (this.s[key] === value) return;
     this.s = { ...this.s, [key]: value };
@@ -63,7 +76,7 @@ export class SettingsStore {
   }
 
   reset(): void {
-    this.s = { ...DEFAULT_SETTINGS, tutorialDone: this.s.tutorialDone, sanctuaryGuideDone: this.s.sanctuaryGuideDone };
+    this.s = { ...DEFAULT_SETTINGS, tutorialDone: this.s.tutorialDone, sanctuaryGuideDone: this.s.sanctuaryGuideDone, comfortAsked: this.s.comfortAsked };
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.s)); } catch { /* ignore */ }
     for (const l of this.listeners) l(this.s, null);
   }

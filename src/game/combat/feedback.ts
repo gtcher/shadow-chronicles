@@ -14,10 +14,14 @@ export class CombatFeedback {
   private arcs: Arc[] = [];
   private arcPool: Graphics[] = [];
 
+  /** Confort visuel : seuls les chiffres et les textes importants (taille ≥ 26) flottent encore. */
+  quiet = false;
+
   constructor(private readonly layer: Container) {}
 
   number(x: number, y: number, value: number | string, opts: { color?: number; crit?: boolean; size?: number } = {}): void {
     if (this.nums.length > 80) return;
+    if (this.quiet && typeof value === 'string' && (opts.size ?? 20) < 26) return;
     const t = this.numPool.pop() ?? new Text({ text: '', style: { fontFamily: 'Georgia, serif', fontWeight: '700', fill: 0xffffff, stroke: { color: 0x120a08, width: 4 } } });
     t.text = String(value);
     t.style.fontSize = opts.size ?? (opts.crit ? 30 : 20);

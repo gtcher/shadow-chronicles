@@ -16,6 +16,8 @@ export interface RunEndOptions {
   onMenu?: () => void;
   /** Nom de ce qui a porté le dernier coup (défaite). */
   killedBy?: string | null;
+  /** Conseil pour la prochaine fois. */
+  killedHint?: string | null;
   /** Sources de dégâts reçus (les 3 premières sont affichées). */
   damageBy?: Array<{ name: string; damage: number }>;
   /** D'où viennent les Éclats : [libellé, montant]. */
@@ -56,7 +58,8 @@ export function runEndScreen(o: RunEndOptions): HTMLElement {
       h('div', { class: 'sc-gains' }, ...gains.map((g) => h('div', { class: 'sc-gain', '--c': g.c }, (vals[vals.length] = h('strong', {}, '0')), h('span', {}, g.label)))),
       h('div', { class: 'sc-xp' }, `Maîtrise de ${o.mastery.hero} · niveau ${o.mastery.level}`, o.mastery.gained ? h('b', { style: { color: 'var(--gold-hi)', marginLeft: '8px' } }, `+${o.mastery.gained} XP`) : null, h('div', { class: 'sc-track' }, xpBar)),
       o.killedBy ? h('div', { class: 'sc-cause' }, h('span', {}, '☠'), h('div', {}, h('b', {}, `Abattu par ${o.killedBy}`),
-        o.damageBy?.length ? h('small', {}, 'Dégâts reçus : ', o.damageBy.slice(0, 3).map((d) => `${d.name} ${d.damage}`).join(' · ')) : null)) : null,
+        o.damageBy?.length ? h('small', {}, 'Dégâts reçus : ', o.damageBy.slice(0, 3).map((d) => `${d.name} ${d.damage}`).join(' · ')) : null,
+        o.killedHint ? h('small', { class: 'sc-hint' }, `💡 ${o.killedHint}`) : null)) : null,
       o.breakdown && o.breakdown.length > 1 ? h('p', { class: 'sc-breakdown' }, o.breakdown.map(([l, v]) => `${l} +${v} ✦`).join(' · ')) : null,
       o.missions ? h('div', { class: 'sc-missions sc-near' }, h('div', { class: 'sc-sub', style: { display: 'block' } },
         o.missions.chestOpened ? `🎁 Coffre du jour ouvert : ${o.missions.chestReward}` : `Missions du jour · nouvelles dans ${o.missions.reset}`),

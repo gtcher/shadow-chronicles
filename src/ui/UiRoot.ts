@@ -183,6 +183,7 @@ export class UiRoot {
     if (this.screens.length) { this.back(); return; }
     this.push(pauseScreen({ ...this.pauseInfo(), onResume: () => this.pop(), onSettings: () => this.openSettings(),
       onCodex: this.codexInfo ? () => this.openCodex() : undefined,
+      comfort: { on: this.settings.get().comfort, toggle: () => this.settings.setComfort(!this.settings.get().comfort) },
       onQuit: () => { this.closeAll(); this.onQuitRun(); } }));
   }
 

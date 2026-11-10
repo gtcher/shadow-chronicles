@@ -23,6 +23,12 @@ export interface TitleOptions {
   comfortPrompt?: { onChoose: (on: boolean) => void };
   /** Mode Découverte (débutants) : interrupteur sous les héros. */
   discovery?: { on: boolean; toggle: (on: boolean) => void };
+  /** Apparence par héros : titre porté, cadre doré (maîtrise 9). */
+  looks?: Partial<Record<HeroId, { title?: string; frame: boolean }>>;
+  /** Écran Apparence (cosmétiques de maîtrise) du héros choisi. */
+  onLook?: (hero: HeroId) => void;
+  /** Classement personnel. */
+  onRecords?: () => void;
   onSanctuary: () => void;
   onSettings: () => void;
   /** Codex des Brumes : % découvert et découvertes pas encore consultées. */
@@ -46,11 +52,12 @@ export function titleScreen(o: TitleOptions): HTMLElement {
   const cards = HERO_IDS.map((id) => {
     const info = HERO_INFO[id];
     const m = o.mastery?.[id];
-    const card = h('button', { class: 'sc-herocard', '--c': info.color, 'aria-pressed': String(id === hero), 'aria-label': `${info.name}, ${info.role}`,
+    const look = o.looks?.[id];
+    const card = h('button', { class: `sc-herocard${look?.frame ? ' sc-gold' : ''}`, '--c': info.color, 'aria-pressed': String(id === hero), 'aria-label': `${info.name}, ${info.role}`,
       style: { backgroundImage: `url(${art(o, `select-${id}`, `hero-${id}`)})` },
       onclick: () => { if (hero === id) o.onPlay(hero); hero = id; cards.forEach((c, i) => c.setAttribute('aria-pressed', String(HERO_IDS[i] === id))); },
       ondblclick: () => o.onPlay(id) },
-    h('div', {}, h('h4', {}, info.name), h('p', {}, info.role),
+    h('div', {}, h('h4', {}, info.name), h('p', {}, info.role), look?.title ? h('p', { class: 'sc-herotitle' }, `« ${look.title} »`) : null,
       // Maîtrise du héros : niveau + XP vers le palier suivant (gagnée à chaque run, même perdue).
       h('div', { class: 'sc-mastrow', title: m?.xpForNext ? `Maîtrise niveau ${m.level} : ${m.xpInLevel ?? 0} / ${m.xpForNext} XP avant le niveau ${m.level + 1}` : `Maîtrise niveau ${m?.level ?? 1}` },
         h('span', {}, `Maîtrise ${m?.level ?? 1}`),
@@ -74,9 +81,12 @@ export function titleScreen(o: TitleOptions): HTMLElement {
         h('div', { style: { flex: '1' } }, h('b', {}, 'Expédition en cours'), h('div', { style: { color: 'var(--mute)', fontSize: '0.9em' } }, o.resume.label)),
         h('button', { class: 'sc-btn sc-primary', onclick: o.resume.onResume, 'data-autofocus': true }, 'Reprendre'),
         h('button', { class: 'sc-btn sc-ghost', onclick: o.resume.onDiscard, 'aria-label': 'Abandonner l\'expédition' }, '✕')) : null,
+      h('div', { class: 'sc-subrow' },
       o.discovery ? h('label', { class: 'sc-discovery', title: 'Ennemis plus doux, 2 fioles de plus, soin entre les vagues. Les Pactes sont désactivés.' },
         h('input', { type: 'checkbox', class: 'sc-switch', checked: o.discovery.on, onchange: (e: Event) => o.discovery!.toggle((e.target as HTMLInputElement).checked) }),
         h('span', {}, '🌱 Mode Découverte', h('small', {}, ' · pour apprendre en douceur'))) : null,
+      o.onLook ? h('button', { class: 'sc-link', onclick: () => o.onLook!(hero) }, '🎨 Apparence') : null,
+      o.onRecords ? h('button', { class: 'sc-link', onclick: o.onRecords }, '🏆 Records') : null),
       h('div', { class: 'sc-row' },
         h('button', { class: `sc-btn${o.resume ? '' : ' sc-primary'}`, style: { minWidth: '220px', fontSize: '1.15em' }, onclick: () => o.onPlay(hero) }, o.resume ? '⚔  Nouvelle run' : '⚔  Partir en run'),
         h('button', { class: 'sc-btn', onclick: o.onSanctuary }, '♜ Sanctuaire'),

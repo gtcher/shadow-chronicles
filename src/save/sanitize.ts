@@ -122,8 +122,8 @@ export function sanitizeProfile(raw: unknown): Profile {
     for (const h of HERO_IDS) {
       const e = (un.equipped as Obj)[h];
       if (!isObj(e)) continue;
-      const slot: { title?: string; skin?: string; trail?: string } = {};
-      for (const k of ['title', 'skin', 'trail'] as const) if (typeof e[k] === 'string') slot[k] = (e[k] as string).slice(0, 80);
+      const slot: { title?: string; skin?: string; trail?: string; aura?: string } = {};
+      for (const k of ['title', 'skin', 'trail', 'aura'] as const) if (typeof e[k] === 'string') slot[k] = (e[k] as string).slice(0, 80);
       equipped[h] = slot;
     }
   }
@@ -132,6 +132,13 @@ export function sanitizeProfile(raw: unknown): Profile {
     seenBlessings: strList(un.seenBlessings), seenDuos: strList(un.seenDuos), seenLegendaryPowers: strList(un.seenLegendaryPowers),
   };
 
+  if (Array.isArray(o.records)) {
+    p.records = (o.records as unknown[]).filter(isObj).slice(-60).flatMap((r) => {
+      if (!isHero(r.hero)) return [];
+      return [{ at: int(r.at, 0, 0, 1e15), hero: r.hero, wave: int(r.wave, 1, 0, 999), won: bool(r.won, false), timeSec: int(r.timeSec, 0, 0, 1e7),
+        kills: int(r.kills, 0, 0, 1e9), mode: typeof r.mode === 'string' ? r.mode.slice(0, 20) : 'survie', pact: int(r.pact, 0, 0, 999), discovery: bool(r.discovery, false) }];
+    });
+  }
   if (isObj(o.missions) && typeof o.missions.day === 'string' && isDay(o.missions.day)) {
     const m = o.missions, progress: Record<string, number> = {};
     if (isObj(m.progress)) for (const [k, v] of Object.entries(m.progress).slice(0, 12)) progress[k.slice(0, 40)] = int(v, 0, 0, 1e9);

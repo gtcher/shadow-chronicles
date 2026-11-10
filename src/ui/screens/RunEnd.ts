@@ -31,6 +31,19 @@ export interface RunEndOptions {
   missions?: { lines: Array<{ icon: string; text: string; from: number; to: number; target: number; justDone: boolean; done: boolean }>; chestOpened: boolean; chestReward: string; reset: string };
   /** Proposition après une chute rapide (ex. mode Découverte). */
   suggest?: { text: string; label: string; onAccept: () => void };
+  /** Rang de la run dans le classement personnel (tous héros / ce héros). */
+  rank?: { rank: number; heroRank: number; total: number };
+  /** Cosmétiques et titres débloqués par cette run (maîtrise). */
+  unlocked?: string[];
+  /** Prochain cosmétique de maîtrise : « Sillage de Taro · encore 120 XP ». */
+  nextLook?: { level: number; label: string; xpLeft: number };
+  /** Statistiques détaillées (liste dépliable). */
+  detail?: {
+    dealtBy: Array<{ name: string; damage: number }>;
+    dealt: number; taken: number; hits: number; crits: number; maxHit: number; potions: number;
+    waves: Array<{ wave: number; sec: number; boss: boolean }>;
+    perfectDodges: number; bestCombo: number; elites: number;
+  };
   /** Texte à partager (bouton « Partager »). */
   share?: string;
 }
@@ -61,7 +74,10 @@ export function runEndScreen(o: RunEndOptions): HTMLElement {
       h('h2', { class: 'sc-title', style: { fontSize: '2em' } }, o.victory ? 'Le Juge est tombé' : 'Ce que tu rapportes'),
       newBest ? h('p', { style: { color: 'var(--gold-hi)', margin: '6px 0 0', fontWeight: '700' } }, `★ Nouveau record : vague ${o.wave} (+5 ✦)`) : null,
       h('div', { class: 'sc-gains' }, ...gains.map((g) => h('div', { class: 'sc-gain', '--c': g.c }, (vals[vals.length] = h('strong', {}, '0')), h('span', {}, g.label)))),
-      h('div', { class: 'sc-xp' }, `Maîtrise de ${o.mastery.hero} · niveau ${o.mastery.level}`, o.mastery.gained ? h('b', { style: { color: 'var(--gold-hi)', marginLeft: '8px' } }, `+${o.mastery.gained} XP`) : null, h('div', { class: 'sc-track' }, xpBar)),
+      o.rank && o.rank.rank > 0 && o.rank.rank <= 10 ? h('p', { class: 'sc-rank' }, `🏆 ${o.rank.rank === 1 ? 'Ta meilleure run' : `${o.rank.rank === 2 ? '2e' : `${o.rank.rank}e`} de ton classement`}${o.rank.heroRank > 0 && o.rank.heroRank < o.rank.rank ? ` · ${o.rank.heroRank === 1 ? 'meilleure' : `${o.rank.heroRank}e`} avec ${o.mastery.hero}` : ''}`) : null,
+      h('div', { class: 'sc-xp' }, `Maîtrise de ${o.mastery.hero} · niveau ${o.mastery.level}`, o.mastery.gained ? h('b', { style: { color: 'var(--gold-hi)', marginLeft: '8px' } }, `+${o.mastery.gained} XP`) : null, h('div', { class: 'sc-track' }, xpBar),
+        o.nextLook ? h('small', { class: 'sc-nextlook' }, `🎨 Niveau ${o.nextLook.level} : ${o.nextLook.label} · encore ${o.nextLook.xpLeft} XP`) : null),
+      o.unlocked?.length ? h('div', { class: 'sc-next sc-unlocked' }, h('i', {}, '🎨'), h('div', {}, h('b', {}, 'Débloqué !'), h('div', { style: { fontSize: '0.9em' } }, o.unlocked.join(' · '), h('small', { style: { display: 'block', color: 'var(--mute)' } }, 'Porté d\'office · à changer dans « Apparence » au menu')))) : null,
       o.killedBy ? h('div', { class: 'sc-cause' }, h('span', {}, '☠'), h('div', {}, h('b', {}, `Abattu par ${o.killedBy}`),
         o.damageBy?.length ? h('small', {}, 'Dégâts reçus : ', o.damageBy.slice(0, 3).map((d) => `${d.name} ${d.damage}`).join(' · ')) : null,
         o.killedHint ? h('small', { class: 'sc-hint' }, `💡 ${o.killedHint}`) : null)) : null,
@@ -76,6 +92,7 @@ export function runEndScreen(o: RunEndOptions): HTMLElement {
       o.build && (o.build.blessings.length || o.build.item) ? h('div', { class: 'sc-build' },
         o.build.item ? h('span', { class: 'sc-chip-item', style: { color: o.build.item.color } }, `◆ ${o.build.item.name}`) : null,
         ...o.build.blessings.slice(0, 10).map((b) => h('span', { style: { borderColor: b.color, color: b.color } }, b.name))) : null,
+      o.detail ? detailBlock(o.detail, o.timeSec) : null,
       o.gear?.length ? h('details', { class: 'sc-gear-end' }, h('summary', {}, `◆ Équipement porté (${o.gear.length})`), gearList(o.gear, '')) : null,
       o.next ? h('div', { class: 'sc-next' }, h('i', {}, o.next.icon),
         h('div', {}, h('b', {}, o.next.affordable ? 'Amélioration disponible !' : 'Prochaine amélioration'), h('div', { style: { color: 'var(--mute)', fontSize: '0.9em' } }, `${o.next.name} · ${o.next.cost} ${o.next.currencyIcon}`))) : null,
@@ -92,4 +109,24 @@ export function runEndScreen(o: RunEndOptions): HTMLElement {
     requestAnimationFrame(() => (xpBar.style.width = `${o.mastery.to * 100}%`));
   });
   return root;
+}
+
+/** Statistiques détaillées : tuiles, dégâts infligés par source, chrono par vague. */
+function detailBlock(d: NonNullable<RunEndOptions['detail']>, timeSec: number): HTMLElement {
+  const fr = (n: number) => Math.round(n).toLocaleString('fr-FR');
+  const tiles: Array<[string, string]> = [
+    ['Dégâts infligés', fr(d.dealt)], ['Dégâts par seconde', fr(d.dealt / Math.max(1, timeSec))], ['Plus gros coup', fr(d.maxHit)],
+    ['Coups critiques', d.hits ? `${Math.round((d.crits / d.hits) * 100)} %` : '—'], ['Dégâts reçus', fr(d.taken)], ['Fioles bues', String(d.potions)],
+    ['Esquives parfaites', String(d.perfectDodges)], ['Meilleur combo', String(d.bestCombo)], ['Élites abattues', String(d.elites)],
+  ];
+  const top = d.dealtBy[0]?.damage || 1;
+  const slow = Math.max(1, ...d.waves.map((w) => w.sec));
+  return h('details', { class: 'sc-stats-end' }, h('summary', {}, '📊 Statistiques de la run'),
+    h('div', { class: 'sc-stat-tiles' }, ...tiles.map(([l, v]) => h('div', {}, h('b', {}, v), h('small', {}, l)))),
+    d.dealtBy.length ? h('div', { class: 'sc-bars' }, h('h4', {}, 'Dégâts infligés'),
+      ...d.dealtBy.slice(0, 6).map((x) => h('div', {}, h('span', {}, x.name), h('div', { class: 'sc-track' }, h('i', { style: { width: `${(x.damage / top) * 100}%` } })),
+        h('small', {}, `${fr(x.damage)} · ${Math.round((x.damage / Math.max(1, d.dealt)) * 100)} %`)))) : null,
+    d.waves.length ? h('div', { class: 'sc-bars sc-chrono' }, h('h4', {}, 'Chrono par vague'),
+      ...d.waves.map((w) => h('div', { class: w.boss ? 'sc-boss' : '' }, h('span', {}, `${w.boss ? '♛ ' : ''}Vague ${w.wave}`),
+        h('div', { class: 'sc-track' }, h('i', { style: { width: `${(w.sec / slow) * 100}%` } })), h('small', {}, `${Math.floor(w.sec / 60)}:${String(w.sec % 60).padStart(2, '0')}`)))) : null);
 }

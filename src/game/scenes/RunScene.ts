@@ -1,4 +1,4 @@
-import { Container, Graphics, Sprite, Text, type Texture } from 'pixi.js';
+import { ColorMatrixFilter, Container, Graphics, Sprite, Text, type Texture } from 'pixi.js';
 import {
   Collider, Layers, Lifetime, MovementSystem, PhysicsSystem, Rng, Scene, SystemPriority, Transform, Velocity, View,
   World, attachView, installViewCleanup, makeTransform, makeVelocity, syncViews, CameraTarget,
@@ -62,6 +62,17 @@ export interface RunResult {
   killedHint: string | null;
   /** Dégâts reçus par source, du plus grand au plus petit (écran de fin). */
   damageBy: Array<{ name: string; damage: number }>;
+  /** Statistiques détaillées (écran de fin). */
+  detail: RunDetail;
+}
+
+/** Statistiques détaillées d'une run (retour des testeurs : chrono et chiffres de fin de run). */
+export interface RunDetail {
+  /** Dégâts infligés par source (techniques, altérations, bénédictions), du plus grand au plus petit. */
+  dealtBy: Array<{ name: string; damage: number }>;
+  dealt: number; taken: number; hits: number; crits: number; maxHit: number; potions: number;
+  /** Durée de chaque vague franchie (s). */
+  waves: Array<{ wave: number; sec: number; boss: boolean }>;
 }
 
 /** Options de run venant de la méta-progression (Sanctuaire). */
@@ -72,6 +83,8 @@ export interface RunOptions {
   /** Graine (défi quotidien) : vagues, offres et butin tirés de flux séparés. */
   seed?: string;
   mode?: 'survie' | 'cauchemar';
+  /** Apparence (cosmétiques de maîtrise) : couleur du sillage, de l'aura, teinte de la tenue. */
+  look?: { trail?: number; aura?: number; skinHue?: number };
   /** Points de Pacte de la Brume engagés (succès, récompenses). */
   pactPoints?: number;
 }
@@ -137,6 +150,14 @@ export class RunScene extends Scene implements CombatCtx {
   private bossWaves: number[] = [];
   private wavesCleared = 0;
   private perfectTotal = 0;
+  private dealtBy: Record<string, number> = {};
+  private hits = 0;
+  private crits = 0;
+  private potionsStart = 0;
+  private potionsGot = 0;
+  private waveTimes: RunDetail['waves'] = [];
+  private trailT = 0;
+  private trails: Array<{ g: Graphics; life: number }> = [];
   private waveKills = 0;
   private waveDamage = 0;
   private waveStartT = 0;
@@ -293,6 +314,7 @@ export class RunScene extends Scene implements CombatCtx {
     }
     this.comboT -= dt;
     if (this.comboT <= 0 && this.combo > 0) this.combo = 0;
+    this.updateTrail(dt);
     this.director.hold = this.holdIntermission;
     this.world.update(dt);
   }
@@ -340,7 +362,11 @@ export class RunScene extends Scene implements CombatCtx {
     } as HeroC);
     this.world.add(e, CameraTarget, true);
     this.recomputeHero();
-    attachView(this.world, this.g.renderer, e, this.character(this.g.assets.texture(`hero-${d.id}`), d.height, 22, 0xffffff, undefined, this.rigSheet(heroOrder(d.id)), e));
+    const look = this.opts.look ?? {};
+    const heroNode = this.character(this.g.assets.texture(`hero-${d.id}`), d.height, 22, 0xffffff, look.aura, this.rigSheet(heroOrder(d.id)), e);
+    if (look.skinHue) { const cm = new ColorMatrixFilter(); cm.hue(look.skinHue, false); const body = heroNode.getChildByLabel('body'); if (body) body.filters = [cm]; }
+    attachView(this.world, this.g.renderer, e, heroNode);
+    this.potionsStart = this.world.get(e, Hero)!.potions;
     // Anneau au sol aux couleurs du héros : on le retrouve dans la mêlée (retour des testeurs : « je ne vois plus mon perso »).
     const ring = new Graphics().ellipse(0, 0, 34, 13).stroke({ width: 3, color: d.color, alpha: 0.85 }).ellipse(0, 0, 40, 16).stroke({ width: 1.5, color: 0xffffff, alpha: 0.35 });
     this.world.get(e, View)!.node.addChildAt(ring, 0);
@@ -475,6 +501,9 @@ export class RunScene extends Scene implements CombatCtx {
     if (!w.isAlive(e) || f.dead) return; // tué par une réaction en chaîne
     hp.hp -= dmg;
     this.stats.hit(dmg);
+    const src = o.dot ? 'Altérations' : o.skill === undefined || o.skill < 0 ? 'Bénédictions' : HERO_DEFS[this.heroId].skills[o.skill]?.name ?? 'Attaque';
+    this.dealtBy[src] = (this.dealtBy[src] ?? 0) + Math.min(dmg, hp.hp + dmg);
+    if (!o.dot) { this.hits++; if (o.crit) this.crits++; }
     f.flash = 0.12;
     if (o.knock && o.fromX !== undefined && o.fromY !== undefined) {
       const kx = t.x - o.fromX, ky = t.y - o.fromY, l = Math.hypot(kx, ky) || 1;
@@ -545,7 +574,7 @@ export class RunScene extends Scene implements CombatCtx {
     this.g.hitStop(0.6, 0.15);
     this.g.camera.targetZoom = this.baseZoom();
     const h = this.world.get(this.player, Hero)!, hp = this.world.get(this.player, Health)!;
-    h.potions++;
+    h.potions++; this.potionsGot++;
     hp.hp = Math.min(hp.max, hp.hp + hp.max * 0.3);
     this.announce(`${b.def.name} est vaincu`, '+1 potion · PV restaurés', 0xffe0a5);
     this.g.events.emit('boss:killed', { wave: this.wave, id: b.def.id, entity: e, x: t.x, y: t.y, time: this.time });
@@ -646,6 +675,25 @@ export class RunScene extends Scene implements CombatCtx {
     if (input.pressed('interact') || input.pressed('attack')) this.restart(this.heroId);
   }
 
+  /** Sillage (cosmétique de maîtrise) : traînée de lueurs derrière le héros quand il se déplace. */
+  private updateTrail(dt: number): void {
+    for (let i = this.trails.length - 1; i >= 0; i--) {
+      const p = this.trails[i];
+      p.life -= dt;
+      p.g.alpha = Math.max(0, p.life / 0.45) * 0.7; p.g.scale.set(0.6 + p.life);
+      if (p.life <= 0) { p.g.destroy(); this.trails.splice(i, 1); }
+    }
+    const color = this.opts.look?.trail;
+    if (color === undefined || !this.world.isAlive(this.player)) return;
+    const v = this.world.get(this.player, Velocity), t = this.world.get(this.player, Transform);
+    if (!v || !t || Math.hypot(v.x, v.y) < 60 || (this.trailT -= dt) > 0) return;
+    this.trailT = 0.04;
+    const g = new Graphics().ellipse(0, 0, 16, 7).fill({ color, alpha: 0.55 }).ellipse(0, 0, 7, 3).fill({ color: 0xffffff, alpha: 0.6 });
+    g.position.set(t.x + (Math.random() - 0.5) * 10, t.y + 2); g.blendMode = 'add';
+    this.g.renderer.layers.decals.addChild(g);
+    this.trails.push({ g, life: 0.45 });
+  }
+
   /** Résumé de la run en cours. */
   result(): RunResult {
     // Pendant le compte à rebours de la première vague, le directeur est encore à startWave - 1.
@@ -656,7 +704,19 @@ export class RunScene extends Scene implements CombatCtx {
       items: Object.values(this.loot.equipped).filter((x): x is Item => !!x),
       killedBy: this.over && !this.won ? this.lastHurtBy : null,
       killedHint: this.over && !this.won ? this.lastHurtHint : null,
-      damageBy: Object.entries(this.damageBy).map(([name, damage]) => ({ name, damage: Math.round(damage) })).sort((a, b) => b.damage - a.damage) };
+      damageBy: Object.entries(this.damageBy).map(([name, damage]) => ({ name, damage: Math.round(damage) })).sort((a, b) => b.damage - a.damage),
+      detail: this.detail() };
+  }
+
+  /** Statistiques détaillées (écran de fin). */
+  detail(): RunDetail {
+    const h = this.world.get(this.player, Hero);
+    const dealtBy = Object.entries(this.dealtBy).map(([name, damage]) => ({ name, damage: Math.round(damage) })).filter((d) => d.damage > 0).sort((a, b) => b.damage - a.damage);
+    return {
+      dealtBy, dealt: dealtBy.reduce((a, d) => a + d.damage, 0), taken: Math.round(Object.values(this.damageBy).reduce((a, v) => a + v, 0)),
+      hits: this.hits, crits: this.crits, maxHit: Math.round(this.stats.counters.maxHit ?? 0),
+      potions: Math.max(0, this.potionsStart + this.potionsGot - (h?.potions ?? 0)), waves: [...this.waveTimes],
+    };
   }
 
   /** Compteurs versés à la sauvegarde (achievements.json > cond.stat). */
@@ -723,6 +783,7 @@ export class RunScene extends Scene implements CombatCtx {
 
   private onWaveCleared(plan: WavePlan): void {
     this.wavesCleared = Math.max(this.wavesCleared, plan.wave);
+    this.waveTimes.push({ wave: plan.wave, sec: Math.round(this.time - this.waveStartT), boss: !!plan.boss });
     this.loot.collectAll();
     if (plan.boss && this.waveDamage <= 0) this.stats.add('bossWaveNoDamage');
     if ((this.opts.pactPoints ?? 0) > 0 && plan.wave === CAMPAIGN_WAVES) this.stats.max('winWithPact', this.opts.pactPoints!);

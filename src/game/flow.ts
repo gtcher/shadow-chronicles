@@ -12,6 +12,9 @@ import { applyRunToMissions, dailyMissions, timeToReset, CHEST_REWARD, MISSION_R
 import { checkAchievements, nearAchievements, tierColor, type RunView } from './achievements';
 import { BASE_MODS, PACTS, applyDailyMods, applyDiscovery, applyPacts, buildDaily, dailyScore, pactPoints, seedStream, shareText, type DailyConfig, type PactRanks } from './modes';
 import { dailyIntroScreen, dailyResultScreen, pactsScreen, missionsScreen } from './screens';
+import { lookScreen, recordsScreen } from './screensMeta';
+import { LOOK_SLOTS, autoEquip, cosmeticDef, equipLook, heroLook, lookOptions, masteryTrack, nextCosmetic, titleName, unlockedIds, type LookSlot } from './cosmetics';
+import { leaderboard, pushRecord, type RunRecord } from './records';
 import { applyVfxSettings, applyGameplaySettings } from './settingsLink';
 import { gearLines, type GearView, mountUI, connectSave, metaFromProfile, codexFromProfile, codexProgress, codexFresh, sanctuaryActions, type UiRoot } from '../ui';
 import { SaveManager, requirementProgress, PACTS_REQUIRES, recordRunEnd, recordBest, recordDaily, masteryProgress, unlockAchievement, upgradeRank, addCurrency, grant, type Profile } from '../save';
@@ -95,7 +98,7 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
   const ui = mountUI(game as unknown as Game);
   if (save) connectSave(ui, save);
   // Outils de test (robot, console) : accès à la sauvegarde et aux écrans.
-  (window as unknown as { sc: unknown }).sc = { save, ui, title: () => title(), pacts: () => pacts(), daily: () => dailyIntro(), missions: () => missionsView() };
+  (window as unknown as { sc: unknown }).sc = { save, ui, title: () => title(), pacts: () => pacts(), daily: () => dailyIntro(), missions: () => missionsView(), looks: (h: HeroId) => looks(h), records: () => records('all') };
   const url = (k: string) => game.assets.url(k);
   if (save) ui.codexInfo = () => ({ ...codexFromProfile(save.profile), assetUrl: url });
   // Flashs et chiffres de dégâts suivent les réglages, même modifiés en pleine run.
@@ -135,9 +138,43 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
       onPlay: (h) => void startRun(h, 1),
       onSanctuary: () => sanctuary(),
       onSettings: () => ui.openSettings(),
+      looks: save ? Object.fromEntries((['taro', 'mei', 'sena', 'ren'] as HeroId[]).map((id) => { const l = heroLook(save!.profile, id); return [id, { title: l.title, frame: l.frame }]; })) : undefined,
+      onLook: save ? (h) => looks(h) : undefined,
+      onRecords: save ? () => records('all') : undefined,
       codex: save ? { pct: codexProgress(codexFromProfile(save.profile)).pct, fresh: codexFresh(codexFromProfile(save.profile)) } : undefined,
       onCodex: save ? () => { ui.openCodex(); } : undefined,
     });
+  };
+
+  /** Apparence (cosmétiques de maîtrise) d'un héros. */
+  const looks = (h: HeroId) => {
+    if (!save) { title(); return; }
+    hero = h;
+    const p = save.profile, xp = p.mastery[h].xp;
+    const eq = p.unlocks.equipped[h] ?? {};
+    ui.show(lookScreen({
+      hero: h, mastery: masteryProgress(xp), track: masteryTrack(h, xp),
+      options: Object.fromEntries(LOOK_SLOTS.map((s) => [s, lookOptions(p, h, s)])) as Record<LookSlot, ReturnType<typeof lookOptions>>,
+      equipped: { title: eq.title, trail: eq.trail, skin: eq.skin, aura: eq.aura },
+      onHero: (x) => looks(x),
+      onEquip: (slot, id) => { save!.update((q) => { equipLook(q, h, slot, id); }); looks(h); },
+      onBack: () => title(),
+    }));
+  };
+
+  /** Classement personnel. */
+  const records = (tab: HeroId | 'all') => {
+    if (!save) { title(); return; }
+    const p = save.profile;
+    const bestByHero: Partial<Record<HeroId, RunRecord>> = {};
+    for (const id of ['taro', 'mei', 'sena', 'ren'] as HeroId[]) { const b = leaderboard(p, id, 1)[0]; if (b) bestByHero[id] = b; }
+    const latest = (p.records ?? []).reduce((a, r) => Math.max(a, r.at), 0);
+    const daily = Object.entries(p.daily.history).sort((a, b) => b[1].score - a[1].score)[0];
+    ui.show(recordsScreen({
+      tab, rows: leaderboard(p, tab === 'all' ? undefined : tab, 10), latestAt: latest || undefined, bestByHero,
+      dailyBest: daily ? { score: daily[1].score, day: daily[0], wave: daily[1].wave } : undefined,
+      onTab: (t) => records(t), onPlay: () => void startRun(tab === 'all' ? hero : tab, 1), onBack: () => title(),
+    }));
   };
 
   const missionsView = () => {
@@ -210,6 +247,8 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
     let best = r.wave;
     let near: ReturnType<typeof nearAchievements> = [];
     let missions = null as MissionResult | null;
+    let rank: { rank: number; heroRank: number; total: number } | undefined;
+    let unlocked: string[] = [];
     const breakdown: Array<[string, number]> = [];
     if (save) {
       // Record d'avant cette run (sinon « nouveau record » ne s'affiche jamais).
@@ -242,6 +281,12 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
         // Missions du jour.
         missions = applyRunToMissions(p, { hero: r.hero, wave: r.wave, wavesCleared: r.wavesCleared, bosses: r.bossWaves.length, counters: r.counters });
         if (missions.eclats) { out.currencies.eclats += missions.eclats; breakdown.push(['Missions', missions.eclats]); }
+        // Cosmétiques de maîtrise : portés d'office s'il n'y a rien dans l'emplacement.
+        const ids = unlockedIds(out.mastery.rewards, r.hero);
+        autoEquip(p, r.hero, ids);
+        unlocked = ids.map((id) => (cosmeticDef(id)?.kind === 'title' ? `Titre « ${titleName(id)} »` : cosmeticDef(id)?.name ?? id));
+        // Classement personnel.
+        rank = pushRecord(p, { at: Date.now(), hero: r.hero, wave: r.wave, won: r.won, timeSec: r.timeSec, kills: r.kills, mode: scene.mode, pact: pts, discovery: !!scene.mods.labels.includes('Découverte') });
         return out;
       });
       unlock(scene, false);
@@ -264,6 +309,10 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
         item: bestItem(r.items),
       },
       gear: gearView(r.items),
+      rank: rank && rank.total >= 3 && (rank.rank <= 3 || rank.heroRank === 1) ? rank : undefined,
+      unlocked,
+      nextLook: save ? nextCosmetic(r.hero, xpTo) : undefined,
+      detail: { ...r.detail, perfectDodges: r.perfectDodges, bestCombo: r.bestCombo, elites: r.counters.elitesKilled ?? 0 },
       missions: missions ? { lines: missions.lines, chestOpened: missions.chestOpened, chestReward: `+${CHEST_REWARD.eclats} ✦ +${CHEST_REWARD.poussiere} ✧`, reset: timeToReset() } : undefined,
       share: `Shadow Chronicles · ${HERO_NAME[r.hero] ?? r.hero} · ${r.won ? 'victoire !' : `vague ${r.wave}`} · ${r.kills} ombres vaincues en ${Math.floor(r.timeSec / 60)} min${r.wave > best ? ' · nouveau record ★' : ''}. Tu fais mieux ?`,
       onRetry: () => void startRun(r.hero, 1),
@@ -368,6 +417,8 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
         o.loot = { ...o.loot, luckPct: (o.loot?.luckPct ?? 0) + pts * PACTS.rewardPerPoint.lootRarityLuckPct };
       }
     }
+    const lk = heroLook(save?.profile ?? null, h);
+    o.look = { trail: lk.trail, aura: lk.aura, skinHue: lk.skinHue };
     const { RunScene } = await loadRun();
     const scene = new RunScene(h, wave, o);
     scene.showBuiltinHud = false;

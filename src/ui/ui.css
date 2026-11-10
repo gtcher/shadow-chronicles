@@ -788,3 +788,64 @@
 .sc-gear-end { margin: 0 0 16px; text-align: left; }
 .sc-gear-end summary { cursor: pointer; color: var(--mute); font-size: 0.9em; text-align: center; padding: 4px; }
 .sc-gear-end .sc-gear { margin-top: 6px; }
+
+/* Ligne sous les héros : Découverte · Apparence · Records */
+.sc-subrow { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px 18px; margin: 0 auto 10px; }
+.sc-subrow .sc-discovery { margin: 0; }
+.sc-link { pointer-events: auto; background: none; border: 0; padding: 4px 6px; color: var(--gold); font: 500 0.9em var(--body); cursor: pointer; border-radius: 6px; }
+.sc-link:hover, .sc-link:focus-visible { color: var(--gold-hi); text-decoration: underline; outline: none; }
+
+/* Cosmétiques de maîtrise : cadre doré, titre porté */
+.sc-herocard.sc-gold { border: 2px solid #e2bf7a; box-shadow: 0 0 0 1px #000, 0 0 18px rgba(246, 220, 164, 0.35), inset 0 0 24px rgba(246, 220, 164, 0.25); }
+.sc-herocard.sc-gold[aria-pressed="true"] { border-color: #f6dca4; }
+.sc-herocard .sc-herotitle { color: var(--gold-hi); font-style: italic; font-size: 0.74em; }
+
+/* Écran Apparence */
+.sc-tabs { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin: 10px 0 12px; }
+.sc-tab { pointer-events: auto; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.03); color: var(--mute); font: 600 0.9em var(--body); cursor: pointer; }
+.sc-tab[aria-selected="true"] { color: var(--c, var(--gold-hi)); border-color: var(--c, var(--gold)); background: color-mix(in srgb, var(--c, #e2bf7a) 14%, transparent); }
+.sc-look-track { list-style: none; margin: 12px 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; text-align: left; }
+.sc-look-track li { display: flex; gap: 8px; align-items: center; padding: 5px 8px; border-radius: 6px; background: rgba(255, 255, 255, 0.03); font-size: 0.82em; color: var(--mute); }
+.sc-look-track li b { flex: 0 0 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line); font-size: 0.85em; }
+.sc-look-track li.sc-on { color: var(--text, #f1e5ca); }
+.sc-look-track li.sc-on b { background: var(--c); color: #0b0d14; border-color: var(--c); }
+.sc-look-track li.sc-cosm:not(.sc-on) span { color: var(--gold); }
+.sc-look-slot { text-align: left; margin: 10px 0; }
+.sc-look-slot h4 { margin: 0 0 6px; font: 600 0.8em var(--display); letter-spacing: 0.2em; color: var(--mute); text-transform: uppercase; }
+.sc-look-opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.sc-look-opt { pointer-events: auto; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.03); color: inherit; font: 500 0.85em var(--body); cursor: pointer; }
+.sc-look-opt[aria-pressed="true"] { border-color: var(--gold); background: rgba(226, 191, 122, 0.14); color: var(--gold-hi); }
+.sc-look-opt.sc-locked { opacity: 0.5; cursor: not-allowed; }
+.sc-swatch { width: 12px; height: 12px; border-radius: 50%; background: var(--c); box-shadow: 0 0 8px var(--c); }
+
+/* Fin de run : classement, cosmétiques, statistiques détaillées */
+.sc-rank { margin: 6px 0 0; color: var(--gold); font-weight: 600; }
+.sc-nextlook { display: block; margin-top: 4px; color: var(--gold); font-size: 0.85em; }
+.sc-unlocked { border-color: var(--gold) !important; }
+.sc-stats-end { margin: 0 0 12px; text-align: left; }
+.sc-stats-end summary { cursor: pointer; color: var(--mute); font-size: 0.9em; text-align: center; padding: 4px; }
+.sc-stat-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 8px 0; }
+.sc-stat-tiles div { padding: 6px 8px; border-radius: 6px; background: rgba(255, 255, 255, 0.04); text-align: center; }
+.sc-stat-tiles b { display: block; font-size: 1.05em; color: var(--gold-hi); }
+.sc-stat-tiles small { color: var(--mute); font-size: 0.75em; }
+.sc-bars { margin: 10px 0; }
+.sc-bars h4 { margin: 0 0 6px; font: 600 0.8em var(--display); letter-spacing: 0.2em; color: var(--mute); text-transform: uppercase; }
+.sc-bars > div { display: grid; grid-template-columns: minmax(90px, 30%) 1fr auto; gap: 8px; align-items: center; font-size: 0.82em; margin: 3px 0; }
+.sc-bars .sc-track { height: 6px; }
+.sc-bars small { color: var(--mute); white-space: nowrap; }
+.sc-chrono .sc-boss span { color: var(--gold); }
+
+/* Records */
+.sc-herobest { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 10px 0; }
+.sc-herobest div { padding: 6px; border-radius: 8px; background: rgba(255, 255, 255, 0.04); border-top: 2px solid var(--c); }
+.sc-herobest b { display: block; color: var(--c); }
+.sc-herobest span { display: block; font-size: 0.9em; }
+.sc-herobest small { color: var(--mute); font-size: 0.75em; }
+.sc-ranks { width: 100%; border-collapse: collapse; font-size: 0.88em; margin: 4px 0 10px; }
+.sc-ranks th { font-weight: 600; color: var(--mute); font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px; border-bottom: 1px solid var(--line); }
+.sc-ranks td { padding: 5px 4px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); text-align: center; }
+.sc-ranks tr.sc-latest td { background: rgba(226, 191, 122, 0.12); }
+@media (max-width: 560px) { .sc-herobest { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sc-stat-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sc-ranks th:nth-child(5), .sc-ranks td:nth-child(5) { display: none; } }
+.sc-bars .sc-track { background: rgba(255, 255, 255, 0.08); border-radius: 3px; overflow: hidden; }
+.sc-bars .sc-track i { display: block; height: 100%; background: var(--gold); border-radius: 3px; }
+.sc-chrono .sc-boss .sc-track i { background: #ff8a7a; }

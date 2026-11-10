@@ -334,3 +334,49 @@ test('mode Découverte + équipement : ennemis adoucis, objets visibles en pause
   await expect(end).toContainText('Lame du Test');
   expect(errors).toEqual([]);
 });
+
+test('apparence, records et statistiques de fin de run', async ({ page }) => {
+  const errors = await open(page);
+  // Profil : Mei maîtrise 4 (titre + sillage débloqués).
+  await page.evaluate(() => {
+    const sc = (window as unknown as { sc: any }).sc;
+    sc.save.update((q: any) => { q.mastery.mei.xp = 400; q.unlocks.titles.push('t_mei_novice'); q.unlocks.cosmetics.push('trail_mei'); });
+    sc.title();
+  });
+  await title(page).getByRole('button', { name: '🎨 Apparence' }).click();
+  const look = page.getByRole('dialog', { name: 'Apparence' });
+  await look.getByRole('tab', { name: 'Mei' }).click();
+  await look.getByRole('button', { name: 'Novice de l\'Ombre' }).click();
+  await look.getByRole('button', { name: /Sillage de Mei/ }).click();
+  await expect(look.getByRole('button', { name: /Sillage de Mei/ })).toHaveAttribute('aria-pressed', 'true');
+  await expect(look.getByRole('button', { name: /Tenue d'éclipse/ })).toBeDisabled();
+  await look.getByRole('button', { name: 'Retour' }).click();
+  await expect(title(page).locator('.sc-herotitle')).toHaveText('« Novice de l\'Ombre »');
+  // La run de Mei porte le sillage, et la fin de run donne les statistiques et le classement.
+  // Ouvrir l'apparence de Mei la sélectionne aussi au menu.
+  await expect(title(page).getByRole('button', { name: /^Mei/ })).toHaveAttribute('aria-pressed', 'true');
+  await title(page).getByRole('button', { name: /Partir en run/ }).click();
+  await waitRun(page);
+  expect(typeof await page.evaluate(() => (window as unknown as W).game.scenes.current.opts.look.trail)).toBe('number');
+  // Des ennemis arrivent, on les frappe avec la 1re technique : les dégâts sont comptés par source.
+  await sim(page, 8);
+  await page.evaluate(() => (window as unknown as W).game.scenes.current.debugHitAll(0.5));
+  const detail = await page.evaluate(() => (window as unknown as W).game.scenes.current.detail());
+  expect(detail.dealt).toBeGreaterThan(0);
+  expect(detail.dealtBy[0].name).toBe('Double taille'); // technique 1 de Mei
+  await page.evaluate(() => (window as unknown as W).game.scenes.current.debugKillHero());
+  await sim(page, 3);
+  const stats = page.locator('details.sc-stats-end');
+  await expect(stats).toBeVisible({ timeout: 30_000 });
+  await stats.locator('summary').click();
+  await expect(stats).toContainText('Dégâts infligés');
+  await expect(stats).toContainText('Fioles bues');
+  await page.getByRole('button', { name: 'Menu principal' }).click();
+  await title(page).getByRole('button', { name: '🏆 Records' }).click();
+  const rec = page.getByRole('dialog', { name: 'Records' });
+  await expect(rec.locator('table.sc-ranks tbody tr')).toHaveCount(1);
+  await expect(rec.locator('tr.sc-latest')).toContainText('Mei');
+  await rec.getByRole('tab', { name: 'Taro' }).click();
+  await expect(rec).toContainText('Aucune run classée');
+  expect(errors).toEqual([]);
+});

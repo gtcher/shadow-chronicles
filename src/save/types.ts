@@ -72,7 +72,7 @@ export interface Profile {
   unlocks: {
     titles: string[];
     cosmetics: string[];
-    equipped: Partial<Record<HeroId, { title?: string; skin?: string; trail?: string }>>;
+    equipped: Partial<Record<HeroId, { title?: string; skin?: string; trail?: string; aura?: string }>>;
     /** Codex : bénédictions / pouvoirs légendaires déjà vus (pour les % de découverte). */
     seenBlessings: string[];
     seenDuos: string[];
@@ -81,6 +81,9 @@ export interface Profile {
 
   /** Missions du jour (src/game/missions.ts) : progression du jour en cours, remise à zéro chaque jour (UTC). */
   missions?: { day: string; progress: Record<string, number>; done: string[]; chest: boolean; chestsOpened: number };
+
+  /** Classement personnel (src/game/records.ts) : meilleures runs et runs récentes. */
+  records?: Array<{ at: number; hero: HeroId; wave: number; won: boolean; timeSec: number; kills: number; mode: string; pact: number; discovery: boolean }>;
 
   /** Coffre-Souvenir (Forge) : objets gardés d'une run à l'autre. Format libre défini par le butin. */
   heirlooms: unknown[];

@@ -37,6 +37,7 @@ export function applyVfxSettings(vfx: Vfx, s: Readonly<Settings>): void {
   vfx.settings.flashes = s.flashes;
   vfx.settings.damageNumbers = s.damageNumbers;
   vfx.settings.comfort = s.comfort;
+  vfx.settings.cinematic = s.cinematic;
   // La secousse est déjà multipliée par le réglage dans UiRoot (camera.shake) : vfx.settings.shake reste à 1.
   vfx.applySettings();
 }

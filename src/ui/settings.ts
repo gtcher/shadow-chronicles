@@ -32,6 +32,8 @@ export interface Settings {
   comfort: boolean;
   /** Le choix « Confort visuel » a été proposé au premier lancement. */
   comfortAsked: boolean;
+  /** Effet cinéma : étalonnage couleur, vignette et grain propres à chaque chapitre. */
+  cinematic: boolean;
   /** Mode Découverte : ennemis plus doux pour apprendre (pas de Pactes). */
   discovery: boolean;
 }
@@ -45,7 +47,7 @@ export const DEFAULT_SETTINGS: Settings = {
   textScale: 1, highContrast: prefersContrast, colorBlind: 'none', reduceMotion: prefersReduced,
   shake: prefersReduced ? 0.3 : 1, flashes: !prefersReduced, damageNumbers: true, vibration: true,
   touchScale: 1, leftHanded: false, autoAim: true, masterVolume: 0.8, musicVolume: 0.7, sfxVolume: 0.8, ambienceVolume: 0.5, muted: false, tutorialDone: false, sanctuaryGuideDone: false,
-  comfort: prefersReduced, comfortAsked: false, discovery: false,
+  comfort: prefersReduced, comfortAsked: false, discovery: false, cinematic: true,
 };
 
 type Listener = (s: Readonly<Settings>, changed: keyof Settings | null) => void;

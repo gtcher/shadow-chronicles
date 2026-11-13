@@ -7,6 +7,8 @@ import { Bloom } from './Bloom';
 import { Fog } from './Fog';
 import { FxParticles } from './FxParticles';
 import { DamageNumbers } from './DamageNumbers';
+import { ColorGrade } from './grade/ColorGrade';
+import { gradeForChapter } from './grade/grades';
 import { FpsGovernor, QUALITY_PRESETS, detectQuality, lowerQuality, type QualityLevel, type QualitySetting } from './quality';
 
 /**
@@ -44,6 +46,8 @@ export interface VfxSettings {
   damageNumbers: boolean;
   /** Confort visuel : bloom, particules et brume allégés (réglage joueur). */
   comfort?: boolean;
+  /** Effet cinéma : étalonnage couleur, vignette et grain propres à chaque chapitre (défaut : oui). */
+  cinematic?: boolean;
 }
 
 type Tracked = { x: number; y: number; prevX?: number; prevY?: number };
@@ -55,6 +59,8 @@ export class Vfx {
   readonly fog: Fog;
   readonly particles: FxParticles;
   readonly numbers: DamageNumbers;
+  /** Étalonnage couleur par chapitre (post-traitement plein écran). */
+  readonly grade = new ColorGrade();
   readonly settings: VfxSettings;
   level: QualityLevel = 'high';
   /** Appelé quand la qualité change (l'UI peut l'afficher, la sauvegarde la mémoriser). */
@@ -118,6 +124,9 @@ export class Vfx {
     this.offs.push(renderer.onResize(resize)); // sinon une rotation d’écran après la scène touche des sprites détruits
 
     this.offs.push(renderer.onBeforeRender(() => { this.lighting.render(); this.bloom.render(); }));
+    // Étalonnage : sur le monde + effets écran (pas sur l'interface). WebGL seulement (le shader est en GLSL).
+    this.gradeOk = (renderer.app.renderer as { type?: number }).type === 1 && new URLSearchParams(location.search).get('grade') !== '0';
+    this.grade.attach(renderer.post, renderer.app.screen, false);
 
     const ev = game.events;
     this.offs.push(
@@ -150,6 +159,7 @@ export class Vfx {
     this.fog.setLayers(p.fogLayers);
     this.particles.max = p.maxParticles;
     this.particles.density = p.particleDensity * (this.settings?.comfort ? 0.5 : 1);
+    this.applyGrade();
     this.numbers.max = p.maxDamageNumbers;
     this.maxDecals = p.maxDecals;
     this.onQualityChange?.(level);
@@ -166,8 +176,23 @@ export class Vfx {
     this.bloom.configure(0, 0);
     this.fog.setLayers(0);
     this.numbers.enabled = false;
+    this.applyGrade();
   }
+
+  /** Étalonnage actif ? (qualité medium/high, réglage « Effet cinéma », effets allumés). */
+  private applyGrade(): void {
+    const s = this.settings;
+    const on = this.gradeOk && this.enabled && QUALITY_PRESETS[this.level].grade && (s?.cinematic ?? true);
+    this.grade.setEnabled(on);
+    this.grade.grainScale = s?.comfort ? 0 : 1;
+    // Le shader fait sa propre vignette colorée : l'ancienne (noire, en sprite) ne sert qu'en secours.
+    this.vignette.visible = !on;
+  }
+
+  /** Ambiance couleur du chapitre (0..3), en fondu sur `duration` secondes. */
+  setChapter(idx: number, duration = 0): void { this.grade.set(gradeForChapter(idx), duration); }
   enabled = true;
+  private gradeOk = false;
   /** Intensité de référence du bloom (modulée par la densité d'effets). */
   bloomBase = 0.62;
 
@@ -375,7 +400,8 @@ export class Vfx {
     this.hurtFlash.visible = this.hurtFlash.alpha > 0.004;
     this.whiteFlash.visible = this.whiteFlash.alpha > 0.004;
     // Bloom moins fort quand l'écran est déjà saturé d'effets.
-    this.bloom.strength = this.bloomBase * (0.55 + 0.45 * this.particles.crowd);
+    this.bloom.strength = this.bloomBase * (0.55 + 0.45 * this.particles.crowd) * (this.grade.enabled ? this.grade.params.bloom : 1);
+    if (this.grade.enabled) this.grade.update(frameDt, this.game.renderer.width / Math.max(1, this.game.renderer.height));
   }
 
   private spawnGhost(node: Container): void {
@@ -400,6 +426,7 @@ export class Vfx {
     this.fog.destroy();
     this.particles.destroy();
     this.numbers.destroy();
+    this.grade.destroy();
     this.decals.destroy({ children: true });
     this.ghosts.destroy({ children: true });
     for (const s of [this.vignette, this.lowHp, this.hurtFlash, this.whiteFlash]) s.destroy();

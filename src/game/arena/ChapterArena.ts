@@ -103,7 +103,7 @@ export class ChapterArena {
   }
 
   /** Branche l'éclairage (le VFX est créé après l'arène). */
-  attach(vfx: Vfx): void { this.vfx = vfx; this.applyAtmosphere(1); }
+  attach(vfx: Vfx): void { this.vfx = vfx; this.applyAtmosphere(1); vfx.setChapter(this.amb.to, 0); }
 
   get chapter(): number { return this.current; }
 
@@ -120,6 +120,8 @@ export class ChapterArena {
     if (instant) { for (const s of this.skins.slice(0, -1)) this.destroySkin(s); this.skins = [skin]; }
     this.drawEdge(idx);
     this.amb = { from: prev < 0 ? idx : prev, to: idx, k: instant ? 1 : 0 };
+    // Étalonnage couleur du chapitre : même fondu que le décor.
+    this.vfx?.setChapter(idx, instant ? 0 : 2.2);
     this.resetMotes();
   }
 

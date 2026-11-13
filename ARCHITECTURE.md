@@ -158,6 +158,18 @@ Moteur (ajouts) : `renderer.onBeforeRender(fn)` (passes hors écran), `renderer.
 `game.hitStop()` cumulable (plus de conflit entre deux gels rapprochés).
 `src/game/Particles.ts` (ancien) reste disponible mais n'est plus utilisé par la démo.
 
+### Étalonnage couleur par chapitre (`src/game/vfx/grade/`)
+
+Une passe GPU plein écran (`ColorGrade`, GLSL) sur le monde + bloom + effets écran, jamais sur l'interface :
+contraste, lift/gamma/gain, saturation, virage ombres/hautes lumières, vignette colorée et grain léger.
+Les 4 ambiances sont dans `grades.ts` (`CHAPTER_GRADES`, une par région de vagues) avec une copie CPU de
+la formule (`gradePixel`) testée dans `tests/grade.test.ts`. `ChapterArena.setChapter` appelle
+`vfx.setChapter(idx, 2.2)` : même fondu que le décor. Le bloom est modulé par chapitre (`bloom`).
+
+- Actif en qualité medium/high (coupé en low, donc aussi quand le mode auto baisse la qualité).
+- Réglage joueur « Effet cinéma » (`settings.cinematic`) ; le mode confort coupe le grain.
+- `?grade=0` dans l'URL le coupe (captures avant/après). Quand il est actif, l'ancienne vignette sprite est masquée.
+
 ## Combat (agent Gameplay) — `src/game/combat/` + `scenes/RunScene.ts` + `flow.ts`
 
 | Fichier | Rôle |

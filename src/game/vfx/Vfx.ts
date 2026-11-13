@@ -9,6 +9,7 @@ import { FxParticles } from './FxParticles';
 import { DamageNumbers } from './DamageNumbers';
 import { ColorGrade } from './grade/ColorGrade';
 import { gradeForChapter } from './grade/grades';
+import { CombatFx } from './combat/CombatFx';
 import { FpsGovernor, QUALITY_PRESETS, detectQuality, lowerQuality, type QualityLevel, type QualitySetting } from './quality';
 
 /**
@@ -61,6 +62,8 @@ export class Vfx {
   readonly numbers: DamageNumbers;
   /** Étalonnage couleur par chapitre (post-traitement plein écran). */
   readonly grade = new ColorGrade();
+  /** Effets de combat en shaders (dissolution, flash d'impact, lames, rubans). */
+  readonly combat: CombatFx;
   readonly settings: VfxSettings;
   level: QualityLevel = 'high';
   /** Appelé quand la qualité change (l'UI peut l'afficher, la sauvegarde la mémoriser). */
@@ -106,6 +109,7 @@ export class Vfx {
     this.fog = new Fog(this.tex.fog, renderer.layers.decals, renderer.layers.overlay);
     this.particles = new FxParticles(renderer.layers.fx, this.tex);
     this.numbers = new DamageNumbers(renderer.layers.overlay);
+    this.combat = new CombatFx(renderer, this.particles);
     this.bloom = new Bloom(renderer);
 
     const full = (tex: Texture, tint: number, blend: 'normal' | 'add') => {
@@ -162,6 +166,7 @@ export class Vfx {
     this.applyGrade();
     this.numbers.max = p.maxDamageNumbers;
     this.maxDecals = p.maxDecals;
+    this.combat.setLevel(level);
     this.onQualityChange?.(level);
   }
 
@@ -201,6 +206,7 @@ export class Vfx {
     this.game.camera.shakeScale = this.settings.shake;
     this.numbers.enabled = this.settings.damageNumbers;
     this.bloomBase = this.settings.comfort ? 0.22 : 0.62;
+    this.combat.soft = !this.settings.flashes || !!this.settings.comfort;
     if (this.enabled) this.applyLevel(this.level);
   }
 
@@ -224,7 +230,8 @@ export class Vfx {
     // Éclat central : un seul par zone toutes les 60 ms (sinon une mêlée de 6 coups devient une tache blanche).
     if (crit || this.t - this.lastCoreT > 0.06 || Math.abs(x - this.lastCoreX) + Math.abs(by - this.lastCoreY) > 90) {
       this.lastCoreT = this.t; this.lastCoreX = x; this.lastCoreY = by;
-      this.particles.emit(x, by, { color: crit ? 0xffe6b0 : 0xffd9a8, count: 1, speed: 0, size: crit ? 1.3 : 0.8, life: 0.09, grow: 4, alpha: crit ? 0.95 : 0.75 });
+      // Lueur propre : plus petite et plus chaude qu'avant (l'ancien éclat blanc noyait la silhouette touchée).
+      this.particles.emit(x, by, { color: crit ? 0xffd9a0 : 0xffc890, count: 1, speed: 0, size: crit ? 0.95 : 0.55, life: 0.08, grow: 4, alpha: crit ? 0.8 : 0.55 });
     }
     this.lighting.flash(x, by, crit ? 200 : 120, 0xffb070, crit ? 0.9 : 0.5, 0.1);
     this.numbers.show(x, by - 24, dmg, crit ? 'crit' : 'normal', id);
@@ -242,7 +249,7 @@ export class Vfx {
     this.particles.emit(x, by, { color: col, count: 16 * k, speed: 220 * Math.sqrt(k), size: 0.6, life: 0.6, gravity: 380, drag: 2, jitter: 10 });
     this.particles.emit(x, by + 10, { shape: 'smoke', color: 0x1a1622, count: 6 * k, speed: 60, size: 0.9 * k, life: 1.1, grow: 0.9, drag: 2, gravity: -30, alpha: 0.75, jitter: 14, spin: 1.5 });
     this.particles.emit(x, by, { color: 0x9a8cff, endColor: 0x3a2c8f, count: 5 * k, speed: 40, angle: -Math.PI / 2, spread: 1.2, size: 0.8, life: 1.3, drag: 1, gravity: -90, alpha: 0.7, jitter: 12 });
-    this.particles.emit(x, by, { color: 0xfff0d8, count: 1, speed: 0, size: 1.8 * k, life: 0.12, grow: 5, alpha: 0.75 });
+    this.particles.emit(x, by, { color: 0xffd8a8, count: 1, speed: 0, size: 1.2 * k, life: 0.12, grow: 5, alpha: 0.55 });
     this.lighting.flash(x, by, 260 * k, 0xff9a5a, 1, heavy ? 0.35 : 0.2);
     this.decal(x, y, col, heavy ? 1.6 : 0.9);
     if (heavy) {
@@ -385,6 +392,7 @@ export class Vfx {
     }
 
     this.particles.update(dt);
+    this.combat.update(dt);
     this.numbers.update(dt);
     this.lighting.update(dt);
     this.fog.update(dt, cam);
@@ -427,6 +435,7 @@ export class Vfx {
     this.particles.destroy();
     this.numbers.destroy();
     this.grade.destroy();
+    this.combat.destroy();
     this.decals.destroy({ children: true });
     this.ghosts.destroy({ children: true });
     for (const s of [this.vignette, this.lowHp, this.hurtFlash, this.whiteFlash]) s.destroy();

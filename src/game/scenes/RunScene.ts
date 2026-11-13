@@ -8,6 +8,7 @@ import { Health, type HeroId } from '../components';
 import type { GameEvents } from '../events';
 import { makeFxTextures, type FxTextures } from '../textures';
 import { Vfx } from '../vfx';
+import type { FrameQuad } from '../vfx/combat/FrameQuad';
 import { Foe, Hero, Shot, type FoeC, type HeroC } from '../combat/components';
 import { BODY_Y, type CombatCtx, type ParticleSink, type FoeHitOpts, type HeroHitOpts } from '../combat/context';
 import { BOSS_DEFS, ENEMY_DEFS, HERO_DEFS, REGIONS, STATUS_COLORS, type BossId, type EnemyId, type FoeStatusId, type StatusId } from '../combat/data';
@@ -167,7 +168,7 @@ export class RunScene extends Scene implements CombatCtx {
   private renderTime = 0;
   /** Feuilles cuites par clé (héros, ennemi + teinte, boss). */
   private rigs = new Map<number, RigState>();
-  private corpses: Array<{ node: Container; sheet: RigSheet; t: number }> = [];
+  private corpses: Array<{ node: Container; sheet: RigSheet; t: number; quad: FrameQuad | null; color: number }> = [];
   private heroAtkSeq = 0;
   private heroAtkSeen = 0;
   private offRig: (() => void) | null = null;
@@ -238,6 +239,7 @@ export class RunScene extends Scene implements CombatCtx {
     this.arena.attach(this.vfx);
     this.particles = this.vfx.particles;
     this.feedback = new CombatFeedback(renderer.layers.overlay);
+    this.feedback.fancy = this.vfx.combat;
     this.buildHud();
 
     this.physics.bounds = ARENA;
@@ -489,6 +491,7 @@ export class RunScene extends Scene implements CombatCtx {
     sh.anchor.set(0.5); sh.width = 26 * sz; sh.height = 9 * sz; sh.alpha = 0.6;
     node.addChild(sh, body);
     attachView(this.world, this.g.renderer, e, node, 'entities', 40);
+    this.vfx.combat.trail(node, hero ? o.color : 0xb07bff, (hero ? 9 : 8) * sz, BODY_Y);
     return e;
   }
 
@@ -992,7 +995,8 @@ export class RunScene extends Scene implements CombatCtx {
       const sq = Math.max(0, Math.min(1, flash / 0.12));
       body.scale.x = facing * k * (1 + 0.1 * sq); body.scale.y = k * (1 - 0.08 * sq);
       body.alpha = alpha;
-      body.tint = flash > 0 ? 0xffb0a0 : tint;
+      body.tint = flash > 0 && !this.vfx.combat.on ? 0xffb0a0 : tint;
+      this.vfx.combat.hitFlash(node, body, sq);
       const aura = node.getChildByLabel('aura');
       if (aura) aura.alpha = aura instanceof Graphics ? 0.7 + 0.3 * Math.sin(this.renderTime * 3 + phase) : 0.3 + 0.12 * Math.sin(this.renderTime * 3 + phase);
       return;
@@ -1121,20 +1125,32 @@ export class RunScene extends Scene implements CombatCtx {
     const old = view?.node as Container | undefined;
     const ob = old?.getChildByLabel('body') as Sprite | undefined;
     const node = new Container();
-    const body = new Sprite(r.sheet.frames.mort[0]);
-    body.anchor.set(r.sheet.anchorX, r.sheet.anchorY);
+    const f = this.world.get(e, Foe);
+    const color = f?.boss ? f.boss.def.color : f?.def.elite ? STATUS_COLORS[f.def.status ?? 'void'] : 0xff7a3a;
+    // Dissolution en shader (bord en braise) ; sinon l'ancien sprite qui s'efface.
+    const quad = this.vfx.combat.corpse(r.sheet.frames.mort[0], r.sheet.anchorX, r.sheet.anchorY, color);
+    const body = quad ?? new Sprite(r.sheet.frames.mort[0]);
+    if (body instanceof Sprite) body.anchor.set(r.sheet.anchorX, r.sheet.anchorY);
     body.scale.set(ob ? ob.scale.x : r.sheet.scale, r.sheet.scale);
     node.addChild(body);
     node.position.set(t.x, t.y);
     node.zIndex = t.y;
     this.g.renderer.layers.entities.addChild(node);
-    this.corpses.push({ node, sheet: r.sheet, t: 0 });
+    this.corpses.push({ node, sheet: r.sheet, t: 0, quad, color });
   }
 
   private animateCorpses(dt: number): void {
     for (const c of this.corpses) {
       c.t += dt;
       const p = c.t / RIG_LEN.mort;
+      if (c.quad) {
+        // Chute jusqu'au sol (avant la dissolution cuite dans l'atlas), puis dissolution en shader.
+        c.quad.setFrame(rigFrame(c.sheet, 'mort', Math.min(p / 0.86, 0.335)));
+        const k = Math.max(0, Math.min(1, (p - 0.25) / 0.61));
+        this.vfx.combat.dissolve(c.quad, k, dt, c.node.x, c.node.y, c.quad.scale.x, c.quad.scale.y, c.color);
+        c.node.alpha = 1;
+        continue;
+      }
       (c.node.children[0] as Sprite).texture = rigFrame(c.sheet, 'mort', p / 0.86);
       c.node.alpha = p > 0.75 ? Math.max(0, 1 - (p - 0.75) / 0.12) : 1;
     }

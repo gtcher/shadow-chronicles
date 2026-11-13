@@ -45,8 +45,11 @@ export class TouchControls {
 
   /** Position de repos du joystick (visible et donc découvrable). */
   restPosition(): { x: number; y: number } {
-    const m = 40 + 66 * (this.radius / 52);
-    return { x: this.lefty ? innerWidth - m : m, y: innerHeight - m };
+    const k = this.radius / 52;
+    // Téléphone en portrait : plus près du bord, pour laisser de l'air avec les boutons d'action.
+    const portrait = innerHeight > innerWidth && innerWidth <= 600;
+    const mx = (portrait ? 16 : 40) + 66 * k, my = (portrait ? 28 : 40) + 66 * k;
+    return { x: this.lefty ? innerWidth - mx : mx, y: innerHeight - my };
   }
 
   private rest(): void {

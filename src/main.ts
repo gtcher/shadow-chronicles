@@ -14,6 +14,7 @@ import type { HeroId } from '@game/components';
 import type { GameEvents } from '@game/events';
 import { GameAudio } from '@game/audio';
 import { initPwa } from './pwa';
+import { blockPageZoom } from './ui/noZoom';
 import { linkAudioSettings } from '@game/settingsLink';
 import type { UiRoot } from './ui';
 
@@ -33,7 +34,6 @@ async function boot(): Promise<void> {
   const arena = [...game.assets.keys('tiles-'), ...game.assets.keys('decor-ch')];
   const keys = game.assets.keys().filter((k) => !/^(tiles-|decor-|sprites-|menu-|select-)/.test(k)).concat(arena);
   await game.assets.loadImages(keys, (p) => (bar.style.width = `${Math.round(p * 100)}%`));
-  document.getElementById('loading')!.remove();
 
   const param = new URLSearchParams(location.search).get('hero');
   const hero: HeroId = (['taro', 'mei', 'sena', 'ren'] as const).find((h) => h === param) ?? 'taro';
@@ -53,6 +53,9 @@ async function boot(): Promise<void> {
   if (params.has('hero') || params.has('wave')) await rig;
   if (params.has('demo')) await game.scenes.switch(new (await import('@game/scenes/DemoScene')).DemoScene(hero));
   else ui = await startApp(game, { hero, wave, skipTitle: params.has('hero') || params.has('wave') });
+  // L'écran de chargement reste par-dessus jusqu'à ce que le menu soit prêt (fond peint décodé,
+  // fondu d'entrée joué) : on ne voit plus la run de fond démarrer avant le menu.
+  await revealWhenReady();
   if (params.has('bot')) {
     const skill = Math.max(0, Math.min(1, Number(params.get('bot')) || 0.85));
     const [{ Bot }, { RunScene }] = await Promise.all([import('@game/bot/Bot'), import('@game/scenes/RunScene')]);
@@ -78,6 +81,22 @@ async function boot(): Promise<void> {
   (window as unknown as { scShaders: unknown }).scShaders = shaders;
 }
 
+/** Retire l'écran de chargement une fois le premier écran (menu ou run) prêt à être vu. */
+async function revealWhenReady(): Promise<void> {
+  const loading = document.getElementById('loading');
+  if (!loading) return;
+  const art = document.querySelector<HTMLElement>('#sc-ui .sc-screen .sc-bgart, #sc-ui .sc-screen.sc-bg');
+  const url = art ? /url\(["']?([^"')]+)/.exec(getComputedStyle(art).backgroundImage)?.[1] ?? art.querySelector('img')?.src : undefined;
+  const decoded = url ? (() => { const im = new Image(); im.src = url; return im.decode().catch(() => {}); })() : Promise.resolve();
+  await Promise.race([decoded, new Promise((r) => setTimeout(r, 1500))]);
+  // Fondu d'entrée du menu (~0,25 s) joué sous le voile, puis le voile s'efface.
+  await new Promise((r) => setTimeout(r, 300));
+  loading.style.opacity = '0';
+  loading.style.pointerEvents = 'none';
+  setTimeout(() => loading.remove(), 350);
+}
+
+blockPageZoom(); // pas de zoom de la page sur mobile (pincement, double appui)
 initPwa(); // service worker, installation, mises à jour (production seulement)
 boot().catch((err) => {
   console.error(err);

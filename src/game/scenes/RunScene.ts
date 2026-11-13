@@ -37,7 +37,7 @@ const ARENA: Rect = { x: -1500, y: -1300, w: 3000, h: 2600 };
 const RIG_ON = typeof document !== 'undefined' && typeof location !== 'undefined' && new URLSearchParams(location.search).get('persos') !== 'v1';
 
 /** État d'animation d'un combattant v2. */
-interface RigState { sheet: RigSheet; anim: RigAnim; t: number; hurt: number; atk: number; wind: number; flash: number; hp: number; prevState: string; lastHurt?: number }
+interface RigState { sheet: RigSheet; anim: RigAnim; t: number; hurt: number; atk: number; wind: number; flash: number; hp: number; prevState: string; lastHurt?: number; aim?: number; shotAt?: number }
 
 /** Instantané lisible par l'UI (HUD DOM, mobile) à chaque image. */
 /** Résumé de fin de run (pour l'écran de fin et la sauvegarde). */
@@ -411,7 +411,14 @@ export class RunScene extends Scene implements CombatCtx {
     this.world.add(e, Health, { hp, max: hp });
     this.world.add(e, Foe, this.makeFoe(d, d.dmg * s.dmg * this.mods.foeDmg, d.speed * this.rng.range(0.92, 1.08)));
     const sheet = this.rigSheet(foeOrder(id));
-    const node = this.character(this.g.assets.texture(d.tex), d.h, d.r, sheet ? 0xffffff : d.tint, d.elite ? STATUS_COLORS[d.status ?? 'void'] : undefined, sheet, e);
+    const eliteCol = d.elite ? STATUS_COLORS[d.status ?? 'void'] : undefined;
+    // Élite : un anneau net au sol plutôt qu'une lueur additive (retour mobile : halos baveux en mêlée).
+    const node = this.character(this.g.assets.texture(d.tex), d.h, d.r, sheet ? 0xffffff : d.tint, sheet ? undefined : eliteCol, sheet, e);
+    if (sheet && eliteCol !== undefined) {
+      const ring = new Graphics().ellipse(0, 0, d.r * 1.55, d.r * 0.6).stroke({ width: 2.5, color: eliteCol, alpha: 0.9 });
+      ring.label = 'aura';
+      node.addChildAt(ring, 1);
+    }
     attachView(this.world, this.g.renderer, e, node);
     if (o.portal !== false) {
       this.feedback.ring(x, y, d.r * 2.6, d.elite ? 0xff5ad1 : 0x8a5cff, 0.5, 5);
@@ -440,7 +447,14 @@ export class RunScene extends Scene implements CombatCtx {
     const f = this.world.add(e, Foe, this.makeFoe(base, b.dmg * (1 + 0.25 * (k - 1)) * this.mods.foeDmg, b.speed));
     f.boss = { def: b, phase: 1, transition: 0, next: 2.2, step: 0, spin: 0, edge: 0 };
     const sheet = this.rigSheet(bossOrder(id));
-    attachView(this.world, this.g.renderer, e, this.character(this.g.assets.texture(b.tex), b.h, b.r, sheet ? 0xffffff : b.tint, b.color, sheet, e));
+    const bossNode = this.character(this.g.assets.texture(b.tex), b.h, b.r, sheet ? 0xffffff : b.tint, sheet ? undefined : b.color, sheet, e);
+    if (sheet) {
+      const ring = new Graphics().ellipse(0, 0, b.r * 1.5, b.r * 0.58).stroke({ width: 3.5, color: b.color, alpha: 0.9 })
+        .ellipse(0, 0, b.r * 1.68, b.r * 0.66).stroke({ width: 1.5, color: 0xffffff, alpha: 0.3 });
+      ring.label = 'aura';
+      bossNode.addChildAt(ring, 1);
+    }
+    attachView(this.world, this.g.renderer, e, bossNode);
     this.bossEntity = e;
     this.feedback.ring(x, y, 360, b.color, 1.2, 20);
     this.particles.emit(x, y - 60, { color: b.color, count: 80, speed: 420, size: 1, life: 1.1 });
@@ -935,7 +949,7 @@ export class RunScene extends Scene implements CombatCtx {
     const h = this.world.get(this.player, Hero)!, v = this.world.get(this.player, Velocity)!, hp = this.world.get(this.player, Health)!;
     const blink = h.invuln > 0 && h.dashT <= 0 && !h.rush && Math.floor(time * 20) % 2 === 0;
     this.animateBody(this.player, Math.hypot(v.x, v.y) / h.speed, h.facing, this.over ? 0.35 : blink ? 0.45 : 1, 0, 0, h.dashT > 0 || !!h.rush ? 0x9fe8ff : 0xffffff);
-    this.animateHeroRig(frameDt, Math.hypot(v.x, v.y) / h.speed, hp.hp);
+    this.animateHeroRig(frameDt, Math.hypot(v.x, v.y) / h.speed, hp.hp, h);
     for (const e of this.world.query(Foe, View)) {
       const f = this.world.get(e, Foe)!, ev = this.world.get(e, Velocity)!;
       const windup = f.state === 'windup' || (f.boss?.transition ?? 0) > 0;
@@ -979,8 +993,8 @@ export class RunScene extends Scene implements CombatCtx {
       body.scale.x = facing * k * (1 + 0.1 * sq); body.scale.y = k * (1 - 0.08 * sq);
       body.alpha = alpha;
       body.tint = flash > 0 ? 0xffb0a0 : tint;
-      const aura = node.getChildByLabel('aura') as Sprite | null;
-      if (aura) aura.alpha = 0.3 + 0.12 * Math.sin(this.renderTime * 3 + phase);
+      const aura = node.getChildByLabel('aura');
+      if (aura) aura.alpha = aura instanceof Graphics ? 0.7 + 0.3 * Math.sin(this.renderTime * 3 + phase) : 0.3 + 0.12 * Math.sin(this.renderTime * 3 + phase);
       return;
     }
     const m = Math.min(1, moving);
@@ -1033,14 +1047,22 @@ export class RunScene extends Scene implements CombatCtx {
   private setRigFrame(e: number, r: RigState, anim: RigAnim, p: number): void {
     r.anim = anim;
     const body = (this.world.get(e, View)!.node as Container).getChildByLabel('body') as Sprite;
-    body.texture = rigFrame(r.sheet, anim, p);
+    body.texture = rigFrame(r.sheet, anim, p, r.aim ?? 0);
   }
 
-  private animateHeroRig(dt: number, moving: number, hp: number): void {
+  private animateHeroRig(dt: number, moving: number, hp: number, h: HeroC): void {
     const r = this.rigs.get(this.player);
     if (!r) return;
     if (hp < r.hp - 0.5) r.hurt = RIG_LEN.touche;
     r.hp = hp;
+    if (this.heroAtkSeq !== this.heroAtkSeen) r.shotAt = r.t;
+    if (r.sheet.aims) {
+      // Arc : il suit la visée (vers le haut, le bas ou en biais) tant que le héros tire, puis revient
+      // à l'horizontale en garde. Le sprite est déjà retourné selon h.facing : l'angle est relatif au regard.
+      const firing = r.shotAt !== undefined && r.t - r.shotAt < 1.4;
+      const want = firing ? Math.atan2(h.aimY, Math.max(0.05, Math.abs(h.aimX))) : 0;
+      r.aim = (r.aim ?? 0) + (want - (r.aim ?? 0)) * Math.min(1, dt * 16);
+    }
     if (this.heroAtkSeq !== this.heroAtkSeen) {
       this.heroAtkSeen = this.heroAtkSeq;
       // Le coup part tout de suite en jeu : on démarre juste avant l'impact, l'élan est sauté.

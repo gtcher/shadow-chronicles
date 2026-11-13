@@ -42,6 +42,20 @@ window.sheet = (group, zoom = 1) => {
   }));
   return cv.toDataURL('image/png');
 };
+/** Planche de visée : un héros à arc, lignes = idle / course / attaque, colonnes = angle de visée. */
+window.aimSheet = (key = 'ren', zoom = 2) => {
+  const AIMS = [-1.15, -0.6, 0, 0.6, 1.15], ROWS = [['idle', .25], ['course', .3], ['attaque', .45]];
+  const cellW = 190 * zoom, cellH = 170 * zoom;
+  const cv = document.createElement('canvas'); cv.width = cellW * AIMS.length; cv.height = cellH * ROWS.length;
+  const g = cv.getContext('2d'); bg(g, cv.width, cv.height);
+  ROWS.forEach(([a, p], row) => AIMS.forEach((aim, col) => {
+    RIG.aim = aim; const s = sprite(key, a, p, zoom); RIG.aim = 0;
+    const fx = col * cellW + cellW * .4, fy = row * cellH + cellH * .9;
+    g.drawImage(s.cv, fx - s.ox, fy - s.oy);
+    g.strokeStyle = 'rgba(255,220,120,.5)'; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(fx, fy - 70 * zoom); g.lineTo(fx + Math.cos(aim) * 80 * zoom, fy - 70 * zoom + Math.sin(aim) * 80 * zoom); g.stroke(); g.setLineDash([]);
+  }));
+  return cv.toDataURL('image/png');
+};
 window.labReady = true;
 import { bakeAtlas } from '../../src/game/rig/atlas';
 /** Temps de cuisson (ms) d'un combattant en atlas, comme dans le jeu. */

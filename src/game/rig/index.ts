@@ -21,6 +21,8 @@ export interface RigSheet {
   anchorY: number;
   /** Mémoire de l'atlas (octets, RGBA). */
   bytes: number;
+  /** Armes de tir : images par angle de visée (idle, course, attaque), triées comme `aims.angles`. */
+  aims?: { angles: number[]; frames: Array<Partial<Record<RigAnim, Texture[]>>> };
 }
 
 const hex = (n: number) => '#' + n.toString(16).padStart(6, '0');
@@ -55,10 +57,16 @@ function sheetFrom(src: HTMLCanvasElement | OffscreenCanvas | ImageBitmap, meta:
   const frames = {} as Record<RigAnim, Texture[]>;
   for (const a of RIG_ANIMS) frames[a] = [];
   const orig = new Rectangle(0, 0, meta.fw, meta.fh);
+  const angles = meta.aims ?? [];
+  const aimFrames = angles.map(() => ({} as Partial<Record<RigAnim, Texture[]>>));
   for (const c of meta.cells) {
-    frames[c.anim].push(new Texture({ source, frame: new Rectangle(c.x, c.y, c.w, c.h), orig, trim: new Rectangle(c.tx, c.ty, c.w, c.h) }));
+    const tex = new Texture({ source, frame: new Rectangle(c.x, c.y, c.w, c.h), orig, trim: new Rectangle(c.tx, c.ty, c.w, c.h) });
+    if (c.aim >= 0 && aimFrames[c.aim]) (aimFrames[c.aim][c.anim] ??= []).push(tex);
+    else frames[c.anim].push(tex);
   }
-  return { frames, scale: meta.scale, anchorX: meta.anchorX, anchorY: meta.anchorY, bytes: meta.width * meta.height * 4 };
+  const sheet: RigSheet = { frames, scale: meta.scale, anchorX: meta.anchorX, anchorY: meta.anchorY, bytes: meta.width * meta.height * 4 };
+  if (angles.length) sheet.aims = { angles, frames: aimFrames };
+  return sheet;
 }
 
 /** Cuisson immédiate sur le fil principal (tests, repli). */
@@ -67,9 +75,18 @@ export function bakeRig(def: Record<string, unknown>, heightPx: number, style: '
   return sheetFrom(canvas, meta);
 }
 
+/** Images de l'angle cuit le plus proche de `aim` (radians, négatif = haut), ou null pour l'horizontale. */
+function aimList(sheet: RigSheet, anim: RigAnim, aim: number): Texture[] | null {
+  const a = sheet.aims;
+  if (!a || !aim) return null;
+  let best = -1, gap = Math.abs(aim); // l'horizontale (0) est la référence
+  a.angles.forEach((x, i) => { const d = Math.abs(aim - x); if (d < gap) { gap = d; best = i; } });
+  return best < 0 ? null : a.frames[best][anim] ?? null;
+}
+
 /** Image d'une animation en boucle (idle, course) ou jouée une fois (attaque, touché, mort) à la phase p ∈ [0, 1]. */
-export function rigFrame(sheet: RigSheet, anim: RigAnim, p: number): Texture {
-  const list = sheet.frames[anim];
+export function rigFrame(sheet: RigSheet, anim: RigAnim, p: number, aim = 0): Texture {
+  const list = aimList(sheet, anim, aim) ?? sheet.frames[anim];
   const k = anim === 'idle' || anim === 'course' ? Math.floor((((p % 1) + 1) % 1) * list.length) : Math.min(list.length - 1, Math.floor(Math.max(0, p) * list.length));
   return list[k];
 }

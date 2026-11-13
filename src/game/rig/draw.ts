@@ -6,7 +6,12 @@
  * gardé tel quel (non typé) pour que la planche et le jeu dessinent exactement la même chose.
  * Point d'entrée typé : ./index.ts (cuisson en feuilles de sprites Pixi).
  */
-export const RIG = { now: 0, projectiles: false, loop: 0, phase: 0 };
+export const RIG = { now: 0, projectiles: false, loop: 0, phase: 0, aim: 0 };
+/**
+ * RIG.aim : angle de visée (radians, négatif = vers le haut de l'écran) relatif à la direction du
+ * regard. Les armes de tir (arc) tournent avec lui dans idle, course et attaque : l'atlas cuit une
+ * série d'images par angle (voir AIM_ANGLES dans ./atlas) et le jeu choisit la plus proche.
+ */
 /**
  * Jeu : en cuisson d'une animation en boucle (idle, course), RIG.loop = durée de la boucle (ms) et
  * RIG.phase = avancement 0..1. Les ondulations « au temps » (cape, lueurs, lames en orbite) font
@@ -53,7 +58,7 @@ function basePose(){return{x:0,y:0,lean:0,head:0,sx:1,sy:1,flash:0,dis:0,
 
 function idleArms(c,P,k,s){
   const w=c.weapon;
-  if(w==='bow'){P.arms[1]={u:.5,f:.8};P.arms[0]={u:-.05,f:.3}}
+  if(w==='bow'){P.arms[1]={u:1.42+.03*s,f:1.5+.03*s};P.arms[0]={u:.75,f:2.15}} // garde : arc levé devant, flèche encochée (plus jamais pendu vers le sol)
   else if(w==='staff'){P.arms[1]={u:.25+.04*s,f:1.0};P.arms[0]={u:-.1,f:.2}}
   else if(w==='daggers'){P.arms[1]={u:.55+.05*s,f:1.5};P.arms[0]={u:.35-.05*s,f:1.3}}
   else if(w==='greatsword'||w==='halberd'||w==='scythe'){P.arms[1]={u:.45+.04*s,f:1.25};P.arms[0]={u:.3,f:1.15}}
@@ -79,6 +84,7 @@ function pose(c,anim,p,k){
     P.arms[0]={u:-.75*k*sw,f:-.75*k*sw+.95};
     if(c.weapon==='fists') P.arms[1]={u:.75*k*sw,f:.75*k*sw+.9};
     else if(c.weapon==='daggers') P.arms[1]={u:.45*k*sw-.3,f:.6};
+    else if(c.weapon==='bow'){P.arms[1].u+=.05*k*sw;P.arms[1].f+=.05*k*sw;P.arms[0]={u:.75+.05*k*sw,f:2.15+.05*k*sw}}
     else P.arms[1].u+= .18*k*sw;
     if(c.float){P.y=-8+Math.sin(a)*2;P.lean=.3*k}
     P.capeFlow=18*k+Math.sin(a*2)*4; P.hairLag=.5*k+.12*Math.sin(a*2);
@@ -105,6 +111,11 @@ function pose(c,anim,p,k){
     if(p>.34){const d=(p-.34)/.66;P.fx.push({t:'embers',d})}
     if(p>.88) P.alpha=0;
   }
+  if(c.weapon==='bow'&&RIG.aim&&(anim==='idle'||anim==='course'||anim==='attaque')){
+    // Les deux bras pivotent ensemble vers la cible ; le buste et la tête suivent un peu.
+    const d=-RIG.aim; for(const a of P.arms){a.u+=d;a.f+=d}
+    P.head+=RIG.aim*.3; P.lean+=RIG.aim*.08; P.aimRot=RIG.aim;
+  }
   P.expr=anim==='attaque'?'angry':anim==='touche'?'hurt':anim==='mort'?'ko':'n';
   if(c.motes&&anim!=='mort') P.fx.push({t:'motes'});
   return P;
@@ -115,12 +126,12 @@ function attackPose(c,P,p,k){
   const w=c.weapon;
   if(w==='bow'){
     const draw=eo(clamp(p/.42,0,1)), rel=clamp((p-.42)/.1,0,1), back=clamp((p-.6)/.4,0,1);
-    P.arms[1]={u:1.5,f:1.52};
+    P.arms[1]={u:lerp(1.42,1.5,draw),f:lerp(1.5,1.52,draw)};
     const pull=draw*(1-rel);
-    P.arms[0]={u:lerp(.3,1.3,draw),f:lerp(1.1,2.9,pull)+ (rel>0?-.6*rel:0)};
+    P.arms[0]={u:lerp(.75,1.3,draw),f:lerp(2.15,2.9,pull)+ (rel>0?-.6*rel:0)};
     P.lean=-.06*pull*k; P.x=-2*pull*k;
     if(p>=.42&&p<.62){P.lean=-.14*k*(1-rel*.5);P.x=-4*k}
-    if(back>0){const e=eio(back);P.arms[1]={u:lerp(1.5,.5,e),f:lerp(1.52,.8,e)};P.arms[0]={u:lerp(1.3,-.05,e),f:lerp(2.3,.3,e)}}
+    if(back>0){const e=eio(back);P.arms[1]={u:lerp(1.5,1.42,e),f:lerp(1.52,1.5,e)};P.arms[0]={u:lerp(1.3,.75,e),f:lerp(2.3,2.15,e)}}
     P.drawPull=pull; P.legs=[{t:-.35,s:-.25},{t:.35,s:.15}];
     if(p>=.42&&p<.8) P.fx.push({t:'arrow',d:(p-.42)/.38});
     return;
@@ -195,8 +206,10 @@ function cel(g){ // ombre propre en aplat (bas-droite) + reflet (haut-gauche) + 
 function celB(g){ // ombres à contre-jour : chaque volume reçoit la lumière de dos (liseré net + halo coloré), le cœur reste dans l'ombre
   const t=g.getTransform(), k=Math.hypot(t.a,t.b)||1, c=CUR.c; if(!c) {g.beginPath();return}
   g.save(); g.clip(); g.rect(-5000,-5000,10000,10000); g.fillStyle='#000';
-  g.shadowBlur=4.5*k; g.shadowColor=rgba(c.sig,.42); g.shadowOffsetX=-4.2*k; g.shadowOffsetY=2.6*k; g.fill('evenodd');
-  g.shadowBlur=.7*k; g.shadowColor=rgba(c.rim,.78); g.shadowOffsetX=-1.15*k; g.shadowOffsetY=.85*k; g.fill('evenodd');
+  // Lumière de dos : un reflet coloré court et peu flou (l'ancien halo large de 4,5 u bavait en tache
+  // floue sur petit écran, surtout en mêlée), puis un liseré net, plus fin, qui dessine la forme.
+  g.shadowBlur=1.2*k; g.shadowColor=rgba(c.sig,.3); g.shadowOffsetX=-2.4*k; g.shadowOffsetY=1.5*k; g.fill('evenodd');
+  g.shadowBlur=.35*k; g.shadowColor=rgba(c.rim,.85); g.shadowOffsetX=-1*k; g.shadowOffsetY=.7*k; g.fill('evenodd');
   g.shadowBlur=0; g.shadowColor='rgba(0,0,0,.4)'; g.shadowOffsetX=2.2*k; g.shadowOffsetY=-1.2*k; g.fill('evenodd');
   g.restore(); g.beginPath();}
 
@@ -229,7 +242,8 @@ function grain(){
   GRAIN=cv; return cv;
 }
 
-function glow(g,col,blur,style){if(style==='C'){g.shadowBlur=0;return}g.shadowColor=col;g.shadowBlur=blur}
+// Piste B (ennemis, petits à l'écran) : lueurs resserrées, sinon chaque œil ou liseré devient une auréole floue.
+function glow(g,col,blur,style){if(style==='C'){g.shadowBlur=0;return}g.shadowColor=col;g.shadowBlur=style==='B'?blur*.35:blur}
 function noGlow(g){g.shadowBlur=0}
 
 function drawWeapon(g,c,P,style,which){
@@ -283,7 +297,10 @@ function drawWeapon(g,c,P,style,which){
     g.beginPath();g.arc(2,6,5+2*P.charge,0,TAU);g.fillStyle=style==='B'?c.rim:mix(c.sig,'#ffffff',.25);g.fill();
     g.beginPath();g.arc(2,6,2,0,TAU);g.fillStyle='#fff';g.fill();noGlow(g);
   } else if(w==='bow'){
-    g.rotate(-Math.PI/2+.0);
+    // Repère de la main : l'avant-bras va vers +y. Branches perpendiculaires au bras, flèche dans son
+    // prolongement (pointe vers la cible), corde tirée vers l'épaule. (Avant : tourné d'un quart de tour,
+    // l'arc s'alignait sur le bras et pendait vers le sol.)
+    g.rotate(Math.PI);
     const pull=P.drawPull||0, gold=style==='B'?mix('#c9a24a','#06070c',.7):'#c8962e';
     // arc recourbé : branches épaisses au centre, pointes retournées
     const limbP=(sgn)=>{g.beginPath();g.moveTo(0,-4.5);g.quadraticCurveTo(sgn*13,-16,sgn*23,-7);g.quadraticCurveTo(sgn*26,-3,sgn*28.5,-4.5);g.lineTo(sgn*27.5,-1.6);g.quadraticCurveTo(sgn*24,-1.4,sgn*21.5,-3.4);g.quadraticCurveTo(sgn*12,-10,0,1);g.closePath()};
@@ -747,8 +764,11 @@ function renderSprite(id,c,anim,p,style,s,k){
     og.drawImage(body,0,0);
     og.globalCompositeOperation='source-atop';
   } else if(style==='B'){
-    tint(c.rim); og.shadowColor=c.rim; og.shadowBlur=10*s; og.drawImage(sil,2.2*s,-1.8*s); og.shadowBlur=0;
-    og.globalAlpha=.55; og.drawImage(sil,-1*s,-.6*s); og.globalAlpha=1;
+    // Contour sombre net (lisible sur tous les sols) + liseré de contre-jour court, à peine flouté.
+    // Avant : silhouette floutée sur 10 u → auréole qui bavait et fusionnait en mêlée sur mobile.
+    tint('#05040a'); for(const [dx,dy] of [[-1,0],[1,0],[0,-1],[0,1]]) og.drawImage(sil,dx*1.1*s,dy*1.1*s);
+    tint(mix(c.rim,'#ffffff',.2)); og.shadowColor=rgba(c.rim,.5); og.shadowBlur=2.6*s; og.drawImage(sil,1.8*s,-1.5*s); og.shadowBlur=0;
+    og.globalAlpha=.6; og.drawImage(sil,-1*s,-.6*s); og.globalAlpha=1;
     og.drawImage(body,0,0);
   } else {
     tint('#06050a'); for(const [dx,dy] of [[-1,0],[1,0],[0,-1],[0,1]]) og.drawImage(sil,dx,dy);
@@ -774,17 +794,18 @@ function drawShadowFx(g,c,P,anim,p){
   const top=wolf?-34:-(c.leg+c.torso+c.headR*1.6)+P.y, mid=wolf?-24:-(c.leg+c.torso*.5)+P.y, x0=P.x+(wolf?0:2);
   g.save();
   // aura : halo coloré diffus derrière la silhouette
-  const R=wolf?42:(c.torso+c.leg)*(boss?.95:.8);
+  // Discrète : un voile large et pâle se lisait comme une tache autour de chaque ennemi sur mobile.
+  const R=wolf?30:(c.torso+c.leg)*(boss?.75:.5);
   const au=g.createRadialGradient(x0,mid,R*.15,x0,mid,R);
-  {const a0=(boss?.3:.2)*fade; for(let j=0;j<=8;j++){const t=j/8; au.addColorStop(t,rgba(c.sig,a0*Math.pow(1-t,2.2)))}}
+  {const a0=(boss?.16:.07)*fade; for(let j=0;j<=8;j++){const t=j/8; au.addColorStop(t,rgba(c.sig,a0*Math.pow(1-t,2.2)))}}
   g.fillStyle=au; g.beginPath(); g.arc(x0,mid,R,0,TAU); g.fill();
   // volutes de fumée
-  const n=boss?9:5;
+  const n=boss?7:3;
   for(let i=0;i<n;i++){
     const ph=((cyc(1000/(.55+.08*(i%3)))/TAU)+rnd(i*4.1))%1, life=Math.sin(ph*Math.PI);
     const sx=x0+(rnd(i*7.7)-.5)*(wolf?50:c.sw*1.6), sy=i%2?top+(wolf?6:c.headR):mid-6;
     const yy=sy-ph*(boss?60:38), xx=sx-ph*(10+rnd(i)*10)+Math.sin(ph*5+i)*4, r=(boss?10:6)*(.7+ph*1.4);
-    g.globalAlpha=.32*life*fade;
+    g.globalAlpha=(boss?.28:.18)*life*fade;
     const gr=g.createRadialGradient(xx,yy,0,xx,yy,r);
     gr.addColorStop(0,rgba(mix(c.sig,'#06070c',.7),.8)); gr.addColorStop(.5,rgba(mix(c.sig,'#06070c',.8),.4)); gr.addColorStop(1,'rgba(6,6,12,0)');
     g.fillStyle=gr; g.beginPath(); g.arc(xx,yy,r,0,TAU); g.fill();
@@ -827,8 +848,8 @@ function drawFx(g,c,P,style,s){
       noGlow(g); g.restore();
     }
     if(f.t==='arrow'&&RIG.projectiles){
-      const d=eo(f.d), [sx,sy]=shoulderPos(c,P,1); const x0=sx+c.arm, x=x0+d*170, y=sy+2;
-      g.save(); glow(g,col,12,style); g.globalAlpha=1-clamp((f.d-.8)/.2,0,1);
+      const d=eo(f.d), [sx0,sy0]=shoulderPos(c,P,1); const sx=0, sy=0, x0=sx+c.arm, x=x0+d*170, y=sy+2;
+      g.save(); g.translate(sx0,sy0); g.rotate(P.aimRot||0); glow(g,col,12,style); g.globalAlpha=1-clamp((f.d-.8)/.2,0,1);
       const gr=g.createLinearGradient(x-60,0,x,0); gr.addColorStop(0,rgba(col,0)); gr.addColorStop(1,rgba(mix(col,'#fff',.5),1));
       g.strokeStyle=gr; g.lineWidth=2.4; g.beginPath(); g.moveTo(Math.max(x0,x-60),y); g.lineTo(x,y); g.stroke();
       g.fillStyle='#fff'; g.beginPath(); g.moveTo(x+6,y); g.lineTo(x-2,y-3); g.lineTo(x-2,y+3); g.fill(); noGlow(g); g.restore();

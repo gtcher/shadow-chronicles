@@ -1,4 +1,4 @@
-import { ColorMatrixFilter, Container, Graphics, Sprite, Text, type Texture } from 'pixi.js';
+import { ColorMatrixFilter, Container, Graphics, Sprite, Text, Texture } from 'pixi.js';
 import {
   Collider, Layers, Lifetime, MovementSystem, PhysicsSystem, Rng, Scene, SystemPriority, Transform, Velocity, View,
   World, attachView, installViewCleanup, makeTransform, makeVelocity, syncViews, CameraTarget,
@@ -7,7 +7,7 @@ import {
 import { Health, type HeroId } from '../components';
 import type { GameEvents } from '../events';
 import { makeFxTextures, type FxTextures } from '../textures';
-import { Vfx } from '../vfx';
+import { NormalPiece, Vfx } from '../vfx';
 import type { FrameQuad } from '../vfx/combat/FrameQuad';
 import { Foe, Hero, Shot, type FoeC, type HeroC } from '../combat/components';
 import { BODY_Y, type CombatCtx, type ParticleSink, type FoeHitOpts, type HeroHitOpts } from '../combat/context';
@@ -236,6 +236,8 @@ export class RunScene extends Scene implements CombatCtx {
       kindColors: { ashMage: 0xff7a3a, frostWraith: 0x8bdefb, moonStalker: 0x8bb0ff, voidHerald: 0xa070ff, eclipseReaver: 0xd070c0 },
     });
     (window as unknown as { vfx: Vfx }).vfx = this.vfx;
+    // Tests e2e / essais en console : pièces de normales du tampon d'éclairage.
+    (window as unknown as { scVfx: unknown }).scVfx = { NormalPiece, textureFrom: (c: HTMLCanvasElement) => Texture.from(c) };
     this.arena.attach(this.vfx);
     this.particles = this.vfx.particles;
     this.feedback = new CombatFeedback(renderer.layers.overlay);

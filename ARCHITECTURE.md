@@ -171,6 +171,12 @@ la formule (`gradePixel`) testée dans `tests/grade.test.ts`. `ChapterArena.setC
 - Réglage joueur « Effet cinéma » (`settings.cinematic`) ; le mode confort coupe le grain.
 - `?grade=0` dans l'URL le coupe (captures avant/après). Quand il est actif, l'ancienne vignette sprite est masquée.
 
+### Éclairage avec relief et ombres portées (`src/game/vfx/lighting/`)
+- `ReliefFilter` : filtre de l'étage `scene` (order 0) qui remplace la multiplication à plat par la carte de lumière (qualité medium/high). Direction de la lumière = pente de la carte de lumière (pas de limite de lumières) ; normale = tampon de normales s'il est rempli, sinon devinée à partir de la luminance (pentes bornées pour ne pas « graver » les contours encrés). Réglage en console : `vfx.lighting.tuneRelief({ bump, relief, spec, slant })`.
+- Tampon de normales : `vfx.lighting.normals` (Container en espace monde, dessiné avec la caméra). Y mettre des `NormalPiece(textureNormale, ancreX, ancreY)` aux mêmes transformations que les sprites couleur. Convention OpenGL (G = haut), alpha = couverture ; rotation et `scale.x = -1` gérés par le shader. Un appel de dessin par pièce : réserver au héros, élites, boss.
+- `CastShadows` (`vfx.lighting.shadows`) : silhouettes des enfants de la couche `entities` (sprites de décor ou conteneurs avec un enfant `body`), couchées à l'opposé de la lumière dominante, floutées en une passe. Qualité : `castShadows` 0/1/2 dans `quality.ts`.
+- Test : `tests/e2e/lighting.spec.ts`.
+
 ## Combat (agent Gameplay) — `src/game/combat/` + `scenes/RunScene.ts` + `flow.ts`
 
 | Fichier | Rôle |

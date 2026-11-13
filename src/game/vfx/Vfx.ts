@@ -159,6 +159,8 @@ export class Vfx {
     const p = QUALITY_PRESETS[level];
     this.game.renderer.setResolution(Math.min(window.devicePixelRatio || 1, p.resolution));
     this.lighting.setScale(p.lightScale);
+    this.lighting.setRelief(p.relief && p.lightScale > 0);
+    this.lighting.shadows.setEnabled(p.castShadows > 0, p.castShadows > 1);
     this.bloom.configure(p.bloomScale, p.bloomBlur);
     this.fog.setLayers(p.fogLayers);
     this.particles.max = p.maxParticles;
@@ -178,6 +180,8 @@ export class Vfx {
     this.enabled = on;
     if (on) { this.applyLevel(this.level); this.numbers.enabled = this.settings.damageNumbers; return; }
     this.lighting.setScale(0);
+    this.lighting.setRelief(false);
+    this.lighting.shadows.setEnabled(false);
     this.bloom.configure(0, 0);
     this.fog.setLayers(0);
     this.numbers.enabled = false;

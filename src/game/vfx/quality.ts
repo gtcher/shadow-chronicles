@@ -22,12 +22,16 @@ export interface QualityPreset {
   particleDensity: number;
   /** Étalonnage couleur par chapitre (une passe plein écran : coupé en « low »). */
   grade: boolean;
+  /** Éclairage avec relief (shader) au lieu de la lumière à plat. */
+  relief: boolean;
+  /** Ombres portées : 0 = aucune, 1 = nettes, 2 = douces (floutées). */
+  castShadows: 0 | 1 | 2;
 }
 
 export const QUALITY_PRESETS: Record<QualityLevel, QualityPreset> = {
-  low: { resolution: 1, lightScale: 0.25, bloomScale: 0, bloomBlur: 0, fogLayers: 1, maxParticles: 300, maxDamageNumbers: 24, maxDecals: 40, particleDensity: 0.5, grade: false },
-  medium: { resolution: 1.5, lightScale: 0.35, bloomScale: 0.2, bloomBlur: 4, fogLayers: 1, maxParticles: 700, maxDamageNumbers: 48, maxDecals: 90, particleDensity: 0.8, grade: true },
-  high: { resolution: 2, lightScale: 0.5, bloomScale: 0.25, bloomBlur: 6, fogLayers: 2, maxParticles: 1600, maxDamageNumbers: 80, maxDecals: 160, particleDensity: 1, grade: true },
+  low: { resolution: 1, lightScale: 0.25, bloomScale: 0, bloomBlur: 0, fogLayers: 1, maxParticles: 300, maxDamageNumbers: 24, maxDecals: 40, particleDensity: 0.5, grade: false, relief: false, castShadows: 0 },
+  medium: { resolution: 1.5, lightScale: 0.35, bloomScale: 0.2, bloomBlur: 4, fogLayers: 1, maxParticles: 700, maxDamageNumbers: 48, maxDecals: 90, particleDensity: 0.8, grade: true, relief: true, castShadows: 1 },
+  high: { resolution: 2, lightScale: 0.5, bloomScale: 0.25, bloomBlur: 6, fogLayers: 2, maxParticles: 1600, maxDamageNumbers: 80, maxDecals: 160, particleDensity: 1, grade: true, relief: true, castShadows: 2 },
 };
 
 const ORDER: QualityLevel[] = ['low', 'medium', 'high'];

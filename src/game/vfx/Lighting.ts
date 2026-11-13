@@ -1,5 +1,7 @@
 import { Container, Matrix, RenderTexture, Sprite, type Texture } from 'pixi.js';
 import type { Renderer } from '@engine';
+import { createReliefFilter, type ReliefLight, type ReliefParams } from './lighting/ReliefFilter';
+import { CastShadows } from './lighting/CastShadows';
 
 /**
  * Éclairage dynamique par carte de lumière (« lightmap ») :
@@ -12,6 +14,12 @@ import type { Renderer } from '@engine';
  *    chiffres de dégâts restent donc vifs, même dans le noir (ils « émettent »).
  *
  * Coût : 1 passe de rendu à 25–50 % de la résolution + 1 quad plein écran.
+ *
+ * Relief (qualité medium/high, `setRelief(true)`) : au lieu de multiplier à plat, la carte est lue
+ * par un filtre plein écran sur l'étage `scene` (lighting/ReliefFilter) qui ajoute l'ombrage selon
+ * la direction de la lumière et des reflets sur les arêtes. Les normales viennent du tampon
+ * `normals` (pièces peintes, voir lighting/NormalPiece) ou, à défaut, de la luminance de l'image.
+ * Ombres portées : lighting/CastShadows (`shadows`).
  */
 export interface Light {
   x: number;
@@ -50,6 +58,17 @@ export class Lighting {
   private readonly mat = new Matrix();
   private readonly inv = new Matrix();
   private t = 0;
+  /**
+   * Tampon de normales (espace monde, dessiné avec la caméra) : y ajouter des `NormalPiece`
+   * aux mêmes transformations que les sprites couleur. Vide = relief deviné partout.
+   */
+  readonly normals = new Container({ label: 'normals' });
+  /** Ombres portées des combattants et du décor. */
+  readonly shadows: CastShadows;
+  private rtNormals: RenderTexture | null = null;
+  private normalScale = 0.5;
+  private relief: ReliefLight | null = null;
+  private removeRelief: (() => void) | null = null;
 
   constructor(private readonly renderer: Renderer, private readonly tex: Texture) {
     this.root.addChild(this.lightLayer);
@@ -61,7 +80,31 @@ export class Lighting {
     this.glowOverlay.label = 'lightglow';
     renderer.layers.fx.addChildAt(this.overlay, 0);
     renderer.layers.fx.addChildAt(this.glowOverlay, 1);
+    this.shadows = new CastShadows(renderer.layers.entities, renderer.layers.shadows);
   }
+
+  /**
+   * Active l'éclairage avec relief (filtre sur l'étage `scene`) ; sinon multiplication à plat.
+   * `normalScale` : résolution du tampon de normales (fraction de l'écran).
+   */
+  setRelief(on: boolean, normalScale = 0.5): void {
+    this.normalScale = normalScale;
+    this.rtNormals?.destroy(true); this.rtNormals = null;
+    if (on && !this.relief) {
+      this.relief = createReliefFilter();
+      this.removeRelief = this.renderer.post.add('scene', this.relief.filter, 0);
+    } else if (!on && this.relief) {
+      this.removeRelief?.(); this.removeRelief = null;
+      this.relief.filter.destroy(); this.relief = null;
+    }
+    this.overlay.visible = this.enabled && !this.relief;
+    if (this.relief) this.relief.filter.enabled = this.enabled;
+  }
+
+  get reliefOn(): boolean { return !!this.relief; }
+
+  /** Réglages fins du relief (console : vfx.lighting.tuneRelief({ bump: 9 })). */
+  tuneRelief(p: Partial<ReliefParams>): void { this.relief?.set(p); }
 
   /** Lumière persistante (héros, braseros…). La modifier directement, `remove()` pour l'enlever. */
   add(l: Light): Light { this.lights.add(l); return l; }
@@ -81,6 +124,7 @@ export class Lighting {
     this.scale = s;
     this.enabled = s > 0;
     this.overlay.visible = this.glowOverlay.visible = this.enabled;
+    if (this.relief) { this.overlay.visible = false; this.relief.filter.enabled = this.enabled; }
     this.rt?.destroy(true); this.rt = null;
     this.rtGlow?.destroy(true); this.rtGlow = null;
   }
@@ -128,6 +172,7 @@ export class Lighting {
     };
     for (const l of this.lights) place(l);
     for (const l of this.frameLights) place(l);
+    this.shadows.update(this.lights, this.frameLights);
     this.frameLights.length = 0;
     for (let k = i; k < this.sprites.length; k++) this.sprites[k].visible = false;
 
@@ -151,6 +196,7 @@ export class Lighting {
     const kx = w / this.rt!.width, ky = h / this.rt!.height;
     this.inv.set(this.inv.a * kx, this.inv.b * kx, this.inv.c * ky, this.inv.d * ky, this.inv.tx, this.inv.ty);
     this.overlay.setFromMatrix(this.inv);
+    if (this.relief) this.renderNormals(wt);
     this.glowOverlay.setFromMatrix(this.inv);
     const fx = this.overlay.parent;
     if (fx && (fx.children[0] !== this.overlay || fx.children[1] !== this.glowOverlay)) {
@@ -158,7 +204,26 @@ export class Lighting {
     }
   }
 
+  /** Tampon de normales + liaison des textures du filtre de relief. */
+  private renderNormals(wt: Matrix): void {
+    const relief = this.relief!;
+    if (!this.normals.children.length) { relief.bind(this.rt!.source, null); return; }
+    const r = this.renderer, s = this.normalScale;
+    const tw = Math.max(1, Math.ceil(r.width * s)), th = Math.max(1, Math.ceil(r.height * s));
+    if (!this.rtNormals || this.rtNormals.width !== tw || this.rtNormals.height !== th) {
+      this.rtNormals?.destroy(true);
+      this.rtNormals = RenderTexture.create({ width: tw, height: th, resolution: 1, antialias: false });
+    }
+    this.mat.set(wt.a * s, wt.b * s, wt.c * s, wt.d * s, wt.tx * s, wt.ty * s);
+    r.app.renderer.render({ container: this.normals, target: this.rtNormals, transform: this.mat, clear: true, clearColor: [0, 0, 0, 0] });
+    relief.bind(this.rt!.source, this.rtNormals.source);
+  }
+
   destroy(): void {
+    this.removeRelief?.(); this.relief?.filter.destroy();
+    this.shadows.destroy();
+    this.normals.destroy({ children: true });
+    this.rtNormals?.destroy(true);
     this.overlay.destroy(); this.glowOverlay.destroy();
     this.rtGlow?.destroy(true);
     this.root.destroy({ children: true });

@@ -14,11 +14,12 @@ export const puppetsEnabled = (): boolean =>
   typeof location === 'undefined' || new URLSearchParams(location.search).get('persos') !== 'v2';
 
 /** Ajoute le pantin à la commande si le combattant en a un. */
-function withPuppet(input: BakeInput, castKey: string, hero: boolean): BakeInput {
+function withPuppet(input: BakeInput, castKey: string, hero: boolean, relief = hero): BakeInput {
   if (!puppetsEnabled() || !painterFor(castKey)) return input;
   // Texture plus fine que l'écran : les pièces tournent et le zoom de la caméra varie.
   const ppu = (input.heightPx / 96) * input.res * (hero ? 1.7 : 1.4);
-  const normals = typeof navigator === 'undefined' || (navigator.hardwareConcurrency ?? 4) >= 4;
+  // Normal maps (éclairage en relief) : héros, élites et boss seulement, et pas sur les petites machines.
+  const normals = relief && (typeof navigator === 'undefined' || (navigator.hardwareConcurrency ?? 4) >= 4);
   return { ...input, puppet: { key: castKey, ppu, normals } };
 }
 
@@ -41,14 +42,14 @@ export function foeOrder(id: EnemyId): RigOrder | null {
   const d = ENEMY_DEFS[id];
   const ck = d && (RIG_KEY_BY_FAMILY[d.family] ?? d.id);
   const def = d && rigDef(ck, d.tint);
-  return def ? { key: d.id, input: withPuppet({ def, heightPx: d.h, style: 'B', res: bakeResolution(false) }, ck, false) } : null;
+  return def ? { key: d.id, input: withPuppet({ def, heightPx: d.h, style: 'B', res: bakeResolution(false) }, ck, false, !!d.elite) } : null;
 }
 
 export function bossOrder(id: BossId): RigOrder | null {
   const b = BOSS_DEFS[id];
   const ck = RIG_KEY_BY_BOSS[id] ?? id;
   const def = b && rigDef(ck);
-  return def ? { key: `boss-${id}`, input: withPuppet({ def, heightPx: b.h, style: 'B', res: bakeResolution(false) }, ck, false) } : null;
+  return def ? { key: `boss-${id}`, input: withPuppet({ def, heightPx: b.h, style: 'B', res: bakeResolution(false) }, ck, false, true) } : null;
 }
 
 /** Combattants utiles autour de la vague `wave` : ennemis de cette vague et de la suivante, prochain boss. */

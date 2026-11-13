@@ -167,6 +167,8 @@ export class RunScene extends Scene implements CombatCtx {
   private overT = 0;
   private bossEntity = 0;
   private renderTime = 0;
+  /** Compteur d'images (pose des pantins une image sur deux dans la foule). */
+  private rigTick = 0;
   /** Feuilles cuites par clé (héros, ennemi + teinte, boss). */
   private rigs = new Map<number, RigState>();
   private corpses: Array<{ node: Container; sheet: RigSheet; t: number; quad: FrameQuad | null; color: number; snap?: Texture }> = [];
@@ -948,6 +950,7 @@ export class RunScene extends Scene implements CombatCtx {
 
   render(alpha: number, frameDt: number): void {
     this.renderTime += frameDt;
+    this.rigTick++;
     const time = this.renderTime;
     syncViews(this.world, this.g.camera, alpha);
     this.feedback.update(frameDt);
@@ -1056,8 +1059,15 @@ export class RunScene extends Scene implements CombatCtx {
 
   private setRigFrame(e: number, r: RigState, anim: RigAnim, p: number): void {
     r.anim = anim;
-    const body = (this.world.get(e, View)!.node as Container).getChildByLabel('body');
-    if (body instanceof Puppet) body.set(anim, p, r.aim ?? 0, this.renderTime);
+    const node = this.world.get(e, View)!.node as Container;
+    const body = node.getChildByLabel('body');
+    if (body instanceof Puppet) {
+      // Hors écran : rien à poser. Foule : marche et attente posées une image sur deux (les coups, les
+      // impacts et le héros restent à pleine cadence).
+      if (!node.visible) return;
+      if (e !== this.player && this.rigs.size > 16 && (anim === 'idle' || anim === 'course') && (this.rigTick + e) % 2) return;
+      body.set(anim, p, r.aim ?? 0, this.renderTime);
+    }
     else (body as Sprite).texture = rigFrame(r.sheet, anim, p, r.aim ?? 0);
   }
 

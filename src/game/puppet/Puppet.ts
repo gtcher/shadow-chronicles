@@ -124,6 +124,19 @@ export class Puppet extends Container {
     this.flashOn = flash;
   }
 
+  /** Silhouette figée de la pose courante (traînée de l'esquive) : copies des contours, à teinter. */
+  ghost(): Container {
+    const g = new Container();
+    for (const o of this.outl) {
+      if (!o.visible) continue;
+      const c = new Sprite(o.texture);
+      c.anchor.copyFrom(o.anchor);
+      c.setFromMatrix(o.localTransform);
+      g.addChild(c);
+    }
+    return g;
+  }
+
   /** Recopie la transformation monde du pantin sur sa couche de normales (appelé après le placement). */
   syncNormals(): void {
     if (!this.normals) return;

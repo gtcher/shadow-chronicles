@@ -220,6 +220,21 @@
 #sc-ui.sc-lefty.sc-is-touch .sc-skills { right: auto; left: calc(16px + var(--safe-l)); transform: scaleX(-1); }
 #sc-ui.sc-lefty.sc-is-touch .sc-skill > * { transform: scaleX(-1); }
 #sc-ui.sc-lefty.sc-is-touch .sc-skill .sc-kbd { transform: none; }
+/* Téléphone en portrait : l'arc en largeur venait buter contre le joystick. Les techniques
+   montent au-dessus du bouton d'attaque (arc plus haut, plus étroit), un peu plus petites,
+   et le joystick se repose plus près du bord gauche (TouchControls.restPosition). */
+@media (orientation: portrait) and (max-width: 600px) {
+  #sc-ui.sc-is-touch { --pk: calc(var(--ctl) * 0.92); }
+  #sc-ui.sc-is-touch .sc-skills { right: calc(8px + var(--safe-r)); bottom: calc(10px + var(--safe-b)); width: calc(190px * var(--pk)); height: calc(200px * var(--pk)); }
+  #sc-ui.sc-is-touch .sc-skill { width: calc(52px * var(--pk)); height: calc(52px * var(--pk)); }
+  #sc-ui.sc-is-touch .sc-skill[data-i="0"] { right: calc(14px * var(--pk)); bottom: calc(14px * var(--pk)); width: calc(88px * var(--pk)); height: calc(88px * var(--pk)); }
+  #sc-ui.sc-is-touch .sc-skill[data-i="4"] { right: calc(122px * var(--pk)); bottom: calc(30px * var(--pk)); width: calc(56px * var(--pk)); height: calc(56px * var(--pk)); }
+  #sc-ui.sc-is-touch .sc-skill[data-i="1"] { right: calc(116px * var(--pk)); bottom: calc(97px * var(--pk)); }
+  #sc-ui.sc-is-touch .sc-skill[data-i="2"] { right: calc(68px * var(--pk)); bottom: calc(132px * var(--pk)); }
+  #sc-ui.sc-is-touch .sc-skill[data-i="3"] { right: calc(2px * var(--pk)); bottom: calc(131px * var(--pk)); width: calc(60px * var(--pk)); height: calc(60px * var(--pk)); }
+  #sc-ui.sc-lefty.sc-is-touch .sc-skills { left: calc(8px + var(--safe-l)); }
+}
+@media (orientation: portrait) and (max-width: 359px) { #sc-ui.sc-is-touch { --pk: calc(var(--ctl) * 0.8); } }
 
 /* Mobile : HUD compact */
 @media (max-height: 460px) {
@@ -243,7 +258,7 @@
 .sc-screen { position: absolute; inset: 0; pointer-events: auto; display: grid; place-items: center; overflow: auto;
   padding: calc(16px + var(--safe-t)) calc(16px + var(--safe-r)) calc(16px + var(--safe-b)) calc(16px + var(--safe-l));
   background: radial-gradient(ellipse at 50% 40%, rgba(6, 8, 15, 0.55), rgba(6, 8, 15, 0.92));
-  animation: sc-fade 0.25s; }
+  animation: sc-fade 0.25s; touch-action: pan-x pan-y; }
 .sc-screen.sc-bg { background-size: cover; background-position: center; }
 .sc-screen.sc-bg::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse at 50% 35%, rgba(6, 8, 15, 0.15), rgba(6, 8, 15, 0.9) 75%); pointer-events: none; }
 .sc-screen > * { position: relative; }

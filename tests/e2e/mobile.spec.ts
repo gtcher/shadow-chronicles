@@ -66,3 +66,39 @@ test('mobile en paysage : menu complet sans défiler, héros de front, caméra d
   expect(await page.evaluate(() => (window as unknown as W).game.renderer.height)).toBeCloseTo(915, -1);
   expect(errors).toEqual([]);
 });
+
+test('mobile : pas de zoom de la page, commandes écartées en portrait, menu sans voir la run avant', async ({ page }) => {
+  // Le voile de chargement doit rester tant que le menu n'est pas affiché.
+  await page.addInitScript(() => {
+    (window as unknown as { seen: boolean }).seen = false;
+    const check = () => {
+      const l = document.getElementById('loading');
+      const veiled = !!l && getComputedStyle(l).opacity === '1';
+      if (!veiled && document.querySelector('canvas') && !document.querySelector('[aria-label="Menu principal"]')) (window as unknown as { seen: boolean }).seen = true;
+      if (!document.querySelector('[aria-label="Menu principal"]') || l) requestAnimationFrame(check);
+    };
+    requestAnimationFrame(check);
+  });
+  const errors = await open(page, '');
+  await expect(page.getByRole('dialog', { name: 'Menu principal' })).toBeVisible();
+  expect(await page.evaluate(() => (window as unknown as { seen: boolean }).seen)).toBe(false);
+  expect(await page.locator('meta[name=viewport]').getAttribute('content')).toContain('user-scalable=no');
+  // Deux doigts posés (joystick + attaque) : le déplacement est annulé, donc pas de pincement.
+  const prevented = await page.evaluate(() => {
+    const t = (id: number, x: number) => new Touch({ identifier: id, target: document.body, clientX: x, clientY: 500 });
+    const e = new TouchEvent('touchmove', { touches: [t(1, 60), t(2, 300)], cancelable: true, bubbles: true });
+    document.body.dispatchEvent(e);
+    return e.defaultPrevented;
+  });
+  expect(prevented).toBe(true);
+
+  await page.goto('/?hero=taro&seed=4');
+  await waitRun(page);
+  const gap = await page.evaluate(() => {
+    const stick = document.querySelector('.sc-stick')!.getBoundingClientRect();
+    const left = Math.min(...[...document.querySelectorAll('.sc-is-touch .sc-skill')].map((e) => e.getBoundingClientRect().left));
+    return left - stick.right;
+  });
+  expect(gap).toBeGreaterThan(40);
+  expect(errors).toEqual([]);
+});

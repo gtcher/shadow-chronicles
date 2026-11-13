@@ -146,9 +146,51 @@ uniform vec4 uColor;
 void main() {
   float prof = exp(-vUV.y * vUV.y * 3.2);
   float fade = pow(1.0 - vUV.x, 1.6);
-  float I = prof * fade * vColor.a * 1.6;
+  float I = prof * fade * vColor.a * 2.4;
   float hot = pow(prof, 8.0) * pow(1.0 - vUV.x, 3.0) * vColor.a;
   vec3 col = mix(vColor.rgb, vec3(1.0, 0.97, 0.92), hot * 0.75);
   finalColor = vec4(col * (1.0 - exp(-I * 2.0)), 0.0) * uColor.a;
+}
+`;
+
+/**
+ * Onde de choc plein écran (étage `world` de renderer.post) : jusqu'à 4 anneaux qui poussent l'image
+ * vers l'extérieur, avec une légère séparation des couleurs sur l'anneau (coupée si les flashs le sont).
+ * uWaves[i] = (centre x, centre y en 0..1 écran, rayon en hauteurs d'écran, force).
+ */
+export const SHOCKWAVE_FRAG = /* glsl */ `
+in vec2 vTextureCoord;
+in vec2 vScreen;
+out vec4 finalColor;
+uniform sampler2D uTexture;
+uniform vec4 uInputClamp;
+uniform highp vec4 uInputSize;
+uniform highp vec4 uOutputFrame;
+uniform vec4 uWaves[4];
+uniform float uAspect;
+uniform float uChroma;
+void main() {
+  vec2 off = vec2(0.0);
+  float ring = 0.0;
+  for (int i = 0; i < 4; i++) {
+    vec4 w = uWaves[i];
+    if (w.w <= 0.0) continue;
+    vec2 d = (vScreen - w.xy) * vec2(uAspect, 1.0);
+    float dist = length(d);
+    float x = (dist - w.z) / (0.035 + w.z * 0.12);
+    float g = exp(-x * x);
+    off += (d / max(dist, 1e-4)) * (g * x) * w.w;
+    ring += g * w.w;
+  }
+  off.x /= uAspect;
+  vec2 k = uOutputFrame.zw * uInputSize.zw;
+  vec2 uv = vTextureCoord - off * k;
+  vec2 ca = off * k * uChroma * 0.3;
+  vec4 c = texture(uTexture, clamp(uv, uInputClamp.xy, uInputClamp.zw));
+  if (uChroma > 0.0 && ring > 0.001) {
+    c.r = texture(uTexture, clamp(uv + ca, uInputClamp.xy, uInputClamp.zw)).r;
+    c.b = texture(uTexture, clamp(uv - ca, uInputClamp.xy, uInputClamp.zw)).b;
+  }
+  finalColor = c;
 }
 `;

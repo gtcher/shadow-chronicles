@@ -1,9 +1,9 @@
 import { Container, Geometry, Mesh, RendererType, Shader, UniformGroup, type Sprite, type Texture } from 'pixi.js';
-import type { Renderer } from '@engine';
+import { createFilter, type Renderer } from '@engine';
 import type { FxParticles } from '../FxParticles';
 import type { QualityLevel } from '../quality';
 import { FrameQuad } from './FrameQuad';
-import { BEAM_FRAG, DISSOLVE_FRAG, FLASH_FRAG, SLASH_FRAG, TRAIL_FRAG, TRAIL_VERT } from './shaders';
+import { SHOCKWAVE_FRAG, BEAM_FRAG, DISSOLVE_FRAG, FLASH_FRAG, SLASH_FRAG, TRAIL_FRAG, TRAIL_VERT } from './shaders';
 
 /**
  * Effets de combat dessinés par shaders maison (WebGL) :
@@ -25,6 +25,7 @@ const setRgb = (u: Record<string, unknown>, key: string, c: number) => {
 };
 const smooth = (a: number, b: number, x: number) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
+interface Wave { x: number; y: number; age: number; life: number; radius: number; strength: number }
 interface Swoosh { q: FrameQuad; age: number; life: number; kind: 'slash' | 'beam' }
 interface Trail { node: Container; pts: number[]; r: number; g: number; b: number; width: number; yOff: number; fade: number }
 
@@ -47,14 +48,69 @@ export class CombatFx {
   private tUv!: Float32Array;
   private tCol!: Float32Array;
   private emberAcc = new WeakMap<FrameQuad, number>();
+  private waves: Wave[] = [];
+  private waveFilter: ReturnType<typeof createFilter> | null = null;
+  private removeWave: (() => void) | null = null;
+  private distortOn = true;
 
-  constructor(renderer: Renderer, private readonly particles: FxParticles) {
+  constructor(private readonly renderer: Renderer, private readonly particles: FxParticles) {
     this.on = renderer.app.renderer.type === RendererType.WEBGL && !new URLSearchParams(location.search).has('noshaders');
     renderer.layers.fx.addChild(this.root);
     if (this.on) this.buildTrailMesh();
   }
 
-  setLevel(level: QualityLevel): void { this.trailCap = TRAIL_CAP[level]; }
+  setLevel(level: QualityLevel): void {
+    this.trailCap = TRAIL_CAP[level];
+    // Passe plein écran : réservée aux appareils qui tiennent (la qualité auto baisse d'elle-même sinon).
+    this.distortOn = level !== 'low';
+    if (!this.distortOn) { this.waves = []; this.detachWave(); }
+  }
+
+  // ---------------------------------------------------------------- Onde de choc (distorsion)
+
+  /**
+   * Onde de choc qui déforme l'image autour d'un point du monde.
+   * `radius` : rayon final en pixels monde ; `strength` : poussée (0.01 = discret, 0.03 = boss).
+   */
+  distort(x: number, y: number, radius = 260, strength = 0.018, life = 0.5): void {
+    if (!this.on || !this.distortOn) return;
+    if (this.waves.length >= 4) this.waves.shift();
+    this.waves.push({ x, y, age: 0, life, radius, strength: strength * (this.soft ? 0.5 : 1) });
+    if (!this.waveFilter) {
+      this.waveFilter = createFilter({
+        name: 'shockwave', fragment: SHOCKWAVE_FRAG,
+        uniforms: { uWaves: { value: new Float32Array(16), type: 'vec4<f32>', size: 4 }, uAspect: { value: 1, type: 'f32' }, uChroma: { value: 1, type: 'f32' } },
+      });
+    }
+    if (!this.removeWave) this.removeWave = this.renderer.post.add('world', this.waveFilter, 50);
+  }
+
+  private detachWave(): void { this.removeWave?.(); this.removeWave = null; }
+
+  private updateWaves(dt: number): void {
+    if (!this.waveFilter || !this.removeWave) return;
+    const u = this.waveFilter.resources.u.uniforms;
+    const arr = u.uWaves as Float32Array;
+    arr.fill(0);
+    const r = this.renderer, wt = r.world.worldTransform, zoom = Math.hypot(wt.a, wt.b);
+    let i = 0;
+    for (let k = this.waves.length - 1; k >= 0; k--) {
+      const w = this.waves[k];
+      w.age += dt;
+      const p = w.age / w.life;
+      if (p >= 1) { this.waves.splice(k, 1); continue; }
+      const e = 1 - (1 - p) * (1 - p);
+      arr[i * 4] = (wt.a * w.x + wt.c * w.y + wt.tx) / r.width;
+      arr[i * 4 + 1] = (wt.b * w.x + wt.d * w.y + wt.ty) / r.height;
+      arr[i * 4 + 2] = (w.radius * zoom * e) / r.height;
+      arr[i * 4 + 3] = w.strength * (1 - p) * (1 - p);
+      i++;
+    }
+    u.uAspect = r.width / Math.max(1, r.height);
+    u.uChroma = this.soft ? 0 : 1;
+    if (!this.waves.length) this.detachWave();
+  }
+
 
   // ---------------------------------------------------------------- Mort : dissolution
 
@@ -186,6 +242,7 @@ export class CombatFx {
     const crowd = 1 / (1 + Math.max(0, this.swooshes.length - 3) * 0.15);
     for (const s of this.swooshes) s.q.alpha = crowd;
     this.updateTrails(dt);
+    this.updateWaves(dt);
   }
 
   private buildTrailMesh(): void {
@@ -269,6 +326,8 @@ export class CombatFx {
   }
 
   destroy(): void {
+    this.detachWave();
+    this.waveFilter?.destroy();
     for (const k of ['slash', 'beam'] as const) for (const q of this.pool[k]) q.destroy();
     this.root.destroy({ children: true });
     this.swooshes = []; this.trails = []; this.flashes.clear();

@@ -236,7 +236,7 @@ export class Vfx {
     this.lighting.flash(x, by, crit ? 200 : 120, 0xffb070, crit ? 0.9 : 0.5, 0.1);
     this.numbers.show(x, by - 24, dmg, crit ? 'crit' : 'normal', id);
     this.game.camera.shake(crit ? 0.12 : 0.04);
-    if (crit) this.game.hitStop(0.045);
+    if (crit) { this.game.hitStop(0.045); this.combat.distort(x, by, 90, 0.008, 0.28); }
   }
 
   private onKill(kind: string, x: number, y: number): void {
@@ -312,6 +312,7 @@ export class Vfx {
 
   /** Anneau d'onde de choc au sol (pieds). */
   shockwave(x: number, y: number, color = 0xffffff, size = 1): void {
+    this.combat.distort(x, y - this.bodyY * 0.5, 170 * size, 0.014 * Math.min(2, Math.sqrt(size)), 0.45);
     this.particles.emit(x, y - this.bodyY * 0.5, { shape: 'ring', color, count: 1, speed: 0, size: 0.3 * size, life: 0.4, grow: 7, alpha: 0.9 });
   }
 

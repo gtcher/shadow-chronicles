@@ -491,7 +491,7 @@ export class RunScene extends Scene implements CombatCtx {
     sh.anchor.set(0.5); sh.width = 26 * sz; sh.height = 9 * sz; sh.alpha = 0.6;
     node.addChild(sh, body);
     attachView(this.world, this.g.renderer, e, node, 'entities', 40);
-    this.vfx.combat.trail(node, hero ? o.color : 0xb07bff, (hero ? 9 : 8) * sz, BODY_Y);
+    this.vfx.combat.trail(node, hero ? o.color : 0xb07bff, (hero ? 12 : 10) * sz, BODY_Y);
     return e;
   }
 
@@ -585,6 +585,7 @@ export class RunScene extends Scene implements CombatCtx {
     for (const hz of this.hazards.list) if (hz.side === 'foe') { hz.damage = 0; hz.linger = 0; }
     for (const o of [...this.world.query(Foe)]) if (o !== e) this.killFoe(o, this.world.get(o, Foe)!, this.world.get(o, Transform)!);
     this.feedback.ring(t.x, t.y - 40, 700, b.def.color, 1.4, 26);
+    this.vfx.combat.distort(t.x, t.y - 80, 760, 0.035, 1.1);
     this.particles.emit(t.x, t.y - 80, { color: b.def.color, count: 120, speed: 620, size: 1.1, life: 1.4 });
     this.particles.emit(t.x, t.y - 80, { color: 0xffffff, count: 40, speed: 300, size: 0.7, life: 1.0 });
     this.g.camera.shake(1);

@@ -1,6 +1,9 @@
 import { Rectangle, Texture, type TextureSource } from 'pixi.js';
 import { CAST, mix } from './draw';
 import { BAKE_FRAMES, RIG_ANIMS, RIG_LEN, bakeAtlas, bakeAtlasSteps, type AtlasMeta, type BakeInput, type RigAnim } from './atlas';
+import { bakePuppet, type PuppetMeta } from '../puppet/bake';
+import { makePuppetSheet, type PuppetSheet } from '../puppet/Puppet';
+import type { Def } from '../puppet/bones';
 
 /**
  * Combattants v2 : feuilles de sprites cuites depuis le squelette animé (./draw.ts).
@@ -23,6 +26,27 @@ export interface RigSheet {
   bytes: number;
   /** Armes de tir : images par angle de visée (idle, course, attaque), triées comme `aims.angles`. */
   aims?: { angles: number[]; frames: Array<Partial<Record<RigAnim, Texture[]>>> };
+  /** Pantin peint (pièces animées par os) : remplace les images cuites quand il est présent. */
+  puppet?: PuppetSheet;
+}
+
+/** Feuille d'un pantin peint ; `frames` ne contient qu'une image de repli (le buste). */
+function puppetSheetFrom(input: BakeInput, meta: PuppetMeta, color: HTMLCanvasElement | OffscreenCanvas | ImageBitmap, normal: HTMLCanvasElement | OffscreenCanvas | ImageBitmap | null | undefined): RigSheet {
+  const cs = Texture.from(color as HTMLCanvasElement).source;
+  const ns = normal ? Texture.from(normal as HTMLCanvasElement).source : null;
+  const ps = makePuppetSheet(input.puppet!.key, input.def as unknown as Def, meta, cs, ns, input.heightPx);
+  const frames = {} as Record<RigAnim, Texture[]>;
+  const fallback = ps.tex.torso ?? Object.values(ps.tex)[0];
+  for (const a of RIG_ANIMS) frames[a] = [fallback];
+  return { frames, scale: ps.scale, anchorX: 0.5, anchorY: 1, bytes: ps.bytes, puppet: ps };
+}
+
+function bakeSync(input: BakeInput): RigSheet {
+  if (input.puppet) {
+    const r = bakePuppet({ key: input.puppet.key, def: input.def as unknown as Def, style: input.style, ppu: input.puppet.ppu, normals: input.puppet.normals });
+    if (r) return puppetSheetFrom(input, r.meta, r.color, r.normal);
+  }
+  return bakeRig(input.def, input.heightPx, input.style, input.res);
 }
 
 const hex = (n: number) => '#' + n.toString(16).padStart(6, '0');
@@ -91,6 +115,8 @@ export function rigFrame(sheet: RigSheet, anim: RigAnim, p: number, aim = 0): Te
   return list[k];
 }
 
+interface WorkerReply { id: number; meta?: AtlasMeta; pmeta?: PuppetMeta; bmp?: ImageBitmap; nbmp?: ImageBitmap; error?: string }
+
 interface Job {
   key: string;
   input: BakeInput;
@@ -157,7 +183,7 @@ export class RigBaker {
       while (!r.done) r = job.steps.next();
       sheet = sheetFrom(r.value.canvas, r.value.meta);
     } else {
-      sheet = bakeRig(input.def, input.heightPx, input.style, input.res);
+      sheet = bakeSync(input);
     }
     if (job) this.drop(job);
     this.stats.sync++; this.stats.syncKeys.push(key);
@@ -170,6 +196,7 @@ export class RigBaker {
     for (const [k, s] of this.cache) {
       if (keep.has(k)) continue;
       s.frames.idle[0].source.destroy();
+      s.puppet?.normal?.destroy();
       this.cache.delete(k);
     }
   }
@@ -178,7 +205,10 @@ export class RigBaker {
 
   private store(key: string, sheet: RigSheet): void {
     this.cache.set(key, sheet);
-    try { this.upload?.(sheet.frames.idle[0].source); } catch { /* envoi au premier affichage */ }
+    try {
+      this.upload?.(sheet.frames.idle[0].source);
+      if (sheet.puppet?.normal) this.upload?.(sheet.puppet.normal);
+    } catch { /* envoi au premier affichage */ }
   }
 
   private drop(job: Job): void {
@@ -199,7 +229,7 @@ export class RigBaker {
       const ws: Worker[] = [];
       for (let k = 0; k < n; k++) {
         const w = new Worker(new URL('./bake.worker.ts', import.meta.url), { type: 'module' });
-        w.onmessage = (e: MessageEvent<{ id: number; meta?: AtlasMeta; bmp?: ImageBitmap; error?: string }>) => this.onWorker(e.data);
+        w.onmessage = (e: MessageEvent<WorkerReply>) => this.onWorker(e.data);
         w.onerror = () => this.abandonWorker();
         ws.push(w); this.load.push(0);
       }
@@ -210,9 +240,15 @@ export class RigBaker {
     return this.workers;
   }
 
-  private onWorker(d: { id: number; meta?: AtlasMeta; bmp?: ImageBitmap; error?: string }): void {
+  private onWorker(d: WorkerReply): void {
     const job = this.byWid.get(d.id);
-    if (!job) { d.bmp?.close(); return; } // déjà cuite autrement entre-temps
+    if (!job) { d.bmp?.close(); d.nbmp?.close(); return; } // déjà cuite autrement entre-temps
+    if (d.bmp && d.pmeta) {
+      this.drop(job);
+      this.stats.worker++;
+      this.store(job.key, puppetSheetFrom(job.input, d.pmeta, d.bmp, d.nbmp));
+      return;
+    }
     if (!d.bmp || !d.meta) {
       // Échec dans le worker (ex. OffscreenCanvas incomplet) : on repasse par le fil principal.
       this.abandonWorker();
@@ -244,6 +280,12 @@ export class RigBaker {
     const t0 = performance.now();
     while (this.mainQueue.length && performance.now() - t0 < 5) {
       const job = this.mainQueue[0];
+      if (job.input.puppet) { // pantin : peint d'une traite (quelques dizaines de ms)
+        this.drop(job);
+        this.stats.main++;
+        this.store(job.key, bakeSync(job.input));
+        continue;
+      }
       job.steps ??= bakeAtlasSteps(job.input);
       const r = job.steps.next();
       if (r.done) {

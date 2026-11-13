@@ -4,6 +4,23 @@ import { RIG_KEY_BY_BOSS, RIG_KEY_BY_FAMILY, bakeResolution, rigBaker, rigDef } 
 
 export { rigBaker };
 import type { BakeInput } from './atlas';
+import { painterFor } from '../puppet/cast';
+
+/**
+ * Pantins peints (pièces animées par os) pour les combattants qui en ont un ; `?persos=v2` garde
+ * l'ancien rendu cuit image par image (comparaison).
+ */
+export const puppetsEnabled = (): boolean =>
+  typeof location === 'undefined' || new URLSearchParams(location.search).get('persos') !== 'v2';
+
+/** Ajoute le pantin à la commande si le combattant en a un. */
+function withPuppet(input: BakeInput, castKey: string, hero: boolean): BakeInput {
+  if (!puppetsEnabled() || !painterFor(castKey)) return input;
+  // Texture plus fine que l'écran : les pièces tournent et le zoom de la caméra varie.
+  const ppu = (input.heightPx / 96) * input.res * (hero ? 1.7 : 1.4);
+  const normals = typeof navigator === 'undefined' || (navigator.hardwareConcurrency ?? 4) >= 4;
+  return { ...input, puppet: { key: castKey, ppu, normals } };
+}
 
 /**
  * Qui cuire, et quand : la liste des combattants dont une run aura besoin, pour lancer leur
@@ -17,19 +34,21 @@ export const rigsEnabled = (): boolean =>
 export function heroOrder(id: string): RigOrder | null {
   const d = (HERO_DEFS as Record<string, { height: number }>)[id];
   const def = rigDef(id);
-  return d && def ? { key: id, input: { def, heightPx: d.height, style: 'A', res: bakeResolution(true) } } : null;
+  return d && def ? { key: id, input: withPuppet({ def, heightPx: d.height, style: 'A', res: bakeResolution(true) }, id, true) } : null;
 }
 
 export function foeOrder(id: EnemyId): RigOrder | null {
   const d = ENEMY_DEFS[id];
-  const def = d && rigDef(RIG_KEY_BY_FAMILY[d.family] ?? d.id, d.tint);
-  return def ? { key: d.id, input: { def, heightPx: d.h, style: 'B', res: bakeResolution(false) } } : null;
+  const ck = d && (RIG_KEY_BY_FAMILY[d.family] ?? d.id);
+  const def = d && rigDef(ck, d.tint);
+  return def ? { key: d.id, input: withPuppet({ def, heightPx: d.h, style: 'B', res: bakeResolution(false) }, ck, false) } : null;
 }
 
 export function bossOrder(id: BossId): RigOrder | null {
   const b = BOSS_DEFS[id];
-  const def = b && rigDef(RIG_KEY_BY_BOSS[id] ?? id);
-  return def ? { key: `boss-${id}`, input: { def, heightPx: b.h, style: 'B', res: bakeResolution(false) } } : null;
+  const ck = RIG_KEY_BY_BOSS[id] ?? id;
+  const def = b && rigDef(ck);
+  return def ? { key: `boss-${id}`, input: withPuppet({ def, heightPx: b.h, style: 'B', res: bakeResolution(false) }, ck, false) } : null;
 }
 
 /** Combattants utiles autour de la vague `wave` : ennemis de cette vague et de la suivante, prochain boss. */

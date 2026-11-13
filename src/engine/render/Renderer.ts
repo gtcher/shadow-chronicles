@@ -1,5 +1,6 @@
 import { Application, Container, type ApplicationOptions } from 'pixi.js';
 import type { Camera } from '../camera/Camera';
+import { PostStack } from './shaders/PostStack';
 
 /**
  * Couches de rendu, de l'arrière vers l'avant.
@@ -7,6 +8,8 @@ import type { Camera } from '../camera/Camera';
  */
 export const WORLD_LAYERS = ['background', 'ground', 'decals', 'shadows', 'entities', 'fx', 'overlay'] as const;
 export const SCREEN_LAYERS = ['screenFx', 'hud', 'debug'] as const;
+/** Couches « scène » : décor et combattants, éclairés par l'étage `post.scene`. */
+const SCENE_LAYERS: readonly WorldLayer[] = ['background', 'ground', 'decals', 'shadows', 'entities'];
 export type WorldLayer = (typeof WORLD_LAYERS)[number];
 export type ScreenLayer = (typeof SCREEN_LAYERS)[number];
 
@@ -15,6 +18,17 @@ export class Renderer {
   /** Conteneur transformé par la caméra. */
   readonly world = new Container({ label: 'world' });
   readonly screen = new Container({ label: 'screen' });
+  /**
+   * Arbre d'affichage :
+   *   stage ─┬─ frame ─┬─ world ─┬─ scene ─ background, ground, decals, shadows, entities
+   *          │         │         └─ fx, overlay
+   *          │         └─ screenFx (bloom, vignette, flashs)
+   *          └─ screen ─ hud, debug
+   * `post` pose des filtres plein écran sur scene / frame / stage (voir shaders/PostStack).
+   */
+  readonly scene = new Container({ label: 'scene' });
+  readonly frame = new Container({ label: 'frame' });
+  readonly post = new PostStack({ scene: this.scene, world: this.frame, screen: this.app.stage });
   readonly layers = {} as Record<WorldLayer | ScreenLayer, Container>;
   private resizeHandlers: Array<(w: number, h: number) => void> = [];
   private beforeRender: Array<() => void> = [];
@@ -30,6 +44,8 @@ export class Renderer {
       resolution: Math.min(window.devicePixelRatio || 1, 2),
       autoStart: false, // c'est notre FixedLoop qui pilote le rendu
       powerPreference: 'high-performance',
+      // Les shaders du jeu sont écrits en GLSL (src/engine/render/shaders) : WebGL partout.
+      preference: 'webgl',
       ...opts,
     });
     this.app.ticker.stop();
@@ -42,11 +58,17 @@ export class Renderer {
     addEventListener('orientationchange', late);
     window.visualViewport?.addEventListener('resize', late);
 
-    for (const name of WORLD_LAYERS) this.world.addChild((this.layers[name] = new Container({ label: name })));
-    for (const name of SCREEN_LAYERS) this.screen.addChild((this.layers[name] = new Container({ label: name })));
+    this.world.addChild(this.scene);
+    for (const name of WORLD_LAYERS) {
+      const layer = (this.layers[name] = new Container({ label: name }));
+      (SCENE_LAYERS.includes(name) ? this.scene : this.world).addChild(layer);
+    }
+    for (const name of SCREEN_LAYERS) this.layers[name] = new Container({ label: name });
+    this.frame.addChild(this.world, this.layers.screenFx);
+    this.screen.addChild(this.layers.hud, this.layers.debug);
     // Tri par profondeur (y) pour l'effet de perspective vue de dessus.
     this.layers.entities.sortableChildren = true;
-    this.app.stage.addChild(this.world, this.screen);
+    this.app.stage.addChild(this.frame, this.screen);
   }
 
   get width(): number { return this.app.screen.width; }

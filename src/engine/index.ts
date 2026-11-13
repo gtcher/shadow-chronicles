@@ -16,3 +16,4 @@ export { AssetStore } from './assets/AssetStore';
 export { Renderer, WORLD_LAYERS, SCREEN_LAYERS, type WorldLayer, type ScreenLayer } from './render/Renderer';
 export { View, attachView, installViewCleanup, syncViews, type ViewC } from './render/View';
 export { Scene, SceneManager } from './scene/Scene';
+export { createFilter, GLSL, FILTER_VERTEX, PostStack, type PostStage, type CreateFilterOptions } from './render/shaders';

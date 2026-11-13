@@ -99,6 +99,13 @@ Reconfiguration : modifier `input.bindings` (à sauvegarder par l'agent sauvegar
 Couches monde (suivent la caméra) : `background, ground, decals, shadows, entities (triée par y), fx, overlay`.
 Couches écran : `screenFx, hud, debug`. Ajouter un visuel à une entité : `attachView(world, renderer, e, node, 'entities')`.
 
+### Shaders et post-traitement (`src/engine/render/shaders/`)
+- Arbre : `stage → frame → world → scene` (background → entities) puis `fx`, `overlay` ; `frame` contient aussi `screenFx` ; `screen` (hud, debug) est hors de `frame`.
+- `renderer.post.add(stage, filter, order)` pose un filtre plein écran et renvoie sa fonction de retrait. Étages : `scene` (décor + combattants, avant les effets ; éclairage = order 0), `world` (monde + bloom/vignette, sans le HUD ; distorsions ≈ 50, étalonnage ≈ 100), `screen` (tout).
+- `createFilter({ name, fragment, uniforms, resources })` : GLSL ES 3 uniquement (le renderer est forcé en WebGL). Le vertex commun fournit `vTextureCoord` et `vScreen` (0..1 sur l'écran, haut-gauche = 0). Uniforms dans `filter.resources.u.uniforms`.
+- Morceaux communs : `GLSL.luma`, `GLSL.premul` (Pixi est en alpha prémultiplié), `GLSL.hash` (bruit), `GLSL.tonemap`.
+- Test : `tests/e2e/shaders.spec.ts` vérifie que chaque étage couvre l'écran. Console : `window.scShaders`.
+
 ## Événements (`src/game/events.ts`)
 
 `enemy:hit`, `enemy:killed`, `player:hurt`, `player:dash`, `player:shoot`, plus `game:pause`, `game:resize`.

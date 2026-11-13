@@ -65,6 +65,7 @@ export class Puppet extends Container {
     // ennemis (piste B) : contour sombre teinté de leur lueur.
     this.outlineTint = hexNum(d.group === 'h' ? mix(String(d.rim ?? '#ffffff'), '#0b0a12', 0.15) : mix(String(d.rim ?? '#000000'), '#06070c', 0.82));
     this.outlineAlpha = d.group === 'h' ? 0.7 : OUTLINE_ALPHA;
+    this.fx.blendMode = 'add';
     this.addChild(this.back, this.front, this.fx);
     this.set('idle', 0);
   }
@@ -107,8 +108,16 @@ export class Puppet extends Container {
         if (np && nt) { (np as unknown as { texture: Texture }).texture = nt; place(np, m, cell); np.visible = true; }
       }
       if (it.id === 'weapon' && c.weapon === 'bow') this.bowString(g, it.m, P.drawPull ?? 0);
+      if (it.id === 'weapon' && (c.weapon === 'staff' || c.weapon === 'orb') && (P.charge ?? 0) > 0.02) {
+        // Charge du sort : la gemme s'embrase (sommet du bâton, ou orbe dans la main).
+        const [x, y] = c.weapon === 'staff' ? [it.m[0] * 43 + it.m[4], it.m[1] * 43 + it.m[5]] : [it.m[4] + 2, it.m[5] + 6];
+        const col = hexNum(String(c.group === 'h' ? c.sig : c.rim ?? '#ffffff'));
+        g.circle(x, y, 3 + 7 * P.charge).fill({ color: col, alpha: 0.35 * P.charge });
+        g.circle(x, y, 1.5 + 2.5 * P.charge).fill({ color: 0xffffff, alpha: 0.8 * P.charge });
+      }
       n++;
     }
+    drawFx(g, c, P, now);
     for (let i = n; i < this.parts.length; i++) { this.parts[i].visible = false; this.outl[i].visible = false; }
     for (let i = n; i < this.npieces.length; i++) this.npieces[i].visible = false;
     this.front.alpha = this.back.alpha = fade;
@@ -152,6 +161,66 @@ export class Puppet extends Container {
 
 /** Place un objet Pixi selon une matrice 2D (avec décomposition rotation / échelle / biais). */
 const TMP = new Matrix();
+const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
+const eo = (t: number) => 1 - Math.pow(1 - t, 3);
+const rnd = (i: number) => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+
+/**
+ * Effets liés à la pose (rig/draw.ts drawFx), tracés en direct en mode additif dans le repère du pantin :
+ * traînée de l'arme, onde d'impact, anneau d'incantation, lucioles (Sena), braises de la mort.
+ */
+function drawFx(g: Graphics, c: Def, P: ReturnType<typeof poseOf>, now: number): void {
+  const fx = (P as unknown as { fx?: Array<Record<string, number | string | boolean>> }).fx;
+  if (!fx?.length) return;
+  const col = hexNum(String(c.group === 'h' ? c.sig : c.rim ?? '#ffffff'));
+  const T = c.torso, L = c.leg;
+  const shoulder = (i: number): [number, number] => {
+    const lean = P.lean + c.hunch, sx = i ? c.sw * 0.5 * 0.55 : -c.sw * 0.5 * 0.45, sy = -T + c.aw * 0.4;
+    const ca = Math.cos(lean), sa = Math.sin(lean);
+    return [P.x + sx * ca - sy * sa, -L + P.y + sx * sa + sy * ca];
+  };
+  for (const f of fx) {
+    if (f.t === 'smear') {
+      const [sx, sy] = shoulder(Number(f.arm));
+      const w = c.weapon;
+      const wl = w === 'greatsword' ? 56 : w === 'scythe' || w === 'halberd' ? 60 : w === 'fists' ? 6 : w === 'daggers' ? 18 : 36;
+      const R = c.arm + wl * 0.85, a0 = Number(f.a0), a1 = Math.max(a0 + 0.1, Number(f.a1)), N = 16;
+      const pts: number[] = [];
+      for (let i = 0; i <= N; i++) { const a = a0 + (a1 - a0) * i / N; pts.push(sx + Math.sin(a) * R, sy + Math.cos(a) * R); }
+      for (let i = N; i >= 0; i--) { const a = a0 + (a1 - a0) * i / N, r = R - (wl * 0.55 + 4) * (i / N); pts.push(sx + Math.sin(a) * r, sy + Math.cos(a) * r); }
+      const al = clamp(Number(f.al), 0, 1);
+      g.poly(pts).fill({ color: col, alpha: 0.45 * al });
+      const edge: number[] = [];
+      for (let i = 0; i <= N; i++) { const a = a0 + (a1 - a0) * i / N; edge.push(sx + Math.sin(a) * R, sy + Math.cos(a) * R); }
+      g.poly(edge, false).stroke({ width: 1.6, color: 0xffffff, alpha: 0.7 * al });
+    } else if (f.t === 'impact') {
+      const d = Number(f.d), x = P.x + c.arm + 30, y = f.ground ? 0 : -c.leg - 10, e = eo(d);
+      if (f.ground) g.ellipse(x, y, 10 + 50 * e, 3 + 12 * e); else g.circle(x, y, 6 + 24 * e);
+      g.stroke({ width: 3 * (1 - d) + 0.5, color: col, alpha: 1 - d });
+      for (let i = 0; i < 7; i++) {
+        const a = -Math.PI * 0.1 - rnd(i + 3) * Math.PI * 0.8, r = 8 + 40 * e * (0.5 + rnd(i));
+        g.rect(x + Math.cos(a) * r, y + Math.sin(a) * r * 0.8, 2.2, 2.2).fill({ color: i % 2 ? 0xffffff : col, alpha: 1 - d });
+      }
+    } else if (f.t === 'ring') {
+      const [sx, sy] = shoulder(1), d = Number(f.d), r = 6 + 26 * eo(d);
+      g.circle(sx + c.arm * 0.6, sy - 20, r).stroke({ width: 2, color: col, alpha: 1 - d });
+    } else if (f.t === 'motes') {
+      for (let i = 0; i < 4; i++) {
+        const a = now * (1 + i * 0.15) + i * 1.7;
+        const x = Math.cos(a) * (26 + i * 3), y = -62 + Math.sin(a * 1.3) * 16 - i * 4;
+        g.circle(x, y, 1.1 + (i % 2) * 0.8).fill({ color: i % 2 ? 0xffffff : col, alpha: 0.5 + 0.4 * Math.sin(a * 2) });
+      }
+    } else if (f.t === 'embers') {
+      const fd = Number(f.d);
+      for (let i = 0; i < 26; i++) {
+        const st = rnd(i * 5) * 0.4, d = clamp((fd - st) / (1 - st), 0, 1);
+        if (d <= 0 || d >= 1) continue;
+        const x = P.x + (rnd(i * 11) - 0.5) * 40 + Math.sin(d * 6 + i) * 6, y = -10 - rnd(i * 13) * 50 - d * 70 * (0.6 + rnd(i)), r = 1.2 + rnd(i * 17) * 2;
+        g.rect(x - r / 2, y - r / 2, r, r).fill({ color: i % 3 ? col : 0xffffff, alpha: 1 - d });
+      }
+    }
+  }
+}
 function place(o: Container, m: M, cell?: { ax: number; ay: number; w: number; h: number }): void {
   // Pièce de normales (Mesh sans ancre) : l'ancre est appliquée dans la matrice.
   const t: M = cell ? mul(m, [1, 0, 0, 1, -cell.ax * cell.w, -cell.ay * cell.h]) : m;

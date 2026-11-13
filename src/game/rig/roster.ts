@@ -7,11 +7,13 @@ import type { BakeInput } from './atlas';
 import { painterFor } from '../puppet/cast';
 
 /**
- * Pantins peints (pièces animées par os) pour les combattants qui en ont un ; `?persos=v2` garde
- * l'ancien rendu cuit image par image (comparaison).
+ * Pantins peints (pièces animées par os) pour les combattants qui en ont un, seulement avec `?persos=pantins`
+ * (essai) ; par défaut, combattants v3 cuits image par image.
  */
+// Rendu par défaut : combattants v3 validés par Gabriel (dessin cuit image par image). Les pantins peints
+// restent en essai derrière `?persos=pantins` tant que leur design n'est pas au niveau de la v3.
 export const puppetsEnabled = (): boolean =>
-  typeof location === 'undefined' || new URLSearchParams(location.search).get('persos') !== 'v2';
+  typeof location !== 'undefined' && new URLSearchParams(location.search).get('persos') === 'pantins';
 
 /** Ajoute le pantin à la commande si le combattant en a un. */
 function withPuppet(input: BakeInput, castKey: string, hero: boolean, relief = hero): BakeInput {

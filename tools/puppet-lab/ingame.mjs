@@ -1,4 +1,4 @@
-/** node tools/puppet-lab/ingame.mjs <dossier> [héros…] : captures en combat, mobile (jeu servi par vite preview :4173). `?persos=v2` = avant. */
+/** node tools/puppet-lab/ingame.mjs <dossier> [héros…] : captures en combat, mobile (jeu servi par vite preview :4173). `?persos=pantins` = pantins peints (essai). */
 import { chromium, devices } from 'playwright';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -6,7 +6,7 @@ const out = resolve(process.argv[2] ?? 'reports/puppet-lab'); mkdirSync(out, { r
 const heroes = process.argv.slice(3).length ? process.argv.slice(3) : ['ren'];
 const browser = await chromium.launch();
 try {
-  for (const hero of heroes) for (const [tag, q] of [['avant', '&persos=v2'], ['apres', '']]) {
+  for (const hero of heroes) for (const [tag, q] of [['v3', ''], ['pantins', '&persos=pantins']]) {
     const ctx = await browser.newContext({ ...devices['Pixel 7'] });
     const page = await ctx.newPage();
     page.on('pageerror', (e) => console.error('page:', e.message));

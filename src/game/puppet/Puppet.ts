@@ -1,5 +1,5 @@
 import { Container, Graphics, Matrix, Rectangle, Sprite, Texture, type TextureSource } from 'pixi.js';
-import { solveHumanoid, mul, type Def, type M } from './bones';
+import { solvePuppet, poseAnimFor, mul, type Def, type M } from './bones';
 import { poseOf, type PuppetAnim } from './pose';
 import type { PuppetMeta } from './bake';
 import { mix } from './kit';
@@ -31,7 +31,7 @@ export function makePuppetSheet(key: string, def: Def, meta: PuppetMeta, color: 
     tex[id] = new Texture({ source: color, frame: new Rectangle(c.x, c.y, c.w, c.h) });
     if (normal && !id.endsWith('~o')) ntex[id] = new Texture({ source: normal, frame: new Rectangle(c.x, c.y, c.w, c.h) });
   }
-  return { key, def, meta, color, normal, tex, ntex, scale: heightPx / 96, bytes: meta.width * meta.height * 4 * (normal ? 2 : 1) };
+  return { key, def, meta, color, normal, tex, ntex, scale: heightPx / (def.kind === 'w' ? 48 : 96), bytes: meta.width * meta.height * 4 * (normal ? 2 : 1) };
 }
 
 const OUTLINE_ALPHA = 0.92;
@@ -82,8 +82,8 @@ export class Puppet extends Container {
   set(anim: PuppetAnim, p: number, aim = 0, now = performance.now() / 1000): void {
     this.anim = anim;
     const s = this.sheet, c = s.def;
-    const P = poseOf(c, anim, p, aim, now);
-    const placed = solveHumanoid(c, P, now);
+    const P = poseOf(c, poseAnimFor(c, anim), p, aim, now);
+    const placed = solvePuppet(c, P, anim, p, now);
     const k = 1 / s.meta.ppu;
     const flash = (P.flash ?? 0) > 0;
     const fade = (P.alpha ?? 1) * (1 - (P.dis ?? 0) * 0.9);

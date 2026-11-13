@@ -95,8 +95,32 @@ export function solveHumanoid(c: Def, P: Pose, now: number): Placed[] {
     } else push('weapon', hand, far);
   };
 
+  // Éclats de glace (matriarche) : 5 en orbite autour du buste ; la moitié proche passe devant.
+  const shards = (near: boolean) => {
+    for (let i = 0; i < 5; i++) {
+      const a = now * 0.8 + i * Math.PI * 0.4;
+      if ((Math.sin(a) > 0) !== near) continue;
+      const m = R(T(hip, Math.cos(a) * 30 - 4, -Tt * 0.6 + Math.sin(a * 2) * 4 - i * 3), a * 0.3 + 0.4);
+      push('shard', near ? S(m, 1.15) : m, near ? undefined : FAR_TINT);
+    }
+  };
+  // Lames en orbite (arbitre) : 3 lames au-dessus des épaules, derrière le corps (comme l'ancien dessin :
+  // devant, elles passaient sur le masque).
+  const blades = () => {
+    for (let i = 0; i < 3; i++) {
+      const a = now * 1.2 + i * Math.PI * 2 / 3;
+      push('blade', R(T(body, Math.cos(a) * 24 - 6, -Tt - 6 + Math.sin(a) * 8), a * 0.5 + Math.PI / 2), Math.sin(a) < 0 ? FAR_TINT : undefined);
+    }
+  };
+  // Halo (arbitre) : centré derrière la tête, ne tourne pas avec elle.
+  const haloM = (): M => T(torso, 2 - c.headR * 0.4, -Tt - 3 - c.headR * 0.95 - c.headR * 0.4);
+
   // Cape (derrière tout), balancée par le mouvement.
   if (c.cape) push('cape', R(T(R(body, lean * 0.75), 0, -Tt), Math.max(-0.1, (flow - 4) * 0.022)));
+  // Accessoires de boss (ajouts) : éclats en orbite côté éloigné, lames en orbite, halo.
+  if (c.shards) shards(false);
+  if (c.weapon === 'blades') blades();
+  if (c.halo) push('halo', haloM());
   arm(0);
   leg(0);
   const robeLegs = !!c.robe && !c.float;
@@ -122,6 +146,7 @@ export function solveHumanoid(c: Def, P: Pose, now: number): Placed[] {
   if (c.pauldron) push('pauldron', R(T(torso, shX * 0.55, -Tt + 3), -0.3 - (P.arms[1].u - 0.4) * 0.25));
   if (c.shield && P.hold) push('shield', T(torso, -c.sw * 0.1, -Tt * 0.45));
   arm(1);
+  if (c.shards) shards(true);
   return out;
 }
 
@@ -135,4 +160,68 @@ export function anchors(c: Def, P: Pose): { hand: [number, number]; head: [numbe
   const up = R(T(torso, c.sw * 0.5 * 0.55, -Tt + c.aw * 0.4), -a.u);
   const hand = T(R(T(up, 0, c.arm / 2), -(a.f - a.u)), 0, c.arm / 2);
   return { hand: apply(hand, 0, 0), head: apply(torso, 2, -Tt - 3 - c.headR * 0.95), chest: apply(torso, c.sw * 0.1, -Tt * 0.6) };
+}
+
+const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+const eo = (t: number) => 1 - Math.pow(1 - t, 3);
+const eio = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+/**
+ * Pièces du loup (quadrupède), dans l'ordre de dessin. Reprend drawWolf (rig/draw.ts) : la pose
+ * humanoïde ne sert qu'au flash, à la dissolution et à l'alpha ; le loup calcule lui-même ses angles
+ * (corps, tête, mâchoire, pattes) à partir de l'animation et de sa phase. Comme renderSprite, P doit
+ * venir de poseOf(c, poseAnimFor(c, anim), …) (l'attaque part d'une base d'idle).
+ *
+ * Pièces : wLegFU / wLegFL (patte avant : bras, avant-bras + patte), wLegBU / wLegBL (arrière), wTail,
+ * wBody (corps + crinière), wHead, wMaw (lueur de la gueule, ouverte seulement), wJaw.
+ */
+export function solveWolf(c: Def, P: Pose, anim: string, p: number, _now = 0): Placed[] {
+  void c; void P;
+  const out: Placed[] = [];
+  const TW = Math.PI * 2;
+  let bodyY = -26, x = 0, tilt = 0, headA = 0, jaw = 0, tail = Math.sin(p * TW) * 0.2;
+  let legA = [0, 0, 0, 0];
+  const legB = [0, 0, 0, 0];
+  if (anim === 'idle') { bodyY += Math.sin(p * TW) * 0.8; headA = Math.sin(p * TW) * 0.05; jaw = 0.05; }
+  if (anim === 'course') {
+    const a = p * TW;
+    for (let i = 0; i < 4; i++) { const ph = a + (i < 2 ? 0 : Math.PI * 0.9) + (i % 2 ? 0.5 : 0); legA[i] = 0.8 * Math.sin(ph); legB[i] = -0.6 * Math.max(0, Math.cos(ph)); }
+    bodyY += -3 * Math.abs(Math.sin(a)); tilt = 0.08 * Math.sin(a); tail = 0.5 + 0.2 * Math.sin(a * 2);
+  }
+  if (anim === 'attaque') {
+    const w = eo(clamp01(p / 0.35)), h = eo(clamp01((p - 0.35) / 0.15)), b = eio(clamp01((p - 0.65) / 0.35));
+    bodyY += 6 * w * (1 - h) - 6 * h * (1 - b); tilt = (0.25 * w - 0.4 * h) * (1 - b); x += (-6 * w + 22 * h) * (1 - b);
+    jaw = (0.2 * w + 0.6 * h) * (1 - b); headA = (-0.2 * w + 0.25 * h) * (1 - b);
+    legA = [(0.5 * h - 0.3 * w) * (1 - b), (0.7 * h - 0.2 * w) * (1 - b), (-0.6 * h + 0.4 * w) * (1 - b), (-0.4 * h + 0.3 * w) * (1 - b)];
+  }
+  if (anim === 'touche') { const q = 1 - p; x -= 10 * q; tilt = 0.25 * q; headA = -0.4 * q; }
+  if (anim === 'mort') { const q = eo(clamp01(p / 0.42)); bodyY += 16 * q; tilt = -0.2 * q; headA = 0.5 * q; legA = [1.1 * q, 0.9 * q, -1 * q, -1.2 * q]; }
+  const sx = anim === 'touche' ? 1 + 0.07 * (1 - p) : 1;
+  const root = S(T(I(), x, 0), sx, 2 - sx);
+  const push = (id: string, m: M, tint?: number) => out.push({ id, m, tint });
+  const leg = (lx: number, i: number, far: boolean) => {
+    const front = i < 2, tint = far ? FAR_TINT : undefined;
+    const up = R(T(root, lx, bodyY + 4), -legA[i]);
+    push(front ? 'wLegFU' : 'wLegBU', up, tint);
+    push(front ? 'wLegFL' : 'wLegBL', R(T(up, 0, 12), -legB[i] + (front ? 0.2 : -0.3)), tint);
+  };
+  leg(-18, 2, true); leg(14, 0, true);
+  const body = R(T(root, 0, bodyY), tilt);
+  push('wTail', R(T(body, -24, -5), -1.1 - tail));
+  push('wBody', body);
+  const head = R(T(body, 22, -12), headA);
+  push('wHead', head);
+  const jm = R(T(head, 9, 3), jaw);
+  if (jaw > 0.12) push('wMaw', jm);
+  push('wJaw', jm);
+  leg(-12, 3, false); leg(20, 1, false);
+  return out;
+}
+
+/** Animation de pose à demander à poseOf : le loup attaque sur une base d'idle (comme renderSprite). */
+export const poseAnimFor = <A extends string>(c: Def, anim: A): A => (c.kind === 'w' && anim === 'attaque' ? 'idle' as A : anim);
+
+/** Pièces d'un combattant quelconque (humanoïde ou loup). */
+export function solvePuppet(c: Def, P: Pose, anim: string, p: number, now: number): Placed[] {
+  return c.kind === 'w' ? solveWolf(c, P, anim, p, now) : solveHumanoid(c, P, now);
 }

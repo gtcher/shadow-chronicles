@@ -74,3 +74,46 @@ test('relief : filtre sur la scène, normales peintes, ombres, repli à plat en 
   expect(low).toEqual({ relief: false, filters: 0, flat: true, shadows: false });
   expect(errors).toEqual([]);
 });
+
+/** Retour de Gabriel : les ombres du décor sautaient d'un coup quand la lumière dominante changeait. */
+test('ombres portées : la direction tourne en douceur quand une lumière passe devant un décor', async ({ page }) => {
+  const errors = await open(page, '?hero=taro&wave=1&seed=2&quality=high&grade=0');
+  await waitRun(page);
+  const res = await page.evaluate(async () => {
+    const w = window as unknown as W, g = w.game, L = w.vfx.lighting;
+    g.stop();
+    const c = document.createElement('canvas'); c.width = 40; c.height = 120;
+    const x = c.getContext('2d')!; x.fillStyle = '#888'; x.fillRect(0, 0, 40, 120);
+    const prop = new (w as any).scVfx.Sprite((w as any).scVfx.textureFrom(c));
+    prop.anchor.set(0.5, 0.95);
+    const cam = g.camera.renderPos(1);
+    prop.position.set(cam.x + 2000, cam.y + 2000);
+    g.renderer.layers.entities.addChild(prop);
+    // Une torche traverse de gauche à droite juste au-dessus du décor, puis s'éloigne hors de portée.
+    // Le lissage suit le temps réel : on laisse passer ~16 ms entre deux images.
+    const torch = L.add({ x: prop.x - 400, y: prop.y - 40, radius: 430, color: 0xffd7a0, intensity: 1 });
+    const rots: number[] = [];
+    for (let i = 0; i < 240; i++) {
+      torch.x = prop.x - 400 + i * 6;
+      await new Promise((r) => setTimeout(r, 16));
+      L.update(1 / 60); L.render();
+      const s = L.shadows.pool.find((p: any) => p.visible && p.texture === prop.texture);
+      rots.push(s ? s.rotation : NaN);
+    }
+    L.remove(torch); prop.destroy();
+    let maxStep = 0;
+    for (let i = 1; i < rots.length; i++) {
+      let d = Math.abs(rots[i] - rots[i - 1]); if (d > Math.PI) d = 2 * Math.PI - d;
+      maxStep = Math.max(maxStep, d);
+    }
+    // L'ombre a bien tourné pendant le passage (vers la droite puis vers la gauche) : le test ne passe pas « à vide ».
+    const un = [rots[0]];
+    for (let i = 1; i < rots.length; i++) { let d = rots[i] - rots[i - 1]; if (d > Math.PI) d -= 2 * Math.PI; if (d < -Math.PI) d += 2 * Math.PI; un.push(un[i - 1] + d); }
+    const turned = Math.max(...un) - Math.min(...un);
+    return { maxStep, turned, missing: rots.filter((r) => Number.isNaN(r)).length };
+  });
+  expect(res.missing).toBe(0);
+  expect(res.maxStep).toBeLessThan(0.12);
+  expect(res.turned).toBeGreaterThan(0.8);
+  expect(errors).toEqual([]);
+});

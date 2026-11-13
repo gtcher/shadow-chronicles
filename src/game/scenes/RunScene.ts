@@ -246,7 +246,7 @@ export class RunScene extends Scene implements CombatCtx {
     });
     (window as unknown as { vfx: Vfx }).vfx = this.vfx;
     // Tests e2e / essais en console : pièces de normales du tampon d'éclairage.
-    (window as unknown as { scVfx: unknown }).scVfx = { NormalPiece, textureFrom: (c: HTMLCanvasElement) => Texture.from(c) };
+    (window as unknown as { scVfx: unknown }).scVfx = { NormalPiece, Sprite, textureFrom: (c: HTMLCanvasElement) => Texture.from(c) };
     this.arena.attach(this.vfx);
     this.vfx.lighting.prepare.add(this.syncPuppetNormals);
     this.particles = this.vfx.particles;

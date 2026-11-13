@@ -5,6 +5,7 @@
  *   node tools/puppet-lab/capture.mjs <dossier>
  */
 import { CAST, RIG, renderSprite } from '../../src/game/rig/draw';
+import { outlineOf } from '../../src/game/puppet/kit';
 import { bakePuppet } from '../../src/game/puppet/bake';
 import { solvePuppet, poseAnimFor, mul, type M } from '../../src/game/puppet/bones';
 import { poseOf } from '../../src/game/puppet/pose';
@@ -60,8 +61,8 @@ function drawPuppet(g, key, anim, p, fx, fy, s, opt = {}) {
     const cell = b.meta.parts[it.id + '~o'];
     if (!cell) continue;
     const m = mul(root, mul(it.m, [1 / b.meta.ppu, 0, 0, 1 / b.meta.ppu, 0, 0]));
-    g.save(); g.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]); g.globalAlpha = alpha * (flash ? 1 : c.group === 'h' ? 0.7 : 0.92);
-    g.drawImage(tintAtlas(b, flash ? '#ffffff' : (opt.outline ?? (c.group === 'h' ? c.rim : '#0b0a12'))), cell.x, cell.y, cell.w, cell.h, -cell.ax * cell.w, -cell.ay * cell.h, cell.w, cell.h);
+    g.save(); g.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]); g.globalAlpha = alpha * (flash ? 1 : outlineOf(c).alpha);
+    g.drawImage(tintAtlas(b, flash ? '#ffffff' : (opt.outline ?? outlineOf(c).color)), cell.x, cell.y, cell.w, cell.h, -cell.ax * cell.w, -cell.ay * cell.h, cell.w, cell.h);
     g.restore();
   }
   for (const it of placed) {

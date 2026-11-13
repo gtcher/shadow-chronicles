@@ -217,3 +217,13 @@ export function glowLine(g: CanvasRenderingContext2D, pts: Pt[], w: number, col:
   g.shadowBlur = 0; g.strokeStyle = 'rgba(255,255,255,0.7)'; g.lineWidth = w * 0.4; g.stroke(pathOf(pts, false));
   g.restore();
 }
+
+/**
+ * Contour du pantin (silhouette élargie sous les pièces) : héros dans leur couleur de contre-jour, pour
+ * les repérer dans la mêlée ; ennemis dans leur lueur assombrie, liseré net qui détache la silhouette
+ * sombre du sol (piste B), sans halo flou.
+ */
+export function outlineOf(d: { group?: unknown; rim?: unknown }): { color: string; alpha: number } {
+  const rim = String(d.rim ?? '#ffffff');
+  return d.group === 'h' ? { color: mix(rim, '#0b0a12', 0.15), alpha: 0.7 } : { color: mix(rim, '#06070c', 0.4), alpha: 0.8 };
+}

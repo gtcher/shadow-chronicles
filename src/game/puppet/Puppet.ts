@@ -2,7 +2,7 @@ import { Container, Graphics, Matrix, Rectangle, Sprite, Texture, type TextureSo
 import { solvePuppet, poseAnimFor, mul, type Def, type M } from './bones';
 import { poseOf, type PuppetAnim } from './pose';
 import type { PuppetMeta } from './bake';
-import { mix } from './kit';
+import { outlineOf } from './kit';
 
 /**
  * Pantin peint (rendu Pixi) : un Sprite par pièce, placé à chaque image par le squelette (bones.ts).
@@ -34,7 +34,6 @@ export function makePuppetSheet(key: string, def: Def, meta: PuppetMeta, color: 
   return { key, def, meta, color, normal, tex, ntex, scale: heightPx / (def.kind === 'w' ? 48 : 96), bytes: meta.width * meta.height * 4 * (normal ? 2 : 1) };
 }
 
-const OUTLINE_ALPHA = 0.92;
 const hexNum = (h: string) => parseInt(h.replace('#', ''), 16);
 
 /** Fabrique d'une pièce de normales (fournie par l'éclairage) : même transform que la pièce couleur. */
@@ -63,8 +62,9 @@ export class Puppet extends Container {
     const d = sheet.def;
     // Héros : contour lumineux dans leur couleur de contre-jour (on les repère dans la mêlée) ;
     // ennemis (piste B) : contour sombre teinté de leur lueur.
-    this.outlineTint = hexNum(d.group === 'h' ? mix(String(d.rim ?? '#ffffff'), '#0b0a12', 0.15) : mix(String(d.rim ?? '#000000'), '#06070c', 0.82));
-    this.outlineAlpha = d.group === 'h' ? 0.7 : OUTLINE_ALPHA;
+    const ol = outlineOf(d);
+    this.outlineTint = hexNum(ol.color);
+    this.outlineAlpha = ol.alpha;
     this.fx.blendMode = 'add';
     this.addChild(this.back, this.front, this.fx);
     this.set('idle', 0);

@@ -126,7 +126,7 @@ export class Vfx {
     this.offs.push(renderer.onBeforeRender(() => { this.lighting.render(); this.bloom.render(); }));
     // Étalonnage : sur le monde + effets écran (pas sur l'interface). WebGL seulement (le shader est en GLSL).
     this.gradeOk = (renderer.app.renderer as { type?: number }).type === 1 && new URLSearchParams(location.search).get('grade') !== '0';
-    this.grade.attach(renderer.post, renderer.app.screen, false);
+    this.grade.attach(renderer.post, false);
 
     const ev = game.events;
     this.offs.push(

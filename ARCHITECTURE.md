@@ -160,7 +160,7 @@ Moteur (ajouts) : `renderer.onBeforeRender(fn)` (passes hors écran), `renderer.
 
 ### Étalonnage couleur par chapitre (`src/game/vfx/grade/`)
 
-Une passe GPU plein écran (`ColorGrade`, GLSL) sur le monde + bloom + effets écran, jamais sur l'interface :
+Une passe GPU plein écran (`ColorGrade`, via `createFilter`, posée par `renderer.post.add('world', f, 100)`), jamais sur l'interface :
 contraste, lift/gamma/gain, saturation, virage ombres/hautes lumières, vignette colorée et grain léger.
 Les 4 ambiances sont dans `grades.ts` (`CHAPTER_GRADES`, une par région de vagues) avec une copie CPU de
 la formule (`gradePixel`) testée dans `tests/grade.test.ts`. `ChapterArena.setChapter` appelle

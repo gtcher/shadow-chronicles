@@ -6,7 +6,8 @@ import { open, waitRun, frame, type W } from './helpers';
  * couvre tout l'écran et `vScreen` va bien de (0,0) en haut à gauche à (1,1) en bas à droite.
  */
 test('étages post : vScreen couvre l’écran', async ({ page }) => {
-  const errors = await open(page, '?hero=taro&wave=1&seed=3');
+  // grade=0 : sans l'étalonnage de chapitre (étage world), qui recolore et assombrit les coins.
+  const errors = await open(page, '?hero=taro&wave=1&seed=3&grade=0');
   await waitRun(page);
   for (const stage of ['scene', 'world', 'screen'] as const) {
     const res = await page.evaluate((stage) => {
@@ -34,5 +35,23 @@ test('étages post : vScreen couvre l’écran', async ({ page }) => {
     expect(res.br[1], `${stage} bas-droite G`).toBeGreaterThan(235);
     expect(Math.abs(res.mid[0] - 128), `${stage} milieu`).toBeLessThan(12);
   }
+  expect(errors).toEqual([]);
+});
+
+test('étalonnage de chapitre : posé sur l’étage world, retiré en qualité basse et par le réglage', async ({ page }) => {
+  const errors = await open(page, '?hero=taro&wave=4&seed=3&quality=medium');
+  await waitRun(page);
+  const st = await page.evaluate(() => {
+    const g = (window as unknown as W).game, v = g.scenes.current.vfx;
+    const on = () => g.renderer.post.list('world').includes(v.grade.filter);
+    const a = on();
+    v.setQuality('low'); const low = on();
+    v.setQuality('medium'); v.settings.cinematic = false; v.applySettings(); const off = on();
+    v.settings.cinematic = true; v.applySettings();
+    g.stop(); g.frame(1, 1 / 60);
+    return { a, low, off, back: on(), contrast: v.grade.params.contrast };
+  });
+  expect(st).toMatchObject({ a: true, low: false, off: false, back: true });
+  expect(st.contrast).toBeGreaterThan(1);
   expect(errors).toEqual([]);
 });

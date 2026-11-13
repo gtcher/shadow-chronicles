@@ -1,31 +1,19 @@
-import { Filter, GlProgram, Rectangle, UniformGroup, type Container } from 'pixi.js';
+import type { Filter } from 'pixi.js';
+import { GLSL, createFilter, type PostStack } from '@engine';
 import { NEUTRAL_GRADE, hexToRgb, mixGrade, tintOffset, type GradeParams } from './grades';
 
 /**
  * Post-traitement plein écran : étalonnage couleur + vignette + grain, en UNE passe GPU
  * (voir `grades.ts` pour la formule et les ambiances par chapitre).
  *
- * Posé sur `renderer.post` (monde + bloom + effets écran) : l'interface Pixi (`hud`) n'est pas filtrée.
+ * Posé sur l'étage `world` de `renderer.post` (monde + bloom + effets écran, order 100) :
+ * l'interface Pixi (`hud`) n'est pas filtrée.
  * Coût : une lecture de texture par pixel. Coupé en qualité « low », par le réglage joueur
  * « Effet cinéma », ou si le moteur n'est pas en WebGL.
  */
 
-const vertex = /* glsl */ `in vec2 aPosition;
-out vec2 vTextureCoord;
-out vec2 vScreen;
-uniform vec4 uInputSize;
-uniform vec4 uOutputFrame;
-uniform vec4 uOutputTexture;
-void main(void) {
-  vec2 position = aPosition * uOutputFrame.zw + uOutputFrame.xy;
-  position.x = position.x * (2.0 / uOutputTexture.x) - 1.0;
-  position.y = position.y * (2.0 * uOutputTexture.z / uOutputTexture.y) - uOutputTexture.z;
-  gl_Position = vec4(position, 0.0, 1.0);
-  vTextureCoord = aPosition * (uOutputFrame.zw * uInputSize.zw);
-  vScreen = aPosition;
-}`;
-
-const fragment = /* glsl */ `in vec2 vTextureCoord;
+const fragment = /* glsl */ `${GLSL.hash}
+in vec2 vTextureCoord;
 in vec2 vScreen;
 out vec4 finalColor;
 uniform sampler2D uTexture;
@@ -45,12 +33,6 @@ uniform float uMix;
 
 const vec3 LUMA = vec3(0.2126, 0.7152, 0.0722);
 
-float hash(vec2 p) {
-  vec3 p3 = fract(vec3(p.xyx) * 0.1031);
-  p3 += dot(p3, p3.yzx + 33.33);
-  return fract((p3.x + p3.y) * p3.z);
-}
-
 void main(void) {
   vec4 src = texture(uTexture, vTextureCoord);
   if (src.a <= 0.0) { finalColor = src; return; }
@@ -66,7 +48,7 @@ void main(void) {
   float r = length(vScreen - 0.5);
   c = mix(c, uVigColor, smoothstep(0.32, 0.85, r) * uVignette);
   // grain : surtout dans les tons moyens, presque rien dans les noirs et les blancs
-  float n = hash(floor(vScreen * vec2(uAspect, 1.0) * 720.0) + fract(uTime) * 517.0) - 0.5;
+  float n = hash12(floor(vScreen * vec2(uAspect, 1.0) * 720.0) + fract(uTime) * 517.0) - 0.5;
   c += n * uGrain * (1.0 - abs(l - 0.5) * 1.6);
   c = mix(orig, clamp(c, 0.0, 1.0), uMix);
   finalColor = vec4(c * src.a, src.a);
@@ -76,8 +58,9 @@ export class ColorGrade {
   readonly filter: Filter;
   /** Ambiance actuellement appliquée (après fondu). */
   params: GradeParams = NEUTRAL_GRADE;
-  private readonly u: UniformGroup['uniforms'];
-  private target: Container | null = null;
+  private readonly u: Record<string, any>;
+  private post: PostStack | null = null;
+  private remove: (() => void) | null = null;
   private on = false;
   private t = 0;
   private from: GradeParams = NEUTRAL_GRADE;
@@ -92,33 +75,28 @@ export class ColorGrade {
   constructor() {
     const v3 = () => ({ value: new Float32Array(3), type: 'vec3<f32>' as const });
     const f = (value: number) => ({ value, type: 'f32' as const });
-    const group = new UniformGroup({
+    const filter = createFilter({ name: 'color-grade', fragment, options: { antialias: 'off' }, uniforms: {
       uLift: v3(), uGamma: v3(), uGain: v3(), uShadowTint: v3(), uHighTint: v3(), uVigColor: v3(),
       uContrast: f(1), uSaturation: f(1), uVignette: f(0), uGrain: f(0), uTime: f(0), uAspect: f(1), uMix: f(1),
-    });
-    this.u = group.uniforms;
-    this.filter = new Filter({ glProgram: GlProgram.from({ vertex, fragment, name: 'color-grade' }), resources: { gradeUniforms: group } });
-    this.filter.antialias = 'off';
+    } });
+    this.u = filter.resources.u.uniforms;
+    this.filter = filter;
     this.write(NEUTRAL_GRADE);
   }
 
   get enabled(): boolean { return this.on; }
 
-  /** Branche / débranche le filtre sur le conteneur (sans filtre : zéro coût). */
-  attach(target: Container, screen: Rectangle, on: boolean): void {
-    this.target = target;
-    target.filterArea = screen;
+  /** Branche sur les étages de post-traitement du moteur (le filtre n'y est posé que s'il est actif). */
+  attach(post: PostStack, on: boolean): void {
+    this.post = post;
     this.setEnabled(on);
   }
 
+  /** Sans filtre posé : zéro coût. */
   setEnabled(on: boolean): void {
     this.on = on;
-    const t = this.target;
-    if (!t) return;
-    const list = (t.filters as Filter[] | null | undefined) ?? [];
-    const has = list.includes(this.filter);
-    if (on && !has) t.filters = [...list, this.filter];
-    if (!on && has) { const rest = list.filter((x) => x !== this.filter); t.filters = rest.length ? rest : null; }
+    if (on && !this.remove && this.post) this.remove = this.post.add('world', this.filter, 100);
+    if (!on && this.remove) { this.remove(); this.remove = null; }
   }
 
   /** Change d'ambiance avec un fondu (secondes ; 0 = immédiat). */
@@ -159,8 +137,7 @@ export class ColorGrade {
 
   destroy(): void {
     this.setEnabled(false);
-    if (this.target) this.target.filterArea = undefined as unknown as Rectangle;
-    this.target = null;
+    this.post = null;
     this.filter.destroy();
   }
 }

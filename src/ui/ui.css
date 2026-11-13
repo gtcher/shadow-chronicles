@@ -849,3 +849,21 @@
 .sc-bars .sc-track { background: rgba(255, 255, 255, 0.08); border-radius: 3px; overflow: hidden; }
 .sc-bars .sc-track i { display: block; height: 100%; background: var(--gold); border-radius: 3px; }
 .sc-chrono .sc-boss .sc-track i { background: #ff8a7a; }
+
+/* ── Classement en ligne + compte (src/game/screensOnline.ts) ─────────────── */
+.sc-ol-account { text-align: left; padding: 12px 14px; margin: 8px 0 4px; display: grid; gap: 8px; }
+.sc-ol-account small { display: block; color: var(--mute); font-size: 0.85em; }
+.sc-ol-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.sc-ol-input { pointer-events: auto; flex: 1; min-width: 180px; min-height: 42px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line-hi);
+  background: #1b1610; color: var(--text); font: 500 1em var(--body); }
+.sc-ol-input:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 2px; }
+.sc-ol-mute { color: var(--mute); font-size: 0.88em; margin: 6px 0; }
+.sc-ol-note { color: #ff9a8a; margin: 4px 0; font-size: 0.92em; }
+.sc-ol-me { color: var(--gold-hi); font-weight: 700; margin: 6px 0; }
+.sc-ol-name { font-weight: 600; text-align: left !important; max-width: 12em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sc-ol-conflict { border-top: 1px solid var(--line); padding-top: 8px; display: grid; gap: 6px; }
+.sc-ol-save { padding: 6px 10px; border-radius: 8px; background: rgba(255, 255, 255, 0.04); }
+.sc-ol-save b { display: block; color: var(--gold-hi); }
+.sc-ol-save small { color: var(--mute); }
+.sc-ol-board { min-height: 120px; }
+@media (max-width: 560px) { .sc-ol-ranks th:nth-child(6), .sc-ol-ranks td:nth-child(6) { display: none; } .sc-ol-ranks th:nth-child(5), .sc-ol-ranks td:nth-child(5) { display: table-cell; } }

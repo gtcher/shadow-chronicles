@@ -29,6 +29,10 @@ export interface TitleOptions {
   onLook?: (hero: HeroId) => void;
   /** Classement personnel. */
   onRecords?: () => void;
+  /** Classement en ligne + compte (absent si le jeu n'a pas de serveur configuré). */
+  onOnline?: () => void;
+  /** Joueur connecté : son pseudo. */
+  online?: { pseudo: string };
   onSanctuary: () => void;
   onSettings: () => void;
   /** Codex des Brumes : % découvert et découvertes pas encore consultées. */
@@ -86,7 +90,8 @@ export function titleScreen(o: TitleOptions): HTMLElement {
         h('input', { type: 'checkbox', class: 'sc-switch', checked: o.discovery.on, onchange: (e: Event) => o.discovery!.toggle((e.target as HTMLInputElement).checked) }),
         h('span', {}, '🌱 Mode Découverte', h('small', {}, ' · pour apprendre en douceur'))) : null,
       o.onLook ? h('button', { class: 'sc-link', onclick: () => o.onLook!(hero) }, '🎨 Apparence') : null,
-      o.onRecords ? h('button', { class: 'sc-link', onclick: o.onRecords }, '🏆 Records') : null),
+      o.onRecords ? h('button', { class: 'sc-link', onclick: o.onRecords }, '🏆 Records') : null,
+      o.onOnline ? h('button', { class: 'sc-link sc-online-link', onclick: o.onOnline, title: o.online ? `Connecté : ${o.online.pseudo}` : 'Classement de tous les joueurs, compte et sauvegarde cloud' }, o.online ? `🌐 Classement · ${o.online.pseudo}` : '🌐 Classement en ligne') : null),
       h('div', { class: 'sc-row' },
         h('button', { class: `sc-btn${o.resume ? '' : ' sc-primary'}`, style: { minWidth: '220px', fontSize: '1.15em' }, onclick: () => o.onPlay(hero) }, o.resume ? '⚔  Nouvelle run' : '⚔  Partir en run'),
         h('button', { class: 'sc-btn', onclick: o.onSanctuary }, '♜ Sanctuaire'),

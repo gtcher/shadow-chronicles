@@ -293,6 +293,20 @@ export class SaveManager {
     return this.write({ run: true });
   }
 
+  /**
+   * Reprend la progression du compte en ligne (src/online/sync.ts). Réglages et expédition en cours
+   * restent ceux de l'appareil ; une copie de secours de la progression actuelle est gardée.
+   */
+  async replaceFromCloud(profile: Profile): Promise<boolean> {
+    if (this.status.readOnly) return false;
+    await this.flush();
+    await this.backup('before-import');
+    const p = structuredClone(profile);
+    p.rev = Math.max(p.rev, this.profile.rev);
+    this.replaceAll({ profile: p, settings: this.settings, run: this.runDoc });
+    return this.write({ run: true });
+  }
+
   /** Recommencer de zéro (une copie de secours est gardée). */
   async reset(keepSettings = true): Promise<boolean> {
     await this.flush();

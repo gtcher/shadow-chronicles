@@ -11,7 +11,7 @@ try {
     const page = await ctx.newPage();
     page.on('pageerror', (e) => console.error('page:', e.message));
     await page.addInitScript(() => { localStorage.setItem('sc-settings-v1', JSON.stringify({ tutorialDone: true, sanctuaryGuideDone: true, comfortAsked: true })); });
-    await page.goto(`http://localhost:4173/?hero=${hero}&wave=3&seed=4&bot=1${q}`);
+    await page.goto(`http://localhost:4173/?hero=${hero}&wave=${process.env.WAVE ?? 3}&seed=4&bot=1${q}`);
     await page.waitForFunction(() => window.game?.scenes?.current?.director, null, { timeout: 60000 });
     await page.waitForFunction(() => window.rigBaker?.busy === 0, null, { timeout: 120000 }).catch(() => {});
     for (const sec of [6, 9]) {

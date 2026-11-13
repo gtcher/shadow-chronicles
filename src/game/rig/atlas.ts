@@ -56,6 +56,11 @@ export interface BakeInput {
   style: 'A' | 'B';
   /** Suréchantillonnage (netteté sous zoom / écrans haute densité). */
   res: number;
+  /**
+   * Pantin peint (src/game/puppet) au lieu de la feuille d'images : clé du peintre (CAST), pixels de
+   * texture par unité, et cuisson des normal maps pour l'éclairage en relief.
+   */
+  puppet?: { key: string; ppu: number; normals: boolean };
 }
 
 type AnyCanvas = HTMLCanvasElement | OffscreenCanvas;

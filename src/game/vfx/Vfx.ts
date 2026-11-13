@@ -76,7 +76,7 @@ export class Vfx {
   private decalSprites: Sprite[] = [];
   private maxDecals = 160;
   private readonly ghosts = new Container({ label: 'vfx-ghosts' });
-  private ghostList: Array<{ s: Sprite; life: number }> = [];
+  private ghostList: Array<{ s: Container; life: number }> = [];
   private readonly vignette: Sprite;
   private readonly hurtFlash: Sprite;
   private readonly whiteFlash: Sprite;
@@ -379,7 +379,7 @@ export class Vfx {
     for (let i = this.ghostList.length - 1; i >= 0; i--) {
       const g = this.ghostList[i];
       g.life -= dt;
-      if (g.life <= 0) { g.s.destroy(); this.ghostList.splice(i, 1); continue; }
+      if (g.life <= 0) { g.s.destroy({ children: true }); this.ghostList.splice(i, 1); continue; }
       g.s.alpha = (g.life / 0.28) * 0.55;
     }
 
@@ -420,8 +420,10 @@ export class Vfx {
   private spawnGhost(node: Container): void {
     const body = node.getChildByLabel('body') as Sprite | null;
     if (!body) return;
-    const s = new Sprite(body.texture);
-    s.anchor.copyFrom(body.anchor);
+    // Pantin peint (pièces animées) : il fournit sa propre silhouette figée.
+    const puppet = body as unknown as { ghost?: () => Container };
+    const s: Container = puppet.ghost ? puppet.ghost() : new Sprite(body.texture);
+    if (s instanceof Sprite) s.anchor.copyFrom(body.anchor);
     s.position.set(node.x + body.x, node.y + body.y);
     s.scale.copyFrom(body.scale);
     s.rotation = body.rotation;

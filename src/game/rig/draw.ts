@@ -886,4 +886,4 @@ function drawFx(g,c,P,style,s){
 }
 
 
-export { CAST, ANIM_LEN, FRAMES, renderSprite, mix };
+export { CAST, ANIM_LEN, FRAMES, renderSprite, mix, pose, basePose };

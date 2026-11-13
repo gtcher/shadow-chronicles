@@ -24,8 +24,11 @@ const BUDGET = {
   /** Mémoire JS après 4 min de jeu, et croissance entre la 1re et la 4e minute (fuite). */
   heapMB: 160,
   heapGrowthMB: 25,
-  /** Objets d'affichage dans la scène (particules comprises). */
-  displayObjects: 4000,
+  /**
+   * Objets d'affichage dans la scène (particules comprises). Les pantins peints comptent une vingtaine
+   * de pièces (et leurs contours) par combattant au lieu d'une image : ~1 500 → ~5 700 en vague 14.
+   */
+  displayObjects: 7000,
 };
 const perf: Record<string, number> = {};
 test.afterAll(() => {

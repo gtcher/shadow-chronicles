@@ -48,8 +48,11 @@ export class CastShadows {
         src = child;
       } else {
         const b = child.getChildByLabel('body');
-        if (!(b instanceof Sprite) || !b.visible) continue;
-        src = b; ox = b.x; oy = b.y;
+        if (!b || !b.visible) continue;
+        // Corps composé (pantin peint) : il fournit sa silhouette via `shadow`.
+        const sh = b instanceof Sprite ? b : (b as { shadow?: Sprite | null }).shadow;
+        if (!sh) continue;
+        src = sh; ox = b.x; oy = b.y;
       }
       const fx = child.x, fy = child.y; // pieds
       // Lumière dominante : la plus forte au point des pieds (hors lumière posée sur le lanceur lui-même).

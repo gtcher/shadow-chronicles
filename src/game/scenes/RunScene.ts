@@ -25,6 +25,7 @@ import { enterPhase, updateBosses } from '../combat/boss';
 import { WaveDirector } from '../combat/waves';
 import { ChapterArena } from '../arena/ChapterArena';
 import { RIG_LEN, rigBaker, rigFrame, type RigAnim, type RigSheet } from '../rig';
+import { Puppet } from '../puppet/Puppet';
 import { bossOrder, foeOrder, heroOrder, prefetch, waveOrders, type RigOrder } from '../rig/roster';
 import { CAMPAIGN_WAVES, regionForWave, bossScaling, enemyPool, enemyScaling, mitigate, phaseForHp, zoneHits, type WavePlan, type Zone } from '../combat/rules';
 
@@ -166,9 +167,17 @@ export class RunScene extends Scene implements CombatCtx {
   private overT = 0;
   private bossEntity = 0;
   private renderTime = 0;
+  /** Compteur d'images (pose des pantins une image sur deux dans la foule). */
+  private rigTick = 0;
   /** Feuilles cuites par clé (héros, ennemi + teinte, boss). */
   private rigs = new Map<number, RigState>();
-  private corpses: Array<{ node: Container; sheet: RigSheet; t: number; quad: FrameQuad | null; color: number }> = [];
+  /** Pantins branchés sur le tampon de normales (héros, élites, boss) ; silhouettes d'ombre par feuille. */
+  private reliefPuppets = new Set<Puppet>();
+  private puppetShadows = new Map<object, { tex: Texture; ax: number; ay: number } | null>();
+  private readonly syncPuppetNormals = (): void => {
+    for (const p of this.reliefPuppets) { if (p.destroyed) this.reliefPuppets.delete(p); else p.syncNormals(); }
+  };
+  private corpses: Array<{ node: Container; sheet: RigSheet; t: number; quad: FrameQuad | null; color: number; snap?: Texture }> = [];
   private heroAtkSeq = 0;
   private heroAtkSeen = 0;
   private offRig: (() => void) | null = null;
@@ -239,6 +248,7 @@ export class RunScene extends Scene implements CombatCtx {
     // Tests e2e / essais en console : pièces de normales du tampon d'éclairage.
     (window as unknown as { scVfx: unknown }).scVfx = { NormalPiece, textureFrom: (c: HTMLCanvasElement) => Texture.from(c) };
     this.arena.attach(this.vfx);
+    this.vfx.lighting.prepare.add(this.syncPuppetNormals);
     this.particles = this.vfx.particles;
     this.feedback = new CombatFeedback(renderer.layers.overlay);
     this.feedback.fancy = this.vfx.combat;
@@ -297,6 +307,9 @@ export class RunScene extends Scene implements CombatCtx {
     this.offResize?.();
     this.offRig?.();
     this.rigs.clear(); this.corpses = [];
+    this.reliefPuppets.clear();
+    for (const s of this.puppetShadows.values()) s?.tex.destroy(true);
+    this.puppetShadows.clear();
     this.arena.destroy();
     this.vfx.destroy();
     this.hazards.clear();
@@ -947,6 +960,7 @@ export class RunScene extends Scene implements CombatCtx {
 
   render(alpha: number, frameDt: number): void {
     this.renderTime += frameDt;
+    this.rigTick++;
     const time = this.renderTime;
     syncViews(this.world, this.g.camera, alpha);
     this.feedback.update(frameDt);
@@ -999,7 +1013,9 @@ export class RunScene extends Scene implements CombatCtx {
       body.scale.x = facing * k * (1 + 0.1 * sq); body.scale.y = k * (1 - 0.08 * sq);
       body.alpha = alpha;
       body.tint = flash > 0 && !this.vfx.combat.on ? 0xffb0a0 : tint;
-      this.vfx.combat.hitFlash(node, body, sq);
+      // Pantin peint : son flash passe par le contour blanc (pose « touche »), pas par le quad de CombatFx.
+      if (body instanceof Puppet) body.hit = this.vfx.combat.on ? sq * (this.vfx.combat.soft ? 0.5 : 0.85) : 0;
+      else this.vfx.combat.hitFlash(node, body, sq);
       const aura = node.getChildByLabel('aura');
       if (aura) aura.alpha = aura instanceof Graphics ? 0.7 + 0.3 * Math.sin(this.renderTime * 3 + phase) : 0.3 + 0.12 * Math.sin(this.renderTime * 3 + phase);
       return;
@@ -1030,9 +1046,18 @@ export class RunScene extends Scene implements CombatCtx {
       node.addChild(a);
     }
     if (sheet) {
-      const body = new Sprite(sheet.frames.idle[0]);
-      body.anchor.set(sheet.anchorX, sheet.anchorY); body.scale.set(sheet.scale); body.label = 'body'; body.tint = tint;
+      // Pantin peint (pièces animées par os) ou feuille d'images cuites.
+      const body = sheet.puppet ? new Puppet(sheet.puppet) : new Sprite(sheet.frames.idle[0]);
+      if (body instanceof Sprite) body.anchor.set(sheet.anchorX, sheet.anchorY);
+      body.scale.set(sheet.scale); body.label = 'body'; body.tint = tint;
       node.addChild(body);
+      if (body instanceof Puppet) {
+        if (body.attachNormals(this.vfx.lighting.normals, (t, ax, ay) => new NormalPiece(t, ax, ay))) this.reliefPuppets.add(body);
+        // Ombre portée : silhouette au repos, figée une fois par feuille (floutée au sol, la pose importe peu).
+        let sh = this.puppetShadows.get(sheet.puppet!);
+        if (sh === undefined) { sh = this.snapshotPuppet(body, 1); this.puppetShadows.set(sheet.puppet!, sh); }
+        if (sh) body.setShadow(sh.tex, sh.ax, sh.ay);
+      }
       if (entity >= 0) this.rigs.set(entity, { sheet, anim: 'idle', t: Math.random(), hurt: 0, atk: -1, wind: 0, flash: 0, hp: Infinity, prevState: 'move' });
       return node;
     }
@@ -1053,8 +1078,16 @@ export class RunScene extends Scene implements CombatCtx {
 
   private setRigFrame(e: number, r: RigState, anim: RigAnim, p: number): void {
     r.anim = anim;
-    const body = (this.world.get(e, View)!.node as Container).getChildByLabel('body') as Sprite;
-    body.texture = rigFrame(r.sheet, anim, p, r.aim ?? 0);
+    const node = this.world.get(e, View)!.node as Container;
+    const body = node.getChildByLabel('body');
+    if (body instanceof Puppet) {
+      // Hors écran : rien à poser. Foule : marche et attente posées une image sur deux (les coups, les
+      // impacts et le héros restent à pleine cadence).
+      if (!node.visible) return;
+      if (e !== this.player && this.rigs.size > 16 && (anim === 'idle' || anim === 'course') && (this.rigTick + e) % 2) return;
+      body.set(anim, p, r.aim ?? 0, this.renderTime);
+    }
+    else (body as Sprite).texture = rigFrame(r.sheet, anim, p, r.aim ?? 0);
   }
 
   private animateHeroRig(dt: number, moving: number, hp: number, h: HeroC): void {
@@ -1063,7 +1096,7 @@ export class RunScene extends Scene implements CombatCtx {
     if (hp < r.hp - 0.5) r.hurt = RIG_LEN.touche;
     r.hp = hp;
     if (this.heroAtkSeq !== this.heroAtkSeen) r.shotAt = r.t;
-    if (r.sheet.aims) {
+    if (r.sheet.aims || r.sheet.puppet?.def.weapon === 'bow') {
       // Arc : il suit la visée (vers le haut, le bas ou en biais) tant que le héros tire, puis revient
       // à l'horizontale en garde. Le sprite est déjà retourné selon h.facing : l'angle est relatif au regard.
       const firing = r.shotAt !== undefined && r.t - r.shotAt < 1.4;
@@ -1119,6 +1152,20 @@ export class RunScene extends Scene implements CombatCtx {
     else this.setRigFrame(e, r, 'idle', r.t / RIG_LEN.idle);
   }
 
+  /**
+   * Silhouette figée d'un pantin (texture à la taille de l'écran) et son ancre, pour la dissolution en
+   * shader. generateTexture rend le pantin dans son repère local (sa propre échelle est ignorée).
+   */
+  private snapshotPuppet(b: Puppet, maxRes = 3): { tex: Texture; ax: number; ay: number } | null {
+    try {
+      const r = (this.g.renderer.app.renderer as unknown as { generateTexture: (o: unknown) => Texture });
+      const bounds = b.getLocalBounds();
+      if (bounds.width <= 0 || bounds.height <= 0) return null;
+      const tex = r.generateTexture({ target: b, resolution: Math.min(maxRes, Math.abs(b.scale.y) * (window.devicePixelRatio || 1)) });
+      return { tex, ax: -bounds.x / bounds.width, ay: -bounds.y / bounds.height };
+    } catch { return null; }
+  }
+
   /** Dépouille : le corps du combattant joue sa mort (effondrement puis braises) à l'endroit du coup fatal. */
   private spawnCorpse(e: number, t: { x: number; y: number }): void {
     const r = this.rigs.get(e);
@@ -1126,14 +1173,23 @@ export class RunScene extends Scene implements CombatCtx {
     if (!r) return;
     const view = this.world.get(e, View);
     const old = view?.node as Container | undefined;
-    const ob = old?.getChildByLabel('body') as Sprite | undefined;
+    const ob = old?.getChildByLabel('body') as Container | undefined;
     const node = new Container();
     const f = this.world.get(e, Foe);
     const color = f?.boss ? f.boss.def.color : f?.def.elite ? STATUS_COLORS[f.def.status ?? 'void'] : 0xff7a3a;
-    // Dissolution en shader (bord en braise) ; sinon l'ancien sprite qui s'efface.
-    const quad = this.vfx.combat.corpse(r.sheet.frames.mort[0], r.sheet.anchorX, r.sheet.anchorY, color);
-    const body = quad ?? new Sprite(r.sheet.frames.mort[0]);
-    if (body instanceof Sprite) body.anchor.set(r.sheet.anchorX, r.sheet.anchorY);
+    // Pantin peint : il joue sa chute, puis sa silhouette figée part en dissolution (shader).
+    // Feuille cuite : dissolution en shader (bord en braise) ; sinon l'ancien sprite qui s'efface.
+    let quad: FrameQuad | null = null;
+    let body: Container;
+    if (r.sheet.puppet) {
+      const pp = new Puppet(r.sheet.puppet);
+      pp.set('mort', 0, 0, this.renderTime);
+      body = pp;
+    } else {
+      quad = this.vfx.combat.corpse(r.sheet.frames.mort[0], r.sheet.anchorX, r.sheet.anchorY, color);
+      body = quad ?? new Sprite(r.sheet.frames.mort[0]);
+      if (body instanceof Sprite) body.anchor.set(r.sheet.anchorX, r.sheet.anchorY);
+    }
     body.scale.set(ob ? ob.scale.x : r.sheet.scale, r.sheet.scale);
     node.addChild(body);
     node.position.set(t.x, t.y);
@@ -1146,9 +1202,26 @@ export class RunScene extends Scene implements CombatCtx {
     for (const c of this.corpses) {
       c.t += dt;
       const p = c.t / RIG_LEN.mort;
+      const b = c.node.children[0];
+      if (b instanceof Puppet) {
+        // Chute du pantin jusqu'au sol, puis on fige sa silhouette dans une texture pour la dissolution.
+        const q = Math.min(p / 0.86, 0.335);
+        b.set('mort', q, 0, this.renderTime);
+        if (q >= 0.335) {
+          const snap = this.snapshotPuppet(b);
+          const quad = snap && this.vfx.combat.corpse(snap.tex, snap.ax, snap.ay, c.color);
+          if (quad) {
+            quad.scale.copyFrom(b.scale);
+            c.node.removeChild(b); b.destroy();
+            c.node.addChild(quad);
+            c.quad = quad; c.snap = snap.tex;
+          } else snap?.tex.destroy(true);
+        }
+        if (!c.quad) { c.node.alpha = p > 0.75 ? Math.max(0, 1 - (p - 0.75) / 0.12) : 1; continue; }
+      }
       if (c.quad) {
         // Chute jusqu'au sol (avant la dissolution cuite dans l'atlas), puis dissolution en shader.
-        c.quad.setFrame(rigFrame(c.sheet, 'mort', Math.min(p / 0.86, 0.335)));
+        if (!c.snap) c.quad.setFrame(rigFrame(c.sheet, 'mort', Math.min(p / 0.86, 0.335)));
         const k = Math.max(0, Math.min(1, (p - 0.25) / 0.61));
         this.vfx.combat.dissolve(c.quad, k, dt, c.node.x, c.node.y, c.quad.scale.x, c.quad.scale.y, c.color);
         c.node.alpha = 1;
@@ -1157,7 +1230,7 @@ export class RunScene extends Scene implements CombatCtx {
       (c.node.children[0] as Sprite).texture = rigFrame(c.sheet, 'mort', p / 0.86);
       c.node.alpha = p > 0.75 ? Math.max(0, 1 - (p - 0.75) / 0.12) : 1;
     }
-    for (const c of this.corpses) if (c.t >= RIG_LEN.mort * 0.87) c.node.destroy();
+    for (const c of this.corpses) if (c.t >= RIG_LEN.mort * 0.87) { c.node.destroy({ children: true }); c.snap?.destroy(true); }
     this.corpses = this.corpses.filter((c) => !c.node.destroyed);
   }
 

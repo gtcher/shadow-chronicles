@@ -203,9 +203,11 @@ export class CombatFx {
   }
 
   /** Ruban lumineux derrière un projectile ; il s'éteint seul quand le nœud est détruit. */
-  trail(node: Container, color: number, width: number, yOff: number): void {
+  trail(node: Container, color: number, width: number, yOff: number, x = node.x, y = node.y): void {
     if (!this.on || this.trails.length >= this.trailCap) return;
-    this.trails.push({ node, pts: [node.x, node.y - yOff], r: ((color >> 16) & 255) / 255, g: ((color >> 8) & 255) / 255, b: (color & 255) / 255, width, yOff, fade: 1 });
+    // Point de départ = position réelle du tir (le nœud est encore en 0,0 tant que la vue n'est pas synchronisée :
+    // partir de là traçait une bande jusqu'à l'origine de l'arène, qui restait à l'écran).
+    this.trails.push({ node, pts: [x, y - yOff], r: ((color >> 16) & 255) / 255, g: ((color >> 8) & 255) / 255, b: (color & 255) / 255, width, yOff, fade: 1 });
   }
 
   private take(kind: 'slash' | 'beam'): FrameQuad {
@@ -283,7 +285,10 @@ export class CombatFx {
       if (alive) {
         if (!tr.node.visible) { tr.pts.length = 2; tr.pts[0] = tr.node.x; tr.pts[1] = tr.node.y - tr.yOff; }
         const hx = tr.node.x, hy = tr.node.y - tr.yOff;
-        if (Math.hypot(hx - tr.pts[0], hy - tr.pts[1]) > 5) tr.pts.unshift(hx, hy);
+        const jump = Math.hypot(hx - tr.pts[0], hy - tr.pts[1]);
+        // Saut anormal (téléportation, nœud pas encore placé) : on repart de la tête plutôt que de tirer un trait.
+        if (jump > tr.width * 9) { tr.pts.length = 2; tr.pts[0] = hx; tr.pts[1] = hy; }
+        else if (jump > 5) tr.pts.unshift(hx, hy);
         else { tr.pts[0] = hx; tr.pts[1] = hy; }
       } else {
         // Le projectile a disparu : la queue se résorbe vers la tête.
@@ -294,8 +299,17 @@ export class CombatFx {
       const maxLen = tr.width * 9;
       let len = 0;
       for (let j = 2; j < tr.pts.length; j += 2) {
-        len += Math.hypot(tr.pts[j] - tr.pts[j - 2], tr.pts[j + 1] - tr.pts[j - 1]);
-        if (len > maxLen || j / 2 >= TRAIL_PTS) { tr.pts.length = j + 2; break; }
+        if (j / 2 >= TRAIL_PTS) { tr.pts.length = j; break; }
+        const seg = Math.hypot(tr.pts[j] - tr.pts[j - 2], tr.pts[j + 1] - tr.pts[j - 1]);
+        if (len + seg > maxLen) {
+          // Le dernier segment est raccourci à la longueur restante (avant : gardé entier, même très long).
+          const k = seg > 0 ? (maxLen - len) / seg : 0;
+          tr.pts[j] = tr.pts[j - 2] + (tr.pts[j] - tr.pts[j - 2]) * k;
+          tr.pts[j + 1] = tr.pts[j - 1] + (tr.pts[j + 1] - tr.pts[j - 1]) * k;
+          tr.pts.length = j + 2;
+          break;
+        }
+        len += seg;
       }
       if (!alive && (tr.fade <= 0 || tr.pts.length <= 2)) { this.trails.splice(i, 1); continue; }
       const n = tr.pts.length / 2;

@@ -20,7 +20,12 @@ export function updateHero(c: CombatCtx, dt: number): void {
   if (hp.hp <= 0) { v.x *= 0.85; v.y *= 0.85; return; }
 
   input.updateAim(t, (sx, sy) => game.camera.screenToWorld(sx, sy));
-  if (input.aim.x || input.aim.y) { h.aimX = input.aim.x; h.aimY = input.aim.y; }
+  // Sans stick de visée (tactile), la visée de l'entrée = direction du déplacement. Juste après un tir,
+  // on garde la direction du tir : sinon le perso (et l'arc de Ren) se retournait vers où il marche.
+  h.aimHold = Math.max(0, (h.aimHold ?? 0) - dt);
+  const ml = Math.hypot(input.move.x, input.move.y);
+  const fromMove = ml > 1e-6 && Math.abs(input.aim.x - input.move.x / ml) < 1e-3 && Math.abs(input.aim.y - input.move.y / ml) < 1e-3;
+  if ((input.aim.x || input.aim.y) && !(fromMove && h.aimHold > 0)) { h.aimX = input.aim.x; h.aimY = input.aim.y; }
 
   // Minuteries
   for (let i = 0; i < 4; i++) h.cds[i] = Math.max(0, h.cds[i] - dt);
@@ -151,6 +156,7 @@ export function castSkill(c: CombatCtx, h: HeroC, i: number, echo = 1): boolean 
     if (f !== undefined) {
       const ft = c.world.get(f, Transform)!; const d = Math.hypot(ft.x - t.x, ft.y - t.y) || 1;
       h.aimX = (ft.x - t.x) / d; h.aimY = (ft.y - t.y) / d;
+      h.aimHold = 0.7;
     }
   }
   if (echo === 1) {

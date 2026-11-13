@@ -43,6 +43,8 @@ export interface HeroC {
   facing: 1 | -1;
   aimX: number;
   aimY: number;
+  /** Tactile / manette : temps pendant lequel la visée garde la direction du dernier tir (au lieu de suivre le déplacement). */
+  aimHold?: number;
   statuses: Statuses;
   potions: number;
   /** Ruée de technique en cours (dashStrike / execute). */

@@ -493,7 +493,7 @@ export class RunScene extends Scene implements CombatCtx {
     sh.anchor.set(0.5); sh.width = 26 * sz; sh.height = 9 * sz; sh.alpha = 0.6;
     node.addChild(sh, body);
     attachView(this.world, this.g.renderer, e, node, 'entities', 40);
-    this.vfx.combat.trail(node, hero ? o.color : 0xb07bff, (hero ? 12 : 10) * sz, BODY_Y);
+    this.vfx.combat.trail(node, hero ? o.color : 0xb07bff, (hero ? 12 : 10) * sz, BODY_Y, o.x, o.y);
     return e;
   }
 

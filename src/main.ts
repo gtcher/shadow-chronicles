@@ -1,3 +1,4 @@
+import * as shaders from '@engine/render/shaders';
 import { Game } from '@engine';
 import { startApp } from '@game/flow';
 // Pixi enregistre ses « pipes » de rendu (TilingSprite, Text, BitmapText, Graphics…) à l'import du
@@ -73,6 +74,8 @@ async function boot(): Promise<void> {
 
   // Accès console pour le débogage : window.game
   (window as unknown as { game: unknown }).game = game;
+  // Infrastructure de shaders (tests e2e, essais en console).
+  (window as unknown as { scShaders: unknown }).scShaders = shaders;
 }
 
 initPwa(); // service worker, installation, mises à jour (production seulement)

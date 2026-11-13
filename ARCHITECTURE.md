@@ -152,6 +152,7 @@ exit():   this.vfx.destroy();
 | Effets prêts | | `vfx.explosion()`, `shockwave()`, `pickup()`, `heal()`, `flash()`, `setHealth(ratio)` (pulsation rouge < 30 %) |
 | Qualité | `low/medium/high/auto` (auto = détection appareil + baisse si < 48 i/s) ; `?quality=low` dans l'URL | `vfx.setQuality(q)`, `vfx.onQualityChange` |
 | Accessibilité | à exposer dans les options (UI) et sauvegarder | `vfx.settings.shake` (0–1), `.flashes`, `.damageNumbers` puis `vfx.applySettings()` |
+| `CombatFx` (`vfx/combat/`) | effets de combat en shaders maison (WebGL) : dissolution des corps (bord en braise), flash d'impact sur la silhouette, croissant de lame, rayons, rubans derrière les projectiles (un seul mesh), onde de choc en distorsion (étage `post.world`, order 50, posée seulement quand une onde est active). Lueurs « douces » `1 − e^−I` : pas de tache blanche en mêlée. Sans WebGL ou avec `?noshaders` : anciens effets | `vfx.combat.distort(x, y, rayon, force, durée)`, `slash()`, `beam()`, `trail(node, couleur, largeur, yOff)`, `hitFlash(node, body, k)`, `corpse()` + `dissolve()` ; `combat.soft` (flashs coupés / confort) atténue flash et distorsion et coupe la séparation des couleurs ; qualité `low` : pas de distorsion, 12 rubans max |
 
 Moteur (ajouts) : `renderer.onBeforeRender(fn)` (passes hors écran), `renderer.setResolution(r)`,
 `camera.kick(dx, dy, force)` (à-coup directionnel en ressort), `camera.shakeScale`,

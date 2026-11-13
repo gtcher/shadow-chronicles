@@ -14,6 +14,12 @@ export class CombatFeedback {
   private arcs: Arc[] = [];
   private arcPool: Graphics[] = [];
 
+  /** Version shader des lames et rayons (effets VFX) : renvoie false si indisponible. */
+  fancy: {
+    slash(x: number, y: number, angle: number, range: number, arc: number, color: number): boolean;
+    beam(x0: number, y0: number, x1: number, y1: number, color: number, width?: number): boolean;
+  } | null = null;
+
   /** Confort visuel : seuls les chiffres et les textes importants (taille ≥ 26) flottent encore. */
   quiet = false;
 
@@ -36,6 +42,7 @@ export class CombatFeedback {
 
   /** Arc de coup de lame (mêlée). */
   slash(x: number, y: number, angle: number, range: number, arc: number, color: number): void {
+    if (this.fancy?.slash(x, y, angle, range, arc, color)) return;
     this.fx(0.16, (g, k) => {
       const r = range * (0.75 + 0.25 * (1 - k));
       const a0 = angle - arc / 2, a1 = angle + arc / 2;
@@ -57,6 +64,7 @@ export class CombatFeedback {
 
   /** Traînée droite (ruée, charge). */
   streak(x0: number, y0: number, x1: number, y1: number, color: number, width = 26): void {
+    if (this.fancy?.beam(x0, y0, x1, y1, color, width)) return;
     this.fx(0.25, (g, k) => {
       g.moveTo(x0, y0).lineTo(x1, y1).stroke({ color, width: width * k, alpha: 0.6 * k, cap: 'round' });
       g.moveTo(x0, y0).lineTo(x1, y1).stroke({ color: 0xffffff, width: width * 0.25 * k, alpha: 0.9 * k, cap: 'round' });

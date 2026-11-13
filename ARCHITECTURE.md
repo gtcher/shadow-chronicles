@@ -206,3 +206,10 @@ Héros dessinés en piste A (« peint encré »), ennemis et boss en piste B («
 - Flash blanc : 1re image de « touché » seulement, au plus une fois toutes les 0,3 s par ennemi ; la mort démarre après le flash (l'éclat vient des effets).
 - `RunScene` choisit l'image : course ou idle selon la vitesse, attaque à chaque technique du héros ou calée sur la fenêtre `windup` des ennemis, touché sur dégâts, mort jouée par une dépouille (`spawnCorpse`).
 - `?persos=v1` dans l'URL revient aux anciens sprites (comparaison).
+
+## En ligne (`src/online/`, `supabase/`)
+
+Comptes (code par e-mail), sauvegarde cloud et classement en ligne via Supabase, appelé directement depuis le navigateur.
+Tout est facultatif : sans configuration, sans réseau ou sans compte, le jeu se comporte comme avant.
+Le client Supabase est chargé à la demande (écran Classement, ou session déjà ouverte sur l'appareil).
+Les scores ne passent que par des fonctions SQL qui contrôlent leur vraisemblance. Détails et installation : `supabase/README.md`.

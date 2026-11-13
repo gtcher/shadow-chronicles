@@ -98,7 +98,9 @@ export class UiRoot {
     addEventListener('pointerdown', (e) => this.setDevice(e.pointerType === 'touch' ? 'touch' : 'mouse'), true);
     addEventListener('keydown', (e) => {
       if (e.code !== 'Escape' && e.code !== 'KeyP') this.setDevice('keyboard');
-      if ((e.code === 'Escape' || e.code === 'KeyP') && !e.repeat) { e.preventDefault(); this.back(); }
+      // P ne doit pas fermer l'écran quand on tape dans un champ (e-mail, pseudo du classement en ligne).
+      const typing = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
+      if ((e.code === 'Escape' || (e.code === 'KeyP' && !typing)) && !e.repeat) { e.preventDefault(); this.back(); }
     });
     this.loop();
   }

@@ -13,6 +13,9 @@ import { checkAchievements, nearAchievements, tierColor, type RunView } from './
 import { BASE_MODS, PACTS, applyDailyMods, applyDiscovery, applyPacts, buildDaily, dailyScore, pactPoints, seedStream, shareText, type DailyConfig, type PactRanks } from './modes';
 import { dailyIntroScreen, dailyResultScreen, pactsScreen, missionsScreen } from './screens';
 import { lookScreen, recordsScreen } from './screensMeta';
+import { onlineScreen } from './screensOnline';
+import { OnlineService } from '../online/client';
+import { CloudSync } from '../online/sync';
 import { LOOK_SLOTS, autoEquip, cosmeticDef, equipLook, heroLook, lookOptions, masteryTrack, nextCosmetic, titleName, unlockedIds, type LookSlot } from './cosmetics';
 import { leaderboard, pushRecord, type RunRecord } from './records';
 import { applyVfxSettings, applyGameplaySettings } from './settingsLink';
@@ -98,12 +101,34 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
   const ui = mountUI(game as unknown as Game);
   if (save) connectSave(ui, save);
   // Outils de test (robot, console) : accès à la sauvegarde et aux écrans.
-  (window as unknown as { sc: unknown }).sc = { save, ui, title: () => title(), pacts: () => pacts(), daily: () => dailyIntro(), missions: () => missionsView(), looks: (h: HeroId) => looks(h), records: () => records('all') };
+  (window as unknown as { sc: unknown }).sc = { save, ui, title: () => title(), pacts: () => pacts(), daily: () => dailyIntro(), missions: () => missionsView(), looks: (h: HeroId) => looks(h), records: () => records('all'), online: () => onlineView() };
   const url = (k: string) => game.assets.url(k);
   if (save) ui.codexInfo = () => ({ ...codexFromProfile(save.profile), assetUrl: url });
   // Flashs et chiffres de dégâts suivent les réglages, même modifiés en pleine run.
   ui.settings.onChange((s) => { applyGameplaySettings(s); const sc = game.scenes.current; const run = sc as Partial<RunScene> | null; if (run?.vfx) applyVfxSettings(run.vfx, s); if (run?.feedback) run.feedback.quiet = s.comfort; });
   let hero = opts.hero;
+  // En ligne (facultatif) : compte, sauvegarde cloud, classement. null = jeu 100 % hors ligne.
+  const online = OnlineService.get();
+  const qs = new URLSearchParams(location.search);
+  // Runs de test (?hero=, ?wave=, ?seed=, ?bot) : jamais envoyées au classement.
+  const submitScores = !opts.skipTitle && !qs.has('bot') && !qs.has('seed');
+  const sync = save && online ? new CloudSync(save, online, {
+    onConflict: () => { if (!document.querySelector('.sc-online')) ui.hud.toast('☁ Deux sauvegardes', 'Choisis laquelle garder dans 🌐 Classement', '#8fc7ff'); },
+    onPulled: () => {
+      ui.hud.toast('☁ Progression du compte reprise', 'Synchronisée depuis ton autre appareil', '#8fc7ff');
+      if (!ui.inRun && document.querySelector('[aria-label="Menu principal"]')) title();
+    },
+  }) : null;
+  if (online) {
+    // Premier pseudo : la meilleure run de l'appareil entre au classement.
+    online.onFirstPseudo = () => {
+      const best = save ? leaderboard(save.profile, undefined, 10).find((r) => !r.discovery) : undefined;
+      if (best && submitScores) online.submitRun({ hero: best.hero, mode: best.mode, wave: best.wave, won: best.won, timeSec: best.timeSec, kills: best.kills, pact: best.pact, discovery: false },
+        { chests: save?.profile.missions?.chestsOpened ?? 0, streakMax: save?.profile.daily.streakMax ?? 0 });
+    };
+    // Déjà connecté sur cet appareil (ou retour d'un lien de connexion) : on se reconnecte en arrière-plan.
+    if (online.hasPendingSession()) setTimeout(() => void online.ready(), 300);
+  }
   const hex = (c: number) => `#${c.toString(16).padStart(6, '0')}`;
   let offRun: Array<() => void> = [];
 
@@ -141,6 +166,8 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
       looks: save ? Object.fromEntries((['taro', 'mei', 'sena', 'ren'] as HeroId[]).map((id) => { const l = heroLook(save!.profile, id); return [id, { title: l.title, frame: l.frame }]; })) : undefined,
       onLook: save ? (h) => looks(h) : undefined,
       onRecords: save ? () => records('all') : undefined,
+      onOnline: online ? () => onlineView() : undefined,
+      online: online?.player ? { pseudo: online.player.pseudo } : undefined,
       codex: save ? { pct: codexProgress(codexFromProfile(save.profile)).pct, fresh: codexFresh(codexFromProfile(save.profile)) } : undefined,
       onCodex: save ? () => { ui.openCodex(); } : undefined,
     });
@@ -175,6 +202,12 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
       dailyBest: daily ? { score: daily[1].score, day: daily[0], wave: daily[1].wave } : undefined,
       onTab: (t) => records(t), onPlay: () => void startRun(tab === 'all' ? hero : tab, 1), onBack: () => title(),
     }));
+  };
+
+  /** Classement en ligne et compte joueur. */
+  const onlineView = (tab?: 'progress' | 'daily' | 'missions') => {
+    if (!online) { title(); return; }
+    ui.show(onlineScreen({ online, sync, tab, day: buildDaily().day, onPlay: () => void startRun(hero, 1), onBack: () => title() }));
   };
 
   const missionsView = () => {
@@ -290,6 +323,11 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
         return out;
       });
       unlock(scene, false);
+      if (online && submitScores) {
+        online.submitRun({ hero: r.hero, mode: scene.mode, wave: r.wave, won: r.won, timeSec: r.timeSec, kills: r.kills, pact: pts, discovery: !!scene.mods.labels.includes('Découverte') },
+          { chests: save.profile.missions?.chestsOpened ?? 0, streakMax: save.profile.daily.streakMax });
+        sync?.pushNow();
+      }
       near = nearAchievements(save.profile, view(scene, r, false));
       gains = { eclats: rew.currencies.eclats };
       from = rew.mastery.from; to = rew.mastery.to; level = to; xpFrom = rew.mastery.xpFrom; xpTo = rew.mastery.xpTo;
@@ -343,6 +381,8 @@ export async function startApp(game: Game<GameEvents>, opts: { hero: HeroId; wav
         if (res.usedGrace) rewards.push('bougie de veille utilisée');
       });
       unlock(scene, false);
+      if (online && submitScores && counted) online.submitDaily({ day: d.day, hero: r.hero, score: sc.total, wave: r.wave, won: r.won, timeSec: r.timeSec, kills: r.kills });
+      sync?.pushNow();
     }
     ui.hud.el.hidden = true;
     ui.show(dailyResultScreen({

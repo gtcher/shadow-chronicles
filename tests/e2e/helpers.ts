@@ -10,6 +10,8 @@ export async function open(page: Page, query = ''): Promise<string[]> {
   await page.addInitScript(() => { try { localStorage.setItem('sc-settings-v1', JSON.stringify({ tutorialDone: true, sanctuaryGuideDone: true, comfortAsked: true })); } catch { /* */ } });
   await page.goto(`/${query}`);
   await expect(page.locator('#loading')).toHaveCount(0, { timeout: 60_000 });
+  // L'écran de chargement disparaît avant que l'appli (window.sc) soit prête : on l'attend aussi.
+  if (!query.includes('demo')) await page.waitForFunction(() => (window as unknown as { sc?: unknown }).sc, null, { timeout: 60_000 });
   return errors;
 }
 

@@ -141,7 +141,7 @@ function attackPose(c,P,p,k){
     let u=lerp(P.arms[1].u,-2.7,up), f=lerp(P.arms[1].f,-2.6,up);
     u=lerp(u,1.45,th); f=lerp(f,1.5,th);
     u=lerp(u,w==='orb'?.7:.25,back); f=lerp(f,w==='orb'?1.4:1.0,back);
-    P.arms[1]={u,f}; P.lean=lerp(-.12*k*up,.22*k,th)*(1-back); P.x=(lerp(-2*up,6,th))*k*(1-back);
+    P.arms[1]={u,f}; P.staffDir=lerp(lerp(-1.62,-2.2,up),-.35,th)*(1-back)+-1.62*back; P.lean=lerp(-.12*k*up,.22*k,th)*(1-back); P.x=(lerp(-2*up,6,th))*k*(1-back);
     P.charge=up*(1-th*.7)*(1-back); P.sy=1+.04*k*up*(1-th);
     P.capeFlow=4+10*th*(1-back); P.hairLag=-.3*up+.6*th*(1-back);
     if(p>.4&&p<.85) P.fx.push({t:'orb',d:(p-.4)/.45});
@@ -279,7 +279,10 @@ function drawWeapon(g,c,P,style,which){
     fillShape(g,style==='B'?mix('#9aa0ad','#06070c',.72):'#dcd6e2',style);
     glow(g,gc,8,style);g.strokeStyle=gc;g.lineWidth=1.1;g.beginPath();g.moveTo(4,-1.9);g.quadraticCurveTo(12,-3,21,.2);g.stroke();noGlow(g);
   } else if(w==='staff'){
-    g.rotate(-1.45);
+    // Bâton tenu debout devant l'épaule (tête au-dessus de la main, côté regard). Avant : -1,45 le
+    // couchait vers l'arrière, la tête passait derrière l'épaule et la nuque.
+    // Orientation donnée dans le monde (P.staffDir : -π/2 = debout, 0 = vers l'avant), puis ramenée au repère de la main.
+    g.rotate((P.arms[which]?.f??1)+(P.staffDir??-1.62));
     const wood=style==='B'?mix('#6b5a3a','#06070c',.8):'#7a6440';
     g.beginPath();g.moveTo(-26,-1.3);g.lineTo(36,-1.8);g.lineTo(36,1.8);g.lineTo(-26,1.3);g.closePath();fillShape(g,wood,style);
     // bagues dorées + ruban

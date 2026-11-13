@@ -18,6 +18,9 @@ export class CastShadows {
   strength = 0.85;
   private readonly pool: Sprite[] = [];
   private readonly blur = new BlurFilter({ strength: 3, quality: 2 });
+  /** État lissé par lanceur (direction, longueur, opacité) : l'ombre tourne en douceur, sans saut. */
+  private readonly smooth = new WeakMap<object, { dx: number; dy: number; len: number; alpha: number }>();
+  private last = 0;
 
   constructor(private readonly casters: Container, shadowLayer: Container) {
     this.blur.resolution = 0.5;
@@ -34,8 +37,13 @@ export class CastShadows {
   /** À appeler une fois par image, avec les lumières de l'image (avant qu'elles soient vidées). */
   update(lights: Iterable<Light>, extra: readonly Light[]): void {
     if (!this.enabled) return;
+    const now = performance.now() / 1000;
+    const dt = this.last ? Math.min(0.1, Math.max(0, now - this.last)) : 1;
+    this.last = now;
+    const ease = 1 - Math.exp(-dt * 5);
     const strong: Light[] = [];
-    const take = (l: Light) => { if (l.radius >= 150 && l.intensity >= 0.45 && (l.life === undefined || (l.maxLife ?? 0) > 0.3)) strong.push(l); };
+    // Lumières fixes ou durables seulement : les éclairs brefs (impacts, projectiles) feraient sauter les ombres.
+    const take = (l: Light) => { if (l.radius >= 150 && l.intensity >= 0.45 && l.life === undefined) strong.push(l); };
     for (const l of lights) take(l);
     for (const l of extra) take(l);
 
@@ -55,22 +63,31 @@ export class CastShadows {
         src = sh; ox = b.x; oy = b.y;
       }
       const fx = child.x, fy = child.y; // pieds
-      // Lumière dominante : la plus forte au point des pieds (hors lumière posée sur le lanceur lui-même).
-      let best = 0, dx = 0.35, dy = 1, dist = 0, rad = 1;
+      // Direction : moyenne pondérée des lumières proches et de la lune (bas-droite). Le poids d'une lumière
+      // s'éteint en douceur vers son bord et tout près de sa source : plus de bascule d'un coup.
+      const MOON = 0.12;
+      let wx = 0.33 * MOON, wy = 0.94 * MOON, wsum = MOON, lsum = 0.55 * MOON, best = 0;
       for (const l of strong) {
         const lx = fx - l.x, ly = fy - l.y, d = Math.hypot(lx, ly);
-        if (d < 28 || d > l.radius) continue;
-        const a = 1 - d / l.radius, s = l.intensity * a * a;
-        if (s > best) { best = s; dx = lx / d; dy = ly / d; dist = d; rad = l.radius; }
+        if (d > l.radius || d < 1) continue;
+        const a = 1 - d / l.radius, near = Math.min(1, d / 60);
+        const s = l.intensity * a * a * near;
+        if (s <= 0) continue;
+        wx += (lx / d) * s; wy += (ly / d) * s; wsum += s;
+        lsum += Math.min(1.25, 0.35 + (d / l.radius) * 1.3) * s;
+        best = Math.max(best, s);
       }
-      let alpha: number, len: number;
-      if (best > 0) {
-        alpha = Math.min(1, 0.45 + best * 2) * this.strength;
-        len = Math.min(1.25, 0.35 + (dist / rad) * 1.3);
-      } else {
-        const k = Math.hypot(dx, dy); dx /= k; dy /= k;
-        alpha = 0.55 * this.strength; len = 0.55;
+      const k = Math.hypot(wx, wy) || 1;
+      const tdx = wx / k, tdy = wy / k, tlen = lsum / wsum;
+      const talpha = (best > 0 ? Math.min(1, 0.55 + best * 1.6) : 0.55) * this.strength;
+      let st = this.smooth.get(child);
+      if (!st) { st = { dx: tdx, dy: tdy, len: tlen, alpha: talpha }; this.smooth.set(child, st); }
+      else {
+        st.dx += (tdx - st.dx) * ease; st.dy += (tdy - st.dy) * ease;
+        const m = Math.hypot(st.dx, st.dy) || 1; st.dx /= m; st.dy /= m;
+        st.len += (tlen - st.len) * ease; st.alpha += (talpha - st.alpha) * ease;
       }
+      const dx = st.dx, dy = st.dy, len = st.len, alpha = st.alpha;
       let s = this.pool[n];
       if (!s) { s = new Sprite(); s.tint = 0x000000; this.pool.push(s); this.root.addChild(s); }
       s.visible = true;

@@ -63,6 +63,8 @@ export class Lighting {
    * aux mêmes transformations que les sprites couleur. Vide = relief deviné partout.
    */
   readonly normals = new Container({ label: 'normals' });
+  /** Appelés juste avant le tampon de normales (pantins : recopier la pose finale, caméra comprise). */
+  readonly prepare = new Set<() => void>();
   /** Ombres portées des combattants et du décor. */
   readonly shadows: CastShadows;
   private rtNormals: RenderTexture | null = null;
@@ -207,6 +209,7 @@ export class Lighting {
   /** Tampon de normales + liaison des textures du filtre de relief. */
   private renderNormals(wt: Matrix): void {
     const relief = this.relief!;
+    for (const f of this.prepare) f();
     if (!this.normals.children.length) { relief.bind(this.rt!.source, null); return; }
     const r = this.renderer, s = this.normalScale;
     const tw = Math.max(1, Math.ceil(r.width * s)), th = Math.max(1, Math.ceil(r.height * s));

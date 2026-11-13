@@ -37,7 +37,7 @@ export function makePuppetSheet(key: string, def: Def, meta: PuppetMeta, color: 
 const hexNum = (h: string) => parseInt(h.replace('#', ''), 16);
 
 /** Fabrique d'une pièce de normales (fournie par l'éclairage) : même transform que la pièce couleur. */
-export type NormalPieceFactory = (tex: Texture) => Container;
+export type NormalPieceFactory = (tex: Texture, anchorX: number, anchorY: number) => Container & { normalAlpha: number };
 
 export class Puppet extends Container {
   readonly sheet: PuppetSheet;
@@ -50,10 +50,15 @@ export class Puppet extends Container {
   private readonly outlineAlpha: number;
   /** Couche de normales (monde) et ses pièces, si l'éclairage en relief est branché. */
   private normals: Container | null = null;
-  private readonly npieces: Container[] = [];
+  private readonly npieces = new Map<string, Container & { normalAlpha: number }>();
+  /** Silhouette au repos pour les ombres portées (hors scène, lue par CastShadows). */
+  private shadowSprite: Sprite | null = null;
   private nfactory: NormalPieceFactory | null = null;
   private flashOn = false;
+  private readonly seen = new Set<string>();
   anim: PuppetAnim = 'idle';
+  /** Flash d'impact venu du jeu (0..1) : la silhouette blanche transparaît à travers les pièces. */
+  hit = 0;
 
   constructor(sheet: PuppetSheet) {
     super();
@@ -71,11 +76,13 @@ export class Puppet extends Container {
   }
 
   /** Branche la couche de normales de l'éclairage (pièces dessinées dans `layer`, en espace monde). */
-  attachNormals(layer: Container, factory: NormalPieceFactory): void {
-    if (!this.sheet.normal) return;
-    this.normals = new Container();
+  attachNormals(layer: Container, factory: NormalPieceFactory): boolean {
+    if (!this.sheet.normal) return false;
+    this.normals = new Container({ label: 'puppet-normals' });
+    this.normals.sortableChildren = true;
     this.nfactory = factory;
     layer.addChild(this.normals);
+    return true;
   }
 
   /** Met le pantin dans la pose `anim` à la phase p ∈ [0, 1]. `aim` : visée relative au regard (arc). */
@@ -86,6 +93,7 @@ export class Puppet extends Container {
     const placed = solvePuppet(c, P, anim, p, now);
     const k = 1 / s.meta.ppu;
     const flash = (P.flash ?? 0) > 0;
+    const fl = flash ? 1 : Math.min(1, this.hit);
     const fade = (P.alpha ?? 1) * (1 - (P.dis ?? 0) * 0.9);
     let n = 0;
     const g = this.fx; g.clear();
@@ -97,15 +105,16 @@ export class Puppet extends Container {
       const o = this.sprite(this.outl, this.back, n, s.tex[it.id + '~o']);
       const sp = this.sprite(this.parts, this.front, n, t);
       for (const q of [o, sp]) { q.anchor.set(cell.ax, cell.ay); place(q, m); q.visible = true; }
-      o.tint = flash ? 0xffffff : this.outlineTint;
-      o.alpha = flash ? 1 : this.outlineAlpha;
+      o.tint = fl > 0.05 ? 0xffffff : this.outlineTint;
+      o.alpha = this.outlineAlpha + (1 - this.outlineAlpha) * fl;
       sp.tint = it.tint ?? 0xffffff;
-      sp.alpha = flash ? 0.3 : 1;
+      sp.alpha = 1 - 0.7 * fl;
       if (this.normals && this.nfactory) {
-        let np = this.npieces[n];
+        // Une pièce de normales par id (sa géométrie est fixée à la création) ; zIndex = ordre de dessin.
+        let np = this.npieces.get(it.id);
         const nt = s.ntex[it.id];
-        if (!np && nt) { np = this.nfactory(nt); this.npieces[n] = np; this.normals.addChild(np); }
-        if (np && nt) { (np as unknown as { texture: Texture }).texture = nt; place(np, m, cell); np.visible = true; }
+        if (!np && nt) { np = this.nfactory(nt, cell.ax, cell.ay); this.npieces.set(it.id, np); this.normals.addChild(np); }
+        if (np) { place(np, m); np.visible = true; np.zIndex = n; np.normalAlpha = fade; this.seen.add(it.id); }
       }
       if (it.id === 'weapon' && c.weapon === 'bow') this.bowString(g, it.m, P.drawPull ?? 0);
       if (it.id === 'weapon' && (c.weapon === 'staff' || c.weapon === 'orb') && (P.charge ?? 0) > 0.02) {
@@ -119,7 +128,7 @@ export class Puppet extends Container {
     }
     drawFx(g, c, P, now);
     for (let i = n; i < this.parts.length; i++) { this.parts[i].visible = false; this.outl[i].visible = false; }
-    for (let i = n; i < this.npieces.length; i++) this.npieces[i].visible = false;
+    if (this.npieces.size) { for (const [id, np] of this.npieces) if (!this.seen.has(id)) np.visible = false; this.seen.clear(); }
     this.front.alpha = this.back.alpha = fade;
     this.flashOn = flash;
   }
@@ -140,14 +149,35 @@ export class Puppet extends Container {
   /** Recopie la transformation monde du pantin sur sa couche de normales (appelé après le placement). */
   syncNormals(): void {
     if (!this.normals) return;
-    const wt = this.worldTransform;
-    this.normals.setFromMatrix(new Matrix(wt.a, wt.b, wt.c, wt.d, wt.tx, wt.ty));
-    this.normals.visible = this.visible && (this.parent?.visible ?? true) && !this.flashOn;
+    // Le tampon de normales est dessiné en espace monde : transformation du nœud (dans la couche des
+    // entités, sans décalage) composée avec celle du pantin, caméra exclue.
+    const node = this.parent;
+    this.updateLocalTransform();
+    NM.copyFrom(this.localTransform);
+    if (node) { node.updateLocalTransform(); NM.prepend(node.localTransform); }
+    this.normals.setFromMatrix(NM);
+    this.normals.visible = this.visible && this.alpha > 0.05 && (node?.visible ?? true) && !this.flashOn;
+  }
+
+  /** Silhouette (texture figée au repos) servant aux ombres portées ; échelle et opacité suivent le pantin. */
+  setShadow(tex: Texture, ax: number, ay: number): void {
+    this.shadowSprite ??= new Sprite();
+    this.shadowSprite.texture = tex;
+    this.shadowSprite.anchor.set(ax, ay);
+  }
+
+  get shadow(): Sprite | null {
+    const s = this.shadowSprite;
+    if (s) { s.scale.copyFrom(this.scale); s.alpha = this.alpha; s.visible = this.visible; }
+    return s;
   }
 
   override destroy(options?: Parameters<Container['destroy']>[0]): void {
     this.normals?.destroy({ children: true });
     this.normals = null;
+    this.npieces.clear();
+    this.shadowSprite?.destroy();
+    this.shadowSprite = null;
     super.destroy(options);
   }
 
@@ -234,9 +264,8 @@ function drawFx(g: Graphics, c: Def, P: ReturnType<typeof poseOf>, now: number):
     }
   }
 }
-function place(o: Container, m: M, cell?: { ax: number; ay: number; w: number; h: number }): void {
-  // Pièce de normales (Mesh sans ancre) : l'ancre est appliquée dans la matrice.
-  const t: M = cell ? mul(m, [1, 0, 0, 1, -cell.ax * cell.w, -cell.ay * cell.h]) : m;
-  TMP.set(t[0], t[1], t[2], t[3], t[4], t[5]);
+const NM = new Matrix();
+function place(o: Container, m: M): void {
+  TMP.set(m[0], m[1], m[2], m[3], m[4], m[5]);
   o.setFromMatrix(TMP);
 }

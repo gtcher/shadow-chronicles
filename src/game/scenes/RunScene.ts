@@ -171,6 +171,12 @@ export class RunScene extends Scene implements CombatCtx {
   private rigTick = 0;
   /** Feuilles cuites par clé (héros, ennemi + teinte, boss). */
   private rigs = new Map<number, RigState>();
+  /** Pantins branchés sur le tampon de normales (héros, élites, boss) ; silhouettes d'ombre par feuille. */
+  private reliefPuppets = new Set<Puppet>();
+  private puppetShadows = new Map<object, { tex: Texture; ax: number; ay: number } | null>();
+  private readonly syncPuppetNormals = (): void => {
+    for (const p of this.reliefPuppets) { if (p.destroyed) this.reliefPuppets.delete(p); else p.syncNormals(); }
+  };
   private corpses: Array<{ node: Container; sheet: RigSheet; t: number; quad: FrameQuad | null; color: number; snap?: Texture }> = [];
   private heroAtkSeq = 0;
   private heroAtkSeen = 0;
@@ -242,6 +248,7 @@ export class RunScene extends Scene implements CombatCtx {
     // Tests e2e / essais en console : pièces de normales du tampon d'éclairage.
     (window as unknown as { scVfx: unknown }).scVfx = { NormalPiece, textureFrom: (c: HTMLCanvasElement) => Texture.from(c) };
     this.arena.attach(this.vfx);
+    this.vfx.lighting.prepare.add(this.syncPuppetNormals);
     this.particles = this.vfx.particles;
     this.feedback = new CombatFeedback(renderer.layers.overlay);
     this.feedback.fancy = this.vfx.combat;
@@ -300,6 +307,9 @@ export class RunScene extends Scene implements CombatCtx {
     this.offResize?.();
     this.offRig?.();
     this.rigs.clear(); this.corpses = [];
+    this.reliefPuppets.clear();
+    for (const s of this.puppetShadows.values()) s?.tex.destroy(true);
+    this.puppetShadows.clear();
     this.arena.destroy();
     this.vfx.destroy();
     this.hazards.clear();
@@ -1003,7 +1013,9 @@ export class RunScene extends Scene implements CombatCtx {
       body.scale.x = facing * k * (1 + 0.1 * sq); body.scale.y = k * (1 - 0.08 * sq);
       body.alpha = alpha;
       body.tint = flash > 0 && !this.vfx.combat.on ? 0xffb0a0 : tint;
-      this.vfx.combat.hitFlash(node, body, sq);
+      // Pantin peint : son flash passe par le contour blanc (pose « touche »), pas par le quad de CombatFx.
+      if (body instanceof Puppet) body.hit = this.vfx.combat.on ? sq * (this.vfx.combat.soft ? 0.5 : 0.85) : 0;
+      else this.vfx.combat.hitFlash(node, body, sq);
       const aura = node.getChildByLabel('aura');
       if (aura) aura.alpha = aura instanceof Graphics ? 0.7 + 0.3 * Math.sin(this.renderTime * 3 + phase) : 0.3 + 0.12 * Math.sin(this.renderTime * 3 + phase);
       return;
@@ -1039,6 +1051,13 @@ export class RunScene extends Scene implements CombatCtx {
       if (body instanceof Sprite) body.anchor.set(sheet.anchorX, sheet.anchorY);
       body.scale.set(sheet.scale); body.label = 'body'; body.tint = tint;
       node.addChild(body);
+      if (body instanceof Puppet) {
+        if (body.attachNormals(this.vfx.lighting.normals, (t, ax, ay) => new NormalPiece(t, ax, ay))) this.reliefPuppets.add(body);
+        // Ombre portée : silhouette au repos, figée une fois par feuille (floutée au sol, la pose importe peu).
+        let sh = this.puppetShadows.get(sheet.puppet!);
+        if (sh === undefined) { sh = this.snapshotPuppet(body, 1); this.puppetShadows.set(sheet.puppet!, sh); }
+        if (sh) body.setShadow(sh.tex, sh.ax, sh.ay);
+      }
       if (entity >= 0) this.rigs.set(entity, { sheet, anim: 'idle', t: Math.random(), hurt: 0, atk: -1, wind: 0, flash: 0, hp: Infinity, prevState: 'move' });
       return node;
     }
@@ -1137,12 +1156,12 @@ export class RunScene extends Scene implements CombatCtx {
    * Silhouette figée d'un pantin (texture à la taille de l'écran) et son ancre, pour la dissolution en
    * shader. generateTexture rend le pantin dans son repère local (sa propre échelle est ignorée).
    */
-  private snapshotPuppet(b: Puppet): { tex: Texture; ax: number; ay: number } | null {
+  private snapshotPuppet(b: Puppet, maxRes = 3): { tex: Texture; ax: number; ay: number } | null {
     try {
       const r = (this.g.renderer.app.renderer as unknown as { generateTexture: (o: unknown) => Texture });
       const bounds = b.getLocalBounds();
       if (bounds.width <= 0 || bounds.height <= 0) return null;
-      const tex = r.generateTexture({ target: b, resolution: Math.min(3, Math.abs(b.scale.y) * (window.devicePixelRatio || 1)) });
+      const tex = r.generateTexture({ target: b, resolution: Math.min(maxRes, Math.abs(b.scale.y) * (window.devicePixelRatio || 1)) });
       return { tex, ax: -bounds.x / bounds.width, ay: -bounds.y / bounds.height };
     } catch { return null; }
   }

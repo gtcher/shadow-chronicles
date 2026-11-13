@@ -15,6 +15,14 @@ export const RIG_LEN = ANIM_LEN as Record<RigAnim, number>;
 /** Nombre d'images cuites par animation. */
 export const BAKE_FRAMES: Record<RigAnim, number> = { idle: 12, course: 12, attaque: 10, touche: 4, mort: 12 };
 const LOOPS = new Set<RigAnim>(['idle', 'course']);
+/**
+ * Armes de tir (arc) : angles de visée cuits en plus de l'horizontale (radians, négatif = haut).
+ * Seules idle, course et attaque tournent ; elles sont cuites avec moins d'images par angle.
+ */
+export const AIM_ANGLES = [-1.15, -0.6, 0.6, 1.15];
+export const AIM_ANIMS: RigAnim[] = ['idle', 'course', 'attaque'];
+const AIM_FRAMES: Partial<Record<RigAnim, number>> = { idle: 6, course: 8, attaque: 10 };
+export const aimsFor = (def: Record<string, unknown>): number[] => (def.weapon === 'bow' ? AIM_ANGLES : []);
 
 /** Hauteur nominale d'un combattant du squelette, en unités, avant son `scale`. */
 const NOMINAL = { h: 96, w: 48 } as const;
@@ -25,7 +33,7 @@ const MAX_ATLAS = 4096;
 const PAD = 2;
 
 /** Image rognée : position (x, y, w, h) dans l'atlas, décalage (tx, ty) dans l'image complète. */
-export interface AtlasCell { anim: RigAnim; x: number; y: number; w: number; h: number; tx: number; ty: number }
+export interface AtlasCell { anim: RigAnim; /** Indice dans AIM_ANGLES, -1 = horizontale. */ aim: number; x: number; y: number; w: number; h: number; tx: number; ty: number }
 export interface AtlasMeta {
   /** Taille d'une image complète, avant rognage (px). */
   fw: number;
@@ -36,6 +44,8 @@ export interface AtlasMeta {
   /** Échelle d'affichage (la feuille est suréchantillonnée). */
   scale: number;
   cells: AtlasCell[];
+  /** Angles de visée cuits (vide pour les armes sans visée). */
+  aims: number[];
   width: number;
   height: number;
 }
@@ -72,17 +82,21 @@ export function* bakeAtlasSteps(input: BakeInput): Generator<void, { canvas: Any
   let s = ppu * res;
   if (240 * s * scale > MAX_FRAME_W) s = MAX_FRAME_W / (240 * scale);
 
-  const total = RIG_ANIMS.reduce((n, a) => n + BAKE_FRAMES[a], 0);
+  const aims = aimsFor(def);
+  // Passes : la série horizontale complète, puis une série réduite par angle de visée.
+  const passes: Array<{ anim: RigAnim; aim: number; n: number }> = RIG_ANIMS.map((anim) => ({ anim, aim: -1, n: BAKE_FRAMES[anim] }));
+  aims.forEach((_, ai) => { for (const anim of AIM_ANIMS) passes.push({ anim, aim: ai, n: AIM_FRAMES[anim]! }); });
+  const total = passes.reduce((n, a) => n + a.n, 0);
   const COLS = 8;
   let stage: AnyCanvas | null = null, sg: Ctx | null = null;
   let fw = 0, fh = 0, ox = 0, oy = 0, i = 0;
   // Boîte des pixels visibles de chaque image.
   const bounds: Array<[number, number, number, number] | null> = [];
-  const order: RigAnim[] = [];
+  const order: Array<{ anim: RigAnim; aim: number }> = [];
   try {
-    for (const anim of RIG_ANIMS) {
-      const n = BAKE_FRAMES[anim];
+    for (const { anim, aim, n } of passes) {
       const len = RIG_LEN[anim];
+      RIG.aim = aim < 0 ? 0 : aims[aim];
       for (let k = 0; k < n; k++) {
         // La mort s'arrête juste avant la disparition complète pour garder une dernière braise.
         // Mort : commence juste après le flash blanc (l'éclat de mort est déjà fait par les effets).
@@ -100,13 +114,13 @@ export function* bakeAtlasSteps(input: BakeInput): Generator<void, { canvas: Any
         const sx = (i % COLS) * fw, sy = Math.floor(i / COLS) * fh;
         sg!.drawImage(spr.cv as CanvasImageSource, 0, 0, fw, fh, sx, sy, fw, fh);
         bounds.push(alphaBounds((spr.cv.getContext('2d') as Ctx), fw, fh));
-        order.push(anim);
+        order.push({ anim, aim });
         i++;
         yield;
       }
     }
   } finally {
-    RIG.loop = 0; RIG.phase = 0;
+    RIG.loop = 0; RIG.phase = 0; RIG.aim = 0;
   }
   // Rognage image par image puis rangement en étagères : chaque image ne garde que ses pixels
   // utiles (les traînées d'attaque n'élargissent plus les images d'idle).
@@ -132,13 +146,13 @@ export function* bakeAtlasSteps(input: BakeInput): Generator<void, { canvas: Any
   for (const r of rects) {
     const sx = (r.j % COLS) * fw + r.bx, sy = Math.floor(r.j / COLS) * fh + r.by;
     og.drawImage(stage as CanvasImageSource, sx, sy, r.bw, r.bh, r.x, r.y, r.bw, r.bh);
-    cells.push({ anim: order[r.j], x: r.x, y: r.y, w: r.bw, h: r.bh, tx: r.bx, ty: r.by });
+    cells.push({ anim: order[r.j].anim, aim: order[r.j].aim, x: r.x, y: r.y, w: r.bw, h: r.bh, tx: r.bx, ty: r.by });
   }
   // Libère la mémoire de la planche intermédiaire.
   stage!.width = stage!.height = 1;
   const meta: AtlasMeta = {
     fw, fh, anchorX: ox / fw, anchorY: oy / fh,
-    scale: ppu / s, cells, width: out.width, height: out.height,
+    scale: ppu / s, cells, aims, width: out.width, height: out.height,
   };
   return { canvas: out, meta };
 }

@@ -22,4 +22,6 @@ try {
     writeFileSync(f, Buffer.from(url.split(',')[1], 'base64'));
     console.log(f);
   }
+  const aim = await page.evaluate(() => window.aimSheet('ren', 2));
+  writeFileSync(resolve(out, 'ren-visee.png'), Buffer.from(aim.split(',')[1], 'base64'));
 } finally { await browser.close(); await server.close(); }

@@ -6,7 +6,8 @@
  * gardé tel quel (non typé) pour que la planche et le jeu dessinent exactement la même chose.
  * Point d'entrée typé : ./index.ts (cuisson en feuilles de sprites Pixi).
  */
-export const RIG = { now: 0, projectiles: false, loop: 0, phase: 0, aim: 0 };
+export const RIG = { now: 0, projectiles: false, loop: 0, phase: 0, aim: 0, v4: null };
+/** RIG.v4 : maquette « proposition v4 » (labo seulement, jamais posé par le jeu) : {limbs, outline, k}. null = v3. */
 /**
  * RIG.aim : angle de visée (radians, négatif = vers le haut de l'écran) relatif à la direction du
  * regard. Les armes de tir (arc) tournent avec lui dans idle, course et attaque : l'atlas cuit une
@@ -183,7 +184,7 @@ function idleRef(c){const P=basePose();idleArms(c,P,1,0);return P.arms[1]}
 // Matières par piste : A peint, B ombre, C pixel
 function mat(c,key,style,shade){
   let col={body:c.body,body2:c.body2,metal:c.metal,skin:c.skin,hair:c.hair,cape:c.cape||c.body2,scarf:c.scarf||c.sig,band:c.band||c.sig,boots:c.boots||c.body,trim:c.trim||c.sig,ink:'#0b0a10',bone:c.skin}[key]||key;
-  if(shade) col=mix(col,'#05070d',.35);
+  if(shade) col=mix(col,'#05070d',RIG.v4&&RIG.v4.limbs&&style==='A'?.5:.35);
   if(style==='B') col=mix(col,'#06070c',.62);
   return col;
 }
@@ -192,8 +193,8 @@ function glowCol(c,style){return style==='B'?c.rim:c.sig}
 function capsule(g,L,w0,w1){g.beginPath();g.moveTo(-w0/2,0);g.lineTo(-w1/2,L);g.arc(0,L,w1/2,Math.PI,0,true);g.lineTo(w0/2,0);g.arc(0,0,w0/2,0,Math.PI,true);g.closePath()}
 
 /** Combattant en cours de dessin (liseré par forme, matières). */
-const CUR={c:null};
-function fillShape(g,col,style,line=true){g.fillStyle=col;g.fill();if(line&&style!=='B'){g.lineWidth=style==='C'?1.2:1.1;g.strokeStyle='rgba(8,7,12,.85)';g.stroke()}else if(style==='B'){g.lineWidth=.8;g.strokeStyle='rgba(255,255,255,.05)';g.stroke()}
+const CUR={c:null,limb:false,front:false};
+function fillShape(g,col,style,line=true){g.fillStyle=col;g.fill();const V=RIG.v4;if(line&&style!=='B'){g.lineWidth=style==='C'?1.2:(V&&V.limbs&&CUR.limb?1.9:V&&V.limbs?1.45:1.1);g.strokeStyle=V&&V.limbs?'rgba(6,5,10,.95)':'rgba(8,7,12,.85)';g.stroke();if(V&&V.limbs&&CUR.limb&&CUR.front&&CUR.c){g.save();g.clip();g.lineWidth=1.9;g.strokeStyle=rgba(CUR.c.rim,.75);g.stroke();g.restore()}}else if(style==='B'){g.lineWidth=.8;g.strokeStyle='rgba(255,255,255,.05)';g.stroke()}
   if(style==='A'&&CEL.on) cel(g); else if(style==='B'&&CEL.on) celB(g);}
 const CEL={on:false};
 function cel(g){ // ombre propre en aplat (bas-droite) + reflet (haut-gauche) + liseré de contre-jour (droite), décalages en pixels écran = lumière fixe
@@ -250,7 +251,7 @@ function drawWeapon(g,c,P,style,which){
   const w=c.weapon, gc=glowCol(c,style), metal=mat(c,'metal',style), dark=mat(c,'ink',style);
   g.save();
   if(w==='greatsword'||w==='sword'){
-    const L=w==='greatsword'?56:36, W=w==='greatsword'?8:5, hero=c.group==='h';
+    const L=(w==='greatsword'?56:36)*(c.wscale||1), W=(w==='greatsword'?8:5)*(c.wscale?Math.sqrt(c.wscale):1), hero=c.group==='h';
     g.rotate(-.35);
     // poignée gainée + pommeau
     g.beginPath();g.rect(-12,-2.2,10,4.4);fillShape(g,style==='B'?mat(c,'body2',style):'#3a2418',style);
@@ -260,14 +261,14 @@ function drawWeapon(g,c,P,style,which){
     // garde en croissant
     g.beginPath();g.moveTo(-2,-W*1.15);g.quadraticCurveTo(1.5,-W*.6,1.5,0);g.quadraticCurveTo(1.5,W*.6,-2,W*1.15);g.lineTo(-.5,W*1.25);g.quadraticCurveTo(4,W*.6,4,0);g.quadraticCurveTo(4,-W*.6,-.5,-W*1.25);g.closePath();fillShape(g,metal,style);
     // lame : deux pans (clair / sombre) séparés par la gouttière
-    const bl=style==='B'?mix('#9aa0ad','#06070c',.72):'#d4d8e2', bd=style==='B'?mix('#6a7080','#06070c',.8):'#8d93a6';
+    const bl=style==='B'?mix('#9aa0ad','#06070c',.72):(c.blade?c.blade[0]:'#d4d8e2'), bd=style==='B'?mix('#6a7080','#06070c',.8):(c.blade?c.blade[1]:'#8d93a6');
     g.beginPath();g.moveTo(3,-W/2);g.lineTo(2+L*.82,-W/2);g.lineTo(2+L,0);g.lineTo(3,0);g.closePath();fillShape(g,bl,style,false);
     g.beginPath();g.moveTo(3,0);g.lineTo(2+L,0);g.lineTo(2+L*.82,W/2);g.lineTo(3,W/2);g.closePath();fillShape(g,bd,style,false);
     g.beginPath();g.moveTo(3,-W/2);g.lineTo(2+L*.82,-W/2);g.lineTo(2+L,0);g.lineTo(2+L*.82,W/2);g.lineTo(3,W/2);g.closePath();
     if(style!=='B'){g.lineWidth=1.1;g.strokeStyle='rgba(8,7,12,.85)';g.stroke()}
     g.strokeStyle=style==='B'?'rgba(0,0,0,.6)':'rgba(40,40,60,.55)';g.lineWidth=1;g.beginPath();g.moveTo(5,0);g.lineTo(2+L*.72,0);g.stroke();
     // tranchant lumineux + runes
-    glow(g,gc,8+(hero?6*Math.sin(cyc(260)):0),style);g.strokeStyle=gc;g.lineWidth=1.4;g.beginPath();g.moveTo(5,-W/2+.7);g.lineTo(2+L*.82,-W/2+.7);g.lineTo(2+L-1.2,0);g.stroke();
+    glow(g,gc,(8+(hero?6*Math.sin(cyc(260)):0))*(c.wglow||1),style);g.strokeStyle=gc;g.lineWidth=1.4*(c.wglow?1.3:1);g.beginPath();g.moveTo(5,-W/2+.7);g.lineTo(2+L*.82,-W/2+.7);g.lineTo(2+L-1.2,0);g.stroke();
     if(hero||c.group==='b'){g.fillStyle=gc;for(let j=0;j<4;j++){g.fillRect(8+j*L*.16,-.9,L*.07,1.8)}}
     noGlow(g);
   } else if(w==='daggers'){
@@ -276,8 +277,8 @@ function drawWeapon(g,c,P,style,which){
     g.beginPath();g.arc(-6.2,0,1.8,0,TAU);g.strokeStyle=metal;g.lineWidth=1;g.stroke();
     g.beginPath();g.moveTo(0,-4);g.quadraticCurveTo(2,0,0,4);g.lineTo(1.6,4);g.quadraticCurveTo(3.4,0,1.6,-4);g.closePath();fillShape(g,metal,style);
     g.beginPath();g.moveTo(2,-2.4);g.quadraticCurveTo(12,-3.6,22,.4);g.quadraticCurveTo(13,1.2,2,2.4);g.closePath();
-    fillShape(g,style==='B'?mix('#9aa0ad','#06070c',.72):'#dcd6e2',style);
-    glow(g,gc,8,style);g.strokeStyle=gc;g.lineWidth=1.1;g.beginPath();g.moveTo(4,-1.9);g.quadraticCurveTo(12,-3,21,.2);g.stroke();noGlow(g);
+    fillShape(g,style==='B'?mix('#9aa0ad','#06070c',.72):(c.blade?c.blade[0]:'#dcd6e2'),style);
+    glow(g,gc,8*(c.wglow||1),style);g.strokeStyle=gc;g.lineWidth=1.1;g.beginPath();g.moveTo(4,-1.9);g.quadraticCurveTo(12,-3,21,.2);g.stroke();noGlow(g);
   } else if(w==='staff'){
     // Bâton tenu debout devant l'épaule (tête au-dessus de la main, côté regard). Avant : -1,45 le
     // couchait vers l'arrière, la tête passait derrière l'épaule et la nuque.
@@ -292,8 +293,8 @@ function drawWeapon(g,c,P,style,which){
     // croissant forgé + gemme lunaire
     g.translate(42,0);
     g.beginPath();g.arc(0,0,8.5,Math.PI*.3,Math.PI*1.7);g.arc(-3.6,0,6.4,Math.PI*1.62,Math.PI*.38,true);g.closePath();fillShape(g,gold,style);
-    glow(g,gc,14+10*P.charge,style);
-    g.beginPath();g.arc(1.2,0,2.9+3*P.charge,0,TAU);g.fillStyle=style==='B'?c.rim:mix(c.sig,'#ffffff',.45);g.fill();
+    glow(g,gc,(14+10*P.charge)*(c.wglow||1),style);
+    g.beginPath();g.arc(1.2,0,(2.9+3*P.charge)*(c.wglow?1.35:1),0,TAU);g.fillStyle=style==='B'?c.rim:mix(c.sig,'#ffffff',.45);g.fill();
     g.beginPath();g.arc(.6,-.8,1.1+P.charge,0,TAU);g.fillStyle='#ffffff';g.fill();noGlow(g);
   } else if(w==='orb'){
     glow(g,gc,16+10*P.charge,style);
@@ -304,7 +305,7 @@ function drawWeapon(g,c,P,style,which){
     // prolongement (pointe vers la cible), corde tirée vers l'épaule. (Avant : tourné d'un quart de tour,
     // l'arc s'alignait sur le bras et pendait vers le sol.)
     g.rotate(Math.PI);
-    const pull=P.drawPull||0, gold=style==='B'?mix('#c9a24a','#06070c',.7):'#c8962e';
+    const pull=P.drawPull||0, gold=style==='B'?mix('#c9a24a','#06070c',.7):(c.bowCol||'#c8962e');
     // arc recourbé : branches épaisses au centre, pointes retournées
     const limbP=(sgn)=>{g.beginPath();g.moveTo(0,-4.5);g.quadraticCurveTo(sgn*13,-16,sgn*23,-7);g.quadraticCurveTo(sgn*26,-3,sgn*28.5,-4.5);g.lineTo(sgn*27.5,-1.6);g.quadraticCurveTo(sgn*24,-1.4,sgn*21.5,-3.4);g.quadraticCurveTo(sgn*12,-10,0,1);g.closePath()};
     limbP(1);fillShape(g,gold,style);limbP(-1);fillShape(g,gold,style);
@@ -414,7 +415,7 @@ function drawHumanoid(g,c,P,style){
   // pieds-hanche: jambes (cuisse, mollet, genou, botte)
   const drawLeg=(i,shade)=>{
     if(c.float) return;
-    const l=P.legs[i]; g.save(); g.translate((i?1:-1)*c.hw*.28,0);
+    const l=P.legs[i]; g.save(); g.translate((i?1:-1)*c.hw*.28,0); CUR.limb=true; CUR.front=!shade;
     const lw=c.lw;
     g.rotate(-l.t); limbShape(g,th,lw*1.22,lw*.86,lw*.12); fillShape(g,mat(c,c.robe?'body2':'body',style,shade),style);
     if(style==='A'&&!c.robe) seam(lw*.18,th*.15,lw*.1,th*.85);
@@ -428,14 +429,14 @@ function drawHumanoid(g,c,P,style){
     g.translate(0,th); footShape(g,lw,heavy);
     fillShape(g,mat(c,c.enemy||c.greaves?'metal':(c.boots?'boots':'ink'),style,shade),style);
     if(style!=='B'&&!c.enemy){seam(-lw*.45,lw*.38,lw*1.45,lw*.38,'rgba(255,255,255,.12)',1)}
-    g.restore();
+    CUR.limb=false; g.restore();
   };
   const shX=c.sw*.5;
   // main : poing fermé, pouce sur le dessus
   const hand=(col,shade,big)=>{const r=c.aw*(big?.75:.56);g.beginPath();g.ellipse(r*.15,r*.1,r*1.02,r*.92,.3,0,TAU);fillShape(g,col,style);
     g.beginPath();g.ellipse(r*.65,-r*.45,r*.42,r*.3,-.5,0,TAU);fillShape(g,col,style)};
   const arm=(i,shade)=>{
-    const a=P.arms[i]; g.save(); g.translate(i?shX*.55:-shX*.45,-T+c.aw*.4);
+    const a=P.arms[i]; g.save(); g.translate(i?shX*.55:-shX*.45,-T+c.aw*.4); CUR.limb=true; CUR.front=!shade;
     const aw=c.aw, bare=c.weapon==='fists';
     g.rotate(-a.u); limbShape(g,c.arm/2,aw*1.12,aw*.84,aw*.16); fillShape(g,mat(c,bare?'skin':'body',style,shade),style);
     if(bare&&style==='B'){glow(g,glowCol(c,style),5,style);seam(-aw*.1,c.arm*.08,aw*.15,c.arm*.36,rgba(c.rim,.8),1);noGlow(g)}
@@ -445,7 +446,7 @@ function drawHumanoid(g,c,P,style){
     else if(c.wraps&&style!=='B'){g.strokeStyle='rgba(236,226,232,.8)';g.lineWidth=1;for(let j=0;j<4;j++){g.beginPath();g.moveTo(-aw*.45,c.arm*.2+j*3.2);g.lineTo(aw*.42,c.arm*.2+j*3.2+1.6);g.stroke()}}
     else if(c.group==='h'&&!c.robe){g.save();g.translate(0,c.arm*.3);g.beginPath();g.rect(-aw*.48,0,aw*.96,c.arm*.14);fillShape(g,mat(c,'body2',style,shade),style);g.restore()}
     if(bare){g.save();glow(g,glowCol(c,style),6,style);g.strokeStyle=glowCol(c,style);g.lineWidth=1;g.beginPath();g.moveTo(-2,4);g.lineTo(1,9);g.lineTo(-1,13);g.stroke();noGlow(g);g.restore()}
-    g.translate(0,c.arm/2);
+    g.translate(0,c.arm/2); CUR.limb=false;
     if(P.hold&&(i===1||c.weapon==='daggers')) drawWeapon(g,c,P,style,i);
     if(i===0&&bare) drawWeapon(g,c,P,style,0);
     else if(i===1&&!P.hold&&bare) drawWeapon(g,c,P,style,1);
@@ -586,7 +587,7 @@ function drawHumanoid(g,c,P,style){
     g.restore();
   }
   if(c.shield&&P.hold){ // bouclier rond au bras arrière (devant le corps)
-    const [qx,qy]=[-c.sw*.1,-T*.45]; g.save(); g.translate(qx,qy);
+    const [qx,qy]=[-c.sw*.1,-T*.45]; g.save(); g.translate(qx,qy); if(c.shieldS) g.scale(c.shieldS,c.shieldS);
     g.beginPath(); g.ellipse(0,0,9,12,0,0,TAU); fillShape(g,mat(c,'metal',style),style);
     g.beginPath(); g.ellipse(0,0,6.5,9.5,0,0,TAU); fillShape(g,mat(c,'body2',style),style);
     glow(g,glowCol(c,style),8,style); g.strokeStyle=glowCol(c,style); g.lineWidth=1; g.beginPath(); g.moveTo(0,-8); g.lineTo(2.4,0); g.lineTo(0,8); g.lineTo(-2.4,0); g.closePath(); g.stroke();
@@ -735,6 +736,7 @@ function oc(id,w,h){let c=pool[id];if(!c){c=pool[id]=typeof document!=='undefine
 
 function renderSprite(id,c,anim,p,style,s,k){
   // s = pixels par unité ; retourne {cv, ox, oy} avec ox,oy = position des pieds dans cv
+  if(RIG.v4&&RIG.v4.k) k*=RIG.v4.k;
   const sc=s*c.scale, W=Math.ceil(240*sc), Hh=Math.ceil(195*sc), ox=W*.4, oy=Hh*.86;
   const P=c.kind==='w'?Object.assign(basePose(),pose(c,anim==='attaque'?'idle':anim,p,k)):pose(c,anim,p,k);
   if(c.kind==='w'){P.x=0;P.lean=0;P.sx=anim==='touche'?1+.07*(1-p):1;P.sy=2-P.sx}
@@ -762,14 +764,16 @@ function renderSprite(id,c,anim,p,style,s,k){
   const tint=(col)=>{sg.setTransform(1,0,0,1,0,0);sg.globalCompositeOperation='source-over';sg.clearRect(0,0,W,Hh);sg.drawImage(body,0,0);sg.globalCompositeOperation='source-in';sg.fillStyle=col;sg.fillRect(0,0,W,Hh);sg.globalCompositeOperation='source-over'};
   if(P.alpha>0){
   if(style==='A'){
-    tint('#07060c'); for(const [dx,dy] of [[-1,0],[1,0],[0,-1],[0,1]]) og.drawImage(sil,dx*1.6*s,dy*1.6*s);
+    const ol=RIG.v4&&RIG.v4.outline?RIG.v4.outline:1.6;
+    tint(RIG.v4?mix('#07060c',c.sig,.22):'#07060c'); for(const [dx,dy] of [[-1,0],[1,0],[0,-1],[0,1],...(ol>1.6?[[-.7,-.7],[.7,.7],[-.7,.7],[.7,-.7]]:[])]) og.drawImage(sil,dx*ol*s,dy*ol*s);
     tint(c.rim); og.drawImage(sil,1.6*s,-1.6*s);
     og.drawImage(body,0,0);
     og.globalCompositeOperation='source-atop';
   } else if(style==='B'){
     // Contour sombre net (lisible sur tous les sols) + liseré de contre-jour court, à peine flouté.
     // Avant : silhouette floutée sur 10 u → auréole qui bavait et fusionnait en mêlée sur mobile.
-    tint('#05040a'); for(const [dx,dy] of [[-1,0],[1,0],[0,-1],[0,1]]) og.drawImage(sil,dx*1.1*s,dy*1.1*s);
+    const olB=RIG.v4&&RIG.v4.outlineB?RIG.v4.outlineB:1.1;
+    tint('#05040a'); for(const [dx,dy] of [[-1,0],[1,0],[0,-1],[0,1]]) og.drawImage(sil,dx*olB*s,dy*olB*s);
     tint(mix(c.rim,'#ffffff',.2)); og.shadowColor=rgba(c.rim,.5); og.shadowBlur=2.6*s; og.drawImage(sil,1.8*s,-1.5*s); og.shadowBlur=0;
     og.globalAlpha=.6; og.drawImage(sil,-1*s,-.6*s); og.globalAlpha=1;
     og.drawImage(body,0,0);
